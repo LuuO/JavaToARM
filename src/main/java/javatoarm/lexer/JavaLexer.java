@@ -18,7 +18,7 @@ public class JavaLexer implements Iterator<JavaLexerToken> {
 
     public JavaLexer(String code) throws JavaLexerException {
         this.index = 0;
-        this.words = breakdown(code);
+        this.words = scan(code);
     }
 
     public static boolean isNameableChar(char c) {
@@ -26,7 +26,7 @@ public class JavaLexer implements Iterator<JavaLexerToken> {
             || (c >= '0' && c <= '9') || c == '$' || c == '_';
     }
 
-    private List<String> breakdown(String code) throws JavaLexerUnknownCharacterException {
+    private List<String> scan(String code) throws JavaLexerUnknownCharacterException {
         State state = State.WHITESPACE;
         List<String> words = new ArrayList<>();
         StringBuilder word = new StringBuilder();
