@@ -1,11 +1,12 @@
-package javatoarm.lexer;
+package javatoarm.token;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
-public class JavaLexer implements Iterator<JavaLexerToken> {
+public class JavaLexer implements Iterator<Token> {
     private static final Set<Character> symbols =
         Set.of(';', '{', '}', '(', ')', '[', ']', '.', ',',
             '=', '+', '-', '*', '/', '&', '|', '%', '^', '!',
@@ -14,10 +15,10 @@ public class JavaLexer implements Iterator<JavaLexerToken> {
         Set.of("++", "--", "==", "!=", "::", "+=", "-=", "*=", "/=", "%=", "<=", ">=", "//", "/*",
             "*/");
     private final List<String> words;
-    private int index;
+    private int nextIndex;
 
-    public JavaLexer(String code) throws JavaLexerException {
-        this.index = 0;
+    public JavaLexer(String code) throws Exceptions {
+        this.nextIndex = 0;
         this.words = scan(code);
     }
 
@@ -26,7 +27,7 @@ public class JavaLexer implements Iterator<JavaLexerToken> {
             || (c >= '0' && c <= '9') || c == '$' || c == '_';
     }
 
-    private List<String> scan(String code) throws JavaLexerUnknownCharacterException {
+    private List<String> scan(String code) throws Exceptions.UnknownCharacter {
         State state = State.WHITESPACE;
         List<String> words = new ArrayList<>();
         StringBuilder word = new StringBuilder();
@@ -43,7 +44,7 @@ public class JavaLexer implements Iterator<JavaLexerToken> {
                         state = State.SYMBOL;
                         word.append(c);
                     } else {
-                        throw new JavaLexerUnknownCharacterException();
+                        throw new Exceptions.UnknownCharacter(c);
                     }
                     break;
                 case NAME: /* a word (int, String, class, className, 100, ...) */
@@ -57,7 +58,7 @@ public class JavaLexer implements Iterator<JavaLexerToken> {
                         collectAndClear(word, words);
                         word.append(c);
                     } else {
-                        throw new JavaLexerUnknownCharacterException();
+                        throw new Exceptions.UnknownCharacter(c);
                     }
                     break;
                 case SYMBOL: /* last char is a symbol (+, ], }, =, ...) */
@@ -86,7 +87,7 @@ public class JavaLexer implements Iterator<JavaLexerToken> {
                         }
                         word.append(c);
                     } else {
-                        throw new JavaLexerUnknownCharacterException();
+                        throw new Exceptions.UnknownCharacter(c);
                     }
                     break;
                 case COMMENT_SL: /* in a single-line comment */
@@ -123,13 +124,36 @@ public class JavaLexer implements Iterator<JavaLexerToken> {
         builder.setLength(0);
     }
 
-    public JavaLexerToken next() {
-        String word = words.get(index++);
-        return JavaLexerToken.getObject(word);
+    private Token getNextToken() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
+        String word = words.get(nextIndex);
+        return Token.getObject(word);
     }
 
+    @Override
     public boolean hasNext() {
-        return index < words.size();
+        return nextIndex < words.size();
+    }
+
+    @Override
+    public Token next() {
+        Token token = getNextToken();
+        nextIndex += 1;
+        return token;
+    }
+
+    public Token peek() {
+        return getNextToken();
+    }
+
+    public void next(Token expected) throws Exceptions.UnexpectedToken {
+        Token next = getNextToken();
+        nextIndex += 1;
+        if (!expected.equals(next)) {
+            throw new Exceptions.UnexpectedToken(expected, next);
+        }
     }
 
     enum State {

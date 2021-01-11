@@ -1,19 +1,23 @@
-package javatoarm.lexer;
+package javatoarm.token.operator;
 
-public class JavaLexerComparisonOperator extends JavaLexerBinaryOperator {
-    private final Type comparisonOperatorType;
+public class Comparison implements OperatorToken.Binary {
+    private final Type type;
 
-    private JavaLexerComparisonOperator(Type type) {
-        super(JavaLexerBinaryOperator.Type.COMPARISON);
-        this.comparisonOperatorType = type;
+    private Comparison(Type type) {
+        this.type = type;
     }
 
-    public static JavaLexerComparisonOperator get(String operator) {
+    public static Comparison get(String operator) {
         try {
-            return new JavaLexerComparisonOperator(Type.get(operator));
+            return new Comparison(Type.get(operator));
         } catch (IllegalArgumentException e) {
             return null;
         }
+    }
+
+    @Override
+    public OperatorToken.Binary.Type getBinaryOperatorType() {
+        return OperatorToken.Binary.Type.COMPARISON;
     }
 
     public enum Type {

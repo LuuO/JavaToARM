@@ -1,4 +1,4 @@
-package javatoarm.code;
+package javatoarm.java;
 
 public class JavaFunction {
 }

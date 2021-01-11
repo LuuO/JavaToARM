@@ -1,19 +1,23 @@
-package javatoarm.lexer;
+package javatoarm.token.operator;
 
-public class JavaLexerBitwiseOperator extends JavaLexerBinaryOperator {
-    private final Type bitwiseOperatorType;
+public class Bitwise implements OperatorToken.Binary {
+    private final Type type;
 
-    private JavaLexerBitwiseOperator(Type type) {
-        super(JavaLexerBinaryOperator.Type.BITWISE);
-        this.bitwiseOperatorType = type;
+    private Bitwise(Type type) {
+        this.type = type;
     }
 
-    public static JavaLexerBitwiseOperator get(String operator) {
+    public static Bitwise get(String operator) {
         try {
-            return new JavaLexerBitwiseOperator(Type.get(operator));
+            return new Bitwise(Type.get(operator));
         } catch (IllegalArgumentException e) {
             return null;
         }
+    }
+
+    @Override
+    public OperatorToken.Binary.Type getBinaryOperatorType() {
+        return OperatorToken.Binary.Type.BITWISE;
     }
 
     enum Type {

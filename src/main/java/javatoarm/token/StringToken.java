@@ -1,15 +1,15 @@
-package javatoarm.lexer;
+package javatoarm.token;
 
-public class JavaLexerString extends JavaLexerToken {
+public class StringToken implements Token, CharSequence {
     private final String string;
 
-    private JavaLexerString(String s) {
-        super(Type.STRING);
+    public StringToken(String s) {
         string = s;
     }
 
-    public static JavaLexerToken obtain(String s) {
-        return new JavaLexerString(s);
+    @Override
+    public Type getTokenType() {
+        return Type.STRING;
     }
 
     public boolean isValidName() {
@@ -24,6 +24,11 @@ public class JavaLexerString extends JavaLexerToken {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return string;
+    }
+
     public boolean isCharacter() {
         return string.length() == 1;
     }
@@ -34,5 +39,22 @@ public class JavaLexerString extends JavaLexerToken {
         }
 
         return string.charAt(0);
+    }
+
+    // CharSequence
+
+    @Override
+    public int length() {
+        return string.length();
+    }
+
+    @Override
+    public char charAt(int index) {
+        return string.charAt(index);
+    }
+
+    @Override
+    public CharSequence subSequence(int start, int end) {
+        return string.substring(start, end);
     }
 }

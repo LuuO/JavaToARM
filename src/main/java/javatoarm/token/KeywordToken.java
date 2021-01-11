@@ -1,6 +1,6 @@
-package javatoarm.lexer;
+package javatoarm.token;
 
-public class JavaLexerKeyword extends JavaLexerToken {
+public class KeywordToken implements Token {
 //    Set<String> keywords = Set.of("abstract", "continue", "for", "new", "switch",
 //        "assert", "default", "goto", "package", "synchronized",
 //        "boolean", "do", "if", "private", "this",
@@ -17,17 +17,40 @@ public class JavaLexerKeyword extends JavaLexerToken {
 
     private final Keyword keyword;
 
-    private JavaLexerKeyword(Keyword keyword) {
-        super(Type.KEYWORD);
+    public KeywordToken(Keyword keyword) {
         this.keyword = keyword;
     }
 
-    public static JavaLexerKeyword get(String keyword) {
+    public static KeywordToken get(String keyword) {
         try {
-            return new JavaLexerKeyword(Keyword.valueOf("_" + keyword));
+            return new KeywordToken(Keyword.valueOf("_" + keyword));
         } catch (IllegalArgumentException e) {
             return null;
         }
+    }
+
+    @Override
+    public Type getTokenType() {
+        return Type.KEYWORD;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof KeywordToken) {
+            KeywordToken that = (KeywordToken) obj;
+            return this.keyword.equals(that.keyword);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return keyword.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return keyword.name().substring(1);
     }
 
     public enum Keyword {

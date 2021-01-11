@@ -1,8 +1,10 @@
 package javatoarm;
 
-import javatoarm.lexer.JavaLexer;
-import javatoarm.lexer.JavaLexerException;
-import javatoarm.lexer.JavaLexerToken;
+import javatoarm.java.JavaFile;
+import javatoarm.parser.JavaParser;
+import javatoarm.token.JavaLexer;
+import javatoarm.token.Exceptions;
+import javatoarm.token.Token;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -16,14 +18,12 @@ import static org.junit.Assert.*;
 public class Tests {
 
     @Test
-    public void test() throws IOException, JavaLexerException {
+    public void test() throws IOException, Exceptions {
         assertTrue(true);
-        String code = Files.readString(Path.of("resources/java.txt"));
+        String code = Files.readString(Path.of("resources/test1.java"));
         JavaLexer lexer = new JavaLexer(code);
-        List<JavaLexerToken> tokens = new ArrayList<>();
-        while (lexer.hasNext()) {
-            tokens.add(lexer.next());
-        }
-        System.out.println(tokens.size());
+        JavaParser parser = new JavaParser(lexer);
+        JavaFile file = parser.toTree();
+        System.out.println(file);
     }
 }
