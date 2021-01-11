@@ -2,7 +2,7 @@ package javatoarm.parser;
 
 import javatoarm.java.JavaClass;
 import javatoarm.java.JavaFile;
-import javatoarm.token.Exceptions;
+import javatoarm.JTAException;
 import javatoarm.token.KeywordToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.SplitterToken;
@@ -21,7 +21,7 @@ public class JavaParser {
         this.lexer = lexer;
     }
 
-    public JavaFile toTree() throws Exceptions {
+    public JavaFile toTree() throws JTAException {
         JavaFile javaFile = createJavaFile();
         eatSemiColons();
         javaFile.imports.addAll(getImports());
@@ -41,7 +41,7 @@ public class JavaParser {
         }
     }
 
-    private JavaFile createJavaFile() throws Exceptions.UnexpectedToken {
+    private JavaFile createJavaFile() throws JTAException.UnexpectedToken {
         Token semicolon = new SplitterToken(';');
         Stack<StringToken> savedTokens = new Stack<>();
         lexer.next(new KeywordToken(KeywordToken.Keyword._package));
@@ -50,21 +50,21 @@ public class JavaParser {
             Token token = lexer.next();
             if (semicolon.equals(token)) {
                 if (savedTokens.size() == 0) {
-                    throw new Exceptions.UnexpectedToken("package_name", token.toString());
+                    throw new JTAException.UnexpectedToken("package_name", token.toString());
                 } else {
                     return new JavaFile(String.join("", savedTokens));
                 }
             } else if (token.getTokenType().equals(Token.Type.STRING)) {
                 savedTokens.push((StringToken) token);
             } else {
-                throw new Exceptions.UnexpectedToken("package_name", token.toString());
+                throw new JTAException.UnexpectedToken("package_name", token.toString());
             }
         }
 
-        throw new Exceptions.UnexpectedToken(semicolon.toString(), "EOF");
+        throw new JTAException.UnexpectedToken(semicolon.toString(), "EOF");
     }
 
-    private Set<String> getImports() throws Exceptions.UnexpectedToken {
+    private Set<String> getImports() throws JTAException.UnexpectedToken {
         Token importToken = new KeywordToken(KeywordToken.Keyword._import);
         Token semicolon = new SplitterToken(';');
         Set<String> imports = new HashSet<>();
@@ -84,11 +84,11 @@ public class JavaParser {
                             savedTokens.clear();
                             isInImport = false;
                         } else {
-                            throw new Exceptions.UnexpectedToken(
+                            throw new JTAException.UnexpectedToken(
                                 "package_name", token.toString());
                         }
                     }
-                    default -> throw new Exceptions.UnexpectedToken(
+                    default -> throw new JTAException.UnexpectedToken(
                         "package_name or ';'", token.toString());
                 }
             } else {
@@ -100,23 +100,23 @@ public class JavaParser {
                         break;
                     }
                 } else {
-                    throw new Exceptions.UnexpectedToken(
+                    throw new JTAException.UnexpectedToken(
                         "package_name or ';'", token.toString());
                 }
             }
         }
 
         if (savedTokens.size() != 0) {
-            throw new Exceptions.UnexpectedToken("';'", "EOF");
+            throw new JTAException.UnexpectedToken("';'", "EOF");
         }
         if (isInImport) {
-            throw new Exceptions.UnexpectedToken("package_name or ';'", "EOF");
+            throw new JTAException.UnexpectedToken("package_name or ';'", "EOF");
         }
 
         return imports;
     }
 
-    private JavaClass getJavaClass() throws Exceptions.UnexpectedToken {
+    private JavaClass getJavaClass() throws JTAException.UnexpectedToken {
         Token classToken = new KeywordToken(KeywordToken.Keyword._class);
         Token publicToken = new KeywordToken(KeywordToken.Keyword._public);
         Token packageToken = new KeywordToken(KeywordToken.Keyword._package);
@@ -136,7 +136,7 @@ public class JavaParser {
             lexer.next(privateToken);
             javaClass = new JavaClass(false);
         } else {
-            throw new Exceptions.UnexpectedToken(
+            throw new JTAException.UnexpectedToken(
                 "class, public, or package-private", nextToken.toString());
         }
         // names, codes...

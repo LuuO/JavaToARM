@@ -1,5 +1,7 @@
 package javatoarm.token;
 
+import javatoarm.JTAException;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,7 +19,7 @@ public class JavaLexer implements Iterator<Token> {
     private final List<String> words;
     private int nextIndex;
 
-    public JavaLexer(String code) throws Exceptions {
+    public JavaLexer(String code) throws JTAException {
         this.nextIndex = 0;
         this.words = scan(code);
     }
@@ -27,7 +29,7 @@ public class JavaLexer implements Iterator<Token> {
             || (c >= '0' && c <= '9') || c == '$' || c == '_';
     }
 
-    private List<String> scan(String code) throws Exceptions.UnknownCharacter {
+    private List<String> scan(String code) throws JTAException.UnknownCharacter {
         State state = State.WHITESPACE;
         List<String> words = new ArrayList<>();
         StringBuilder word = new StringBuilder();
@@ -44,7 +46,7 @@ public class JavaLexer implements Iterator<Token> {
                         state = State.SYMBOL;
                         word.append(c);
                     } else {
-                        throw new Exceptions.UnknownCharacter(c);
+                        throw new JTAException.UnknownCharacter(c);
                     }
                     break;
                 case NAME: /* a word (int, String, class, className, 100, ...) */
@@ -58,7 +60,7 @@ public class JavaLexer implements Iterator<Token> {
                         collectAndClear(word, words);
                         word.append(c);
                     } else {
-                        throw new Exceptions.UnknownCharacter(c);
+                        throw new JTAException.UnknownCharacter(c);
                     }
                     break;
                 case SYMBOL: /* last char is a symbol (+, ], }, =, ...) */
@@ -87,7 +89,7 @@ public class JavaLexer implements Iterator<Token> {
                         }
                         word.append(c);
                     } else {
-                        throw new Exceptions.UnknownCharacter(c);
+                        throw new JTAException.UnknownCharacter(c);
                     }
                     break;
                 case COMMENT_SL: /* in a single-line comment */
@@ -148,11 +150,11 @@ public class JavaLexer implements Iterator<Token> {
         return getNextToken();
     }
 
-    public void next(Token expected) throws Exceptions.UnexpectedToken {
+    public void next(Token expected) throws JTAException.UnexpectedToken {
         Token next = getNextToken();
         nextIndex += 1;
         if (!expected.equals(next)) {
-            throw new Exceptions.UnexpectedToken(expected, next);
+            throw new JTAException.UnexpectedToken(expected, next);
         }
     }
 
