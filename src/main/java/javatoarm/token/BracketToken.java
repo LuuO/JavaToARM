@@ -1,9 +1,16 @@
 package javatoarm.token;
 
 public class BracketToken implements Token {
+    public static BracketToken CURLY_L = new BracketToken('{');
+    public static BracketToken CURLY_R = new BracketToken('}');
+    public static BracketToken SQUARE_L = new BracketToken('[');
+    public static BracketToken SQUARE_R = new BracketToken(']');
+    public static BracketToken ROUND_L = new BracketToken('(');
+    public static BracketToken ROUND_R = new BracketToken(')');
+
     char bracket;
 
-    BracketToken(char c) throws IllegalArgumentException {
+    public BracketToken(char c) throws IllegalArgumentException {
         bracket = c;
     }
 
@@ -17,5 +24,19 @@ public class BracketToken implements Token {
     @Override
     public Type getTokenType() {
         return Type.BRACKET;
+    }
+
+    @Override
+    public int hashCode() {
+        return bracket;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof BracketToken) {
+            BracketToken that = (BracketToken) obj;
+            return this.bracket == that.bracket;
+        }
+        return false;
     }
 }

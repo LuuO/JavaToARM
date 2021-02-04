@@ -1,33 +1,40 @@
 package javatoarm.java;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class JavaFile {
-    public final String _package;
-    public final Set<String> imports;
-    private final Set<JavaClass> classes;
+    public final List<String> _package;
+    public final Set<List<String>> imports;
+    private final List<JavaClass> classes;
 
     /*
         RI:
             classes contains only one public class
      */
 
-    public JavaFile(String _package) {
-        if (_package.length() == 0) {
+    public JavaFile(List<String> _package, Set<List<String>> imports, List<JavaClass> classes) {
+        if (_package.size() == 0) {
             throw new IllegalArgumentException();
         }
 
+        assertOnePublic(classes);
+
         this._package = _package;
-        this.imports = new HashSet<>();
-        this.classes = new HashSet<>();
+        this.imports = imports;
+        this.classes = classes;
     }
 
-    public void addClass(JavaClass javaClass) {
-        if (javaClass.isPublic) {
-            for (JavaClass c : classes) {
-                if (c.isPublic)
+    public void assertOnePublic(List<JavaClass> classes) {
+        boolean hasPublic = false;
+        for (JavaClass c : classes) {
+            if (c.isPublic) {
+                if (hasPublic) {
                     throw new IllegalArgumentException("There can be at most one public class.");
+                } else {
+                    hasPublic = true;
+                }
             }
         }
     }

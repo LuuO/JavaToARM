@@ -1,6 +1,5 @@
 # JavaToARM
 Welcome!
 
-This a compiler that converts Java programs to ARM assembly codes
+This project is a compiler that converts Java programs to ARM instructions. It is not completed yet. 
 
-This project is still in progress, so there might be a lot of bugs.

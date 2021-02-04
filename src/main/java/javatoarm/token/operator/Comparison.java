@@ -16,6 +16,14 @@ public class Comparison implements OperatorToken.Binary {
     }
 
     @Override
+    public int getPrecedenceLevel() {
+        return switch (type) {
+            case EQUAL, UNEQUAL -> 8;
+            default -> 9;
+        };
+    }
+
+    @Override
     public OperatorToken.Binary.Type getBinaryOperatorType() {
         return OperatorToken.Binary.Type.COMPARISON;
     }

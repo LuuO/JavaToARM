@@ -19,6 +19,8 @@ public interface OperatorToken extends Token {
 
     Type getOperatorType();
 
+    int getPrecedenceLevel();
+
     enum Type {
         UNARY, BINARY, PLUS_MINUS
     }
@@ -67,13 +69,18 @@ public interface OperatorToken extends Token {
                 case "-" -> new PlusMinus(false);
                 case "!" -> new LogicalNot();
                 case "~" -> new BitwiseNot();
-                default -> throw new IllegalArgumentException();
+                default -> null;
             };
         }
 
         @Override
         default OperatorToken.Type getOperatorType() {
             return OperatorToken.Type.UNARY;
+        }
+
+        @Override
+        default int getPrecedenceLevel() {
+            return 14;
         }
 
         Type getUnaryOperatorType();

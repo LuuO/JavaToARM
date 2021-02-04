@@ -1,8 +1,16 @@
 package javatoarm.java;
 
-public class JavaStatement implements JavaCode {
-    @Override
-    public boolean isOneLine() {
-        return true;
+public interface JavaStatement extends JavaCode {
+    JavaStatement BREAK = new JavaStatement() { };
+    JavaStatement RETURN = new JavaStatement() { };
+
+    class Return implements JavaStatement {
+        public Return(JavaExpression expression) {
+
+        }
+
+        public Return() {
+
+        }
     }
 }

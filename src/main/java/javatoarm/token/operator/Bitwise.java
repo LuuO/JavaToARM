@@ -20,6 +20,16 @@ public class Bitwise implements OperatorToken.Binary {
         return OperatorToken.Binary.Type.BITWISE;
     }
 
+    @Override
+    public int getPrecedenceLevel() {
+        return switch (type) {
+            case AND -> 7;
+            case XOR -> 6;
+            case OR -> 5;
+            default -> 10;
+        };
+    }
+
     enum Type {
         AND, OR, XOR, L_SHIFT, SIGNED_R_SHIFT, ZEROFILL_R_SHIFT;
 

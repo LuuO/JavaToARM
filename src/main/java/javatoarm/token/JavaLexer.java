@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.Stack;
 
 public class JavaLexer implements Iterator<Token> {
     private static final Set<Character> symbols =
@@ -16,12 +17,15 @@ public class JavaLexer implements Iterator<Token> {
     private static final Set<String> longOperators =
         Set.of("++", "--", "==", "!=", "::", "+=", "-=", "*=", "/=", "%=", "<=", ">=", "//", "/*",
             "*/");
+
     private final List<String> words;
+    private final Stack<Integer> checkPoints;
     private int nextIndex;
 
     public JavaLexer(String code) throws JTAException {
         this.nextIndex = 0;
         this.words = scan(code);
+        this.checkPoints = new Stack<>();
     }
 
     public static boolean isNameableChar(char c) {
@@ -36,6 +40,7 @@ public class JavaLexer implements Iterator<Token> {
 
         for (char c : code.toCharArray()) {
             switch (state) {
+                // TODO: add string support
                 case WHITESPACE: /* last char is whitespace */
                     if (Character.isWhitespace(c)) {
                         continue;
@@ -150,11 +155,40 @@ public class JavaLexer implements Iterator<Token> {
         return getNextToken();
     }
 
+    public void rewind(int steps) {
+        if (steps > nextIndex) {
+            throw new IllegalArgumentException();
+        }
+        nextIndex -= steps;
+    }
+
+    public void rewind() {
+        rewind(1);
+    }
+
+    public void createCheckPoint() {
+        checkPoints.push(nextIndex);
+    }
+
+    public void returnToLastCheckPoint() {
+        nextIndex = checkPoints.pop();
+    }
+
     public void next(Token expected) throws JTAException.UnexpectedToken {
         Token next = getNextToken();
         nextIndex += 1;
         if (!expected.equals(next)) {
             throw new JTAException.UnexpectedToken(expected, next);
+        }
+    }
+
+    public Token next(Class<?> expected) throws JTAException.UnexpectedToken {
+        Token next = getNextToken();
+        nextIndex += 1;
+        if (next.getClass() != expected) {
+            throw new JTAException.UnexpectedToken(expected.toString(), next);
+        } else {
+            return next;
         }
     }
 

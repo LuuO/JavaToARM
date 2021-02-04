@@ -18,8 +18,13 @@ public class PlusMinus implements ArithmeticOperator, OperatorToken.Unary {
     }
 
     @Override
+    public int getPrecedenceLevel() {
+        return 11;
+    }
+
+    @Override
     public ArithmeticOperator.Type getArithmeticOperatorType() {
-        return isPlus ? ArithmeticOperator.Type.ADD : ArithmeticOperator.Type.SUB;
+        return ArithmeticOperator.Type.ADDITIVE;
     }
 
     @Override

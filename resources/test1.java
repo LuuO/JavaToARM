@@ -1,27 +1,23 @@
 package javatoarm.java;
-;;;
-import java.util.HashSet;;
-import java.util.Set;;;
-;;
-public class JavaFile {;
-    public final String _package;;
-    public final Set<String> imports;;
-    public final Set<JavaClass> classes;
 
-    /*
-        RI:;
-            classes contains only one public class
-     */
+import java.util.HashSet;
 
-    public JavaFile(String _package) {
-        if (_package.length() == 0) {
-            throw new IllegalArgumentException();
+public class JavaFile {
+
+    public static int fibonacci(int n) {
+        if (n <= 1) {
+            return n;
         }
-
-        this._package = _package;
-        this.imports = new HashSet<>();
-        this.classes = new HashSet<>();
+        return fibonacci(n - 1) + fibonacci(n - 2);
     }
 
-};
-;
+    public static int[] fibonacci2(int n) {
+        int[] result = new int[n];
+        result[0] = 0;
+        result[1] = 1;
+        for (int i = 2; i < n; i++) {
+            result[i] = result[i - 1] + result[i - 2];
+        }
+        return result;
+    }
+}

@@ -19,7 +19,7 @@ public class Tests {
         String code = Files.readString(Path.of("resources/test1.java"));
         JavaLexer lexer = new JavaLexer(code);
         JavaParser parser = new JavaParser(lexer);
-        JavaFile file = parser.toTree();
+        JavaFile file = parser.toJavaTree();
         System.out.println(file);
     }
 }

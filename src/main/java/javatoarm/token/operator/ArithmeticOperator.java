@@ -12,7 +12,7 @@ public interface ArithmeticOperator extends OperatorToken.Binary {
             case '*' -> new Multiply();
             case '/' -> new Divide();
             case '%' -> new Modulus();
-            default -> throw new IllegalArgumentException();
+            default -> null;
         };
     }
 
@@ -21,18 +21,24 @@ public interface ArithmeticOperator extends OperatorToken.Binary {
         return OperatorToken.Binary.Type.ARITHMETIC;
     }
 
+    @Override
+    default int getPrecedenceLevel() {
+        if (getArithmeticOperatorType() == Type.MULTI) {
+            return 12;
+        } else {
+            return 11;
+        }
+    }
+
     Type getArithmeticOperatorType();
 
     enum Type {
-        ADD, SUB, MUL, DIV, MOD;
+        MULTI, ADDITIVE;
 
         public static Type get(char c) {
             return switch (c) {
-                case '+' -> ADD;
-                case '-' -> SUB;
-                case '*' -> MUL;
-                case '/' -> DIV;
-                case '%' -> MOD;
+                case '+', '-' -> ADDITIVE;
+                case '*', '/', '%' -> MULTI;
                 default -> throw new IllegalArgumentException();
             };
         }
@@ -41,21 +47,21 @@ public interface ArithmeticOperator extends OperatorToken.Binary {
     class Multiply implements ArithmeticOperator {
         @Override
         public ArithmeticOperator.Type getArithmeticOperatorType() {
-            return ArithmeticOperator.Type.MUL;
+            return ArithmeticOperator.Type.MULTI;
         }
     }
 
     class Divide implements ArithmeticOperator {
         @Override
         public ArithmeticOperator.Type getArithmeticOperatorType() {
-            return ArithmeticOperator.Type.DIV;
+            return ArithmeticOperator.Type.MULTI;
         }
     }
 
     class Modulus implements ArithmeticOperator {
         @Override
         public ArithmeticOperator.Type getArithmeticOperatorType() {
-            return ArithmeticOperator.Type.MOD;
+            return ArithmeticOperator.Type.MULTI;
         }
     }
 

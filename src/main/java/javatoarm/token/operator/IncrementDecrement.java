@@ -1,5 +1,6 @@
 package javatoarm.token.operator;
 
+//TODO: subtype assignment operator
 public class IncrementDecrement implements OperatorToken.Unary {
     public final boolean isIncrement;
 

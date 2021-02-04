@@ -24,9 +24,12 @@ public interface AssignmentOperator extends OperatorToken.Binary {
         return OperatorToken.Binary.Type.ASSIGNMENT;
     }
 
-    Type getAssignmentOperatorType();
+    @Override
+    default int getPrecedenceLevel() {
+        return 1;
+    }
 
-    OperatorToken.Binary getImplicitOperator();
+    Type getAssignmentOperatorType();
 
     enum Type {
         SIMPLE, COMPOUND
@@ -37,19 +40,15 @@ public interface AssignmentOperator extends OperatorToken.Binary {
         public AssignmentOperator.Type getAssignmentOperatorType() {
             return AssignmentOperator.Type.SIMPLE;
         }
-
-        @Override
-        public OperatorToken.Binary getImplicitOperator() {
-            return null;
-        }
     }
 
     class Compound implements AssignmentOperator {
-        OperatorToken.Binary implicitOperator;
+        public final OperatorToken.Binary implicitOperator;
 
         private Compound(OperatorToken.Binary operator) throws IllegalArgumentException {
             if (!(operator instanceof ArithmeticOperator) &&
                 !(operator instanceof Bitwise)) {
+                // TODO: shift
                 throw new IllegalArgumentException();
             }
 
@@ -59,11 +58,6 @@ public interface AssignmentOperator extends OperatorToken.Binary {
         @Override
         public AssignmentOperator.Type getAssignmentOperatorType() {
             return AssignmentOperator.Type.COMPOUND;
-        }
-
-        @Override
-        public OperatorToken.Binary getImplicitOperator() {
-            return null;
         }
     }
 }

@@ -1,18 +1,22 @@
 package javatoarm.parser;
 
-import javatoarm.java.JavaClass;
-import javatoarm.java.JavaFile;
 import javatoarm.JTAException;
-import javatoarm.token.KeywordToken;
+import javatoarm.java.JavaImmediate;
+import javatoarm.java.JavaFile;
+import javatoarm.java.JavaProperty;
+import javatoarm.java.JavaType;
+import javatoarm.token.BracketToken;
 import javatoarm.token.JavaLexer;
+import javatoarm.token.KeywordToken;
 import javatoarm.token.SplitterToken;
 import javatoarm.token.StringToken;
 import javatoarm.token.Token;
-import javatoarm.token.operator.PlusMinus;
+import javatoarm.token.ValueToken;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 
 public class JavaParser {
     private final JavaLexer lexer;
@@ -21,125 +25,99 @@ public class JavaParser {
         this.lexer = lexer;
     }
 
-    public JavaFile toTree() throws JTAException {
-        JavaFile javaFile = createJavaFile();
-        eatSemiColons();
-        javaFile.imports.addAll(getImports());
-        eatSemiColons();
-        while (lexer.hasNext()) {
-            getJavaClass();
-            eatSemiColons();
-        }
-
-        return javaFile;
-    }
-
-    private void eatSemiColons() {
+    public static void eatSemiColons(JavaLexer lexer) {
         Token semicolon = new SplitterToken(';');
         while (lexer.hasNext() && lexer.peek().equals(semicolon)) {
             lexer.next();
         }
     }
 
-    private JavaFile createJavaFile() throws JTAException.UnexpectedToken {
-        Token semicolon = new SplitterToken(';');
-        Stack<StringToken> savedTokens = new Stack<>();
-        lexer.next(new KeywordToken(KeywordToken.Keyword._package));
-
-        while (lexer.hasNext()) {
-            Token token = lexer.next();
-            if (semicolon.equals(token)) {
-                if (savedTokens.size() == 0) {
-                    throw new JTAException.UnexpectedToken("package_name", token.toString());
-                } else {
-                    return new JavaFile(String.join("", savedTokens));
-                }
-            } else if (token.getTokenType().equals(Token.Type.STRING)) {
-                savedTokens.push((StringToken) token);
-            } else {
-                throw new JTAException.UnexpectedToken("package_name", token.toString());
-            }
-        }
-
-        throw new JTAException.UnexpectedToken(semicolon.toString(), "EOF");
+    public JavaFile toJavaTree() throws JTAException {
+        return JavaParserFile.parseFile(lexer);
     }
 
-    private Set<String> getImports() throws JTAException.UnexpectedToken {
-        Token importToken = new KeywordToken(KeywordToken.Keyword._import);
-        Token semicolon = new SplitterToken(';');
-        Set<String> imports = new HashSet<>();
-        Stack<StringToken> savedTokens = new Stack<>();
-        boolean isInImport = false;
+    public static JavaImmediate parseConstant(JavaType type, JavaLexer lexer) throws JTAException {
+        BracketToken leftCurly = new BracketToken('{');
+        BracketToken rightCurly = new BracketToken('}');
+        SplitterToken comma = new SplitterToken(',');
 
-        while (lexer.hasNext()) {
-            Token token = lexer.peek();
-            Token.Type tokenType = token.getTokenType();
-            if (isInImport) {
-                switch (tokenType) {
-                    case STRING -> savedTokens.push((StringToken) lexer.next());
-                    case SPLITTER -> {
-                        lexer.next(semicolon);
-                        if (savedTokens.size() != 0) {
-                            imports.add(String.join("", savedTokens));
-                            savedTokens.clear();
-                            isInImport = false;
-                        } else {
-                            throw new JTAException.UnexpectedToken(
-                                "package_name", token.toString());
-                        }
-                    }
-                    default -> throw new JTAException.UnexpectedToken(
-                        "package_name or ';'", token.toString());
-                }
-            } else {
-                if (tokenType.equals(Token.Type.KEYWORD)) {
-                    if (token.equals(importToken)) {
-                        lexer.next();
-                        isInImport = true;
-                    } else {
-                        break;
-                    }
-                } else {
-                    throw new JTAException.UnexpectedToken(
-                        "package_name or ';'", token.toString());
-                }
-            }
-        }
-
-        if (savedTokens.size() != 0) {
-            throw new JTAException.UnexpectedToken("';'", "EOF");
-        }
-        if (isInImport) {
-            throw new JTAException.UnexpectedToken("package_name or ';'", "EOF");
-        }
-
-        return imports;
-    }
-
-    private JavaClass getJavaClass() throws JTAException.UnexpectedToken {
-        Token classToken = new KeywordToken(KeywordToken.Keyword._class);
-        Token publicToken = new KeywordToken(KeywordToken.Keyword._public);
-        Token packageToken = new KeywordToken(KeywordToken.Keyword._package);
-
-        Token nextToken = lexer.next();
-        JavaClass javaClass;
-
-        if (nextToken.equals(classToken)) {
-            javaClass = new JavaClass(false);
-        } else if (nextToken.equals(publicToken)) {
-            lexer.next(classToken);
-            javaClass = new JavaClass(true);
-        } else if (nextToken.equals(packageToken)) {
-            Token minusToken = new PlusMinus(false);
-            Token privateToken = new KeywordToken(KeywordToken.Keyword._private);
-            lexer.next(minusToken);
-            lexer.next(privateToken);
-            javaClass = new JavaClass(false);
+        if (type.elementType == null) {
+            Token next = lexer.next(ValueToken.class);
+            return new JavaImmediate(type, parseValue(type, (ValueToken) next));
         } else {
-            throw new JTAException.UnexpectedToken(
-                "class, public, or package-private", nextToken.toString());
+            lexer.next(leftCurly);
+            JavaType elementType = type.elementType;
+
+            List<Object> objects = new ArrayList<>();
+            if (!lexer.peek().equals(rightCurly)) {
+                for (Token next = lexer.next(ValueToken.class); ;
+                     next = lexer.next(ValueToken.class)) {
+
+                    objects.add(parseValue(elementType, (ValueToken) next));
+
+                    next = lexer.next();
+                    if (next.equals(rightCurly)) {
+                        break;
+                    } else if (!next.equals(comma)) {
+                        throw new JTAException.UnexpectedToken("',' or '}'", next);
+                    }
+                }
+            }
+            return new JavaImmediate(JavaType.getArrayTypeOf(type), objects);
         }
-        // names, codes...
-        return javaClass;
+    }
+
+    public static Object parseValue(JavaType type, ValueToken valueToken) throws JTAException {
+        if (!type.equals(valueToken.getType())) {
+            throw new JTAException.TypeMismatch(type, valueToken.getType());
+        }
+        return valueToken.getValue();
+    }
+
+    public static Set<JavaProperty> parseProperties(JavaLexer lexer,
+                                                    JavaProperty.Validator validator)
+        throws JTAException {
+
+        Set<JavaProperty> properties = new HashSet<>();
+
+        for (Token token = lexer.peek(); ; token = lexer.peek()) {
+            JavaProperty property = JavaProperty.get(token);
+            if (property != null) {
+                validator.validate(property);
+                properties.add(property);
+                lexer.next();
+            } else {
+                return properties;
+            }
+        }
+    }
+
+    public static JavaType parseType(JavaLexer lexer, boolean checkIsArray) throws JTAException {
+        JavaType type;
+        Token token = lexer.next();
+        if (token instanceof KeywordToken) {
+            type = JavaType.get((KeywordToken) token);
+            if (type == null) {
+                throw new JTAException.UnexpectedToken("data type", token);
+            }
+        } else if (token instanceof StringToken) {
+            type = JavaType.get(token.toString());
+        } else {
+            throw new JTAException.UnexpectedToken("data type", token);
+        }
+        if (checkIsArray && lexer.peek().equals(BracketToken.SQUARE_L)) {
+            lexer.next();
+            lexer.next(BracketToken.SQUARE_R);
+            type = JavaType.getArrayTypeOf(type);
+        }
+        return type;
+    }
+
+    public static String parseName(JavaLexer lexer) throws JTAException {
+        Token token = lexer.next();
+        if (!(token instanceof StringToken)) {
+            throw new JTAException.UnexpectedToken("variable name", token);
+        }
+        return token.toString();
     }
 }

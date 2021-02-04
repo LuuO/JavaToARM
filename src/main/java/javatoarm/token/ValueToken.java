@@ -1,5 +1,7 @@
 package javatoarm.token;
 
+import javatoarm.java.JavaType;
+
 /**
  * Support only null, integers and booleans for now.
  */
@@ -19,16 +21,18 @@ public interface ValueToken extends Token {
         return Token.Type.VALUE;
     }
 
-    Type getValueType();
-
-    enum Type {
-        NULL, BOOLEAN, INTEGER
-    }
+    JavaType getType();
+    Object getValue();
 
     class Null implements ValueToken {
         @Override
-        public ValueToken.Type getValueType() {
-            return ValueToken.Type.NULL;
+        public JavaType getType() {
+            return JavaType.NULL;
+        }
+
+        @Override
+        public Object getValue() {
+            return null;
         }
     }
 
@@ -40,13 +44,18 @@ public interface ValueToken extends Token {
         }
 
         @Override
-        public ValueToken.Type getValueType() {
-            return ValueToken.Type.BOOLEAN;
+        public JavaType getType() {
+            return JavaType.BOOL;
+        }
+
+        @Override
+        public Object getValue() {
+            return value;
         }
     }
 
     class Integer implements ValueToken {
-        int value;
+        public final int value;
 
         private Integer(int value) {
             this.value = value;
@@ -61,8 +70,13 @@ public interface ValueToken extends Token {
         }
 
         @Override
-        public ValueToken.Type getValueType() {
-            return ValueToken.Type.INTEGER;
+        public JavaType getType() {
+            return JavaType.INT;
+        }
+
+        @Override
+        public Object getValue() {
+            return value;
         }
     }
 
