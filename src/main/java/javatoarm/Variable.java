@@ -3,18 +3,14 @@ package javatoarm;
 import javatoarm.java.JavaScope;
 import javatoarm.java.JavaType;
 
-import java.util.List;
-
 public class Variable {
-
-    private final RegisterAssigner registerAssigner;
-    private final Register register;
 
     public final boolean isTemporary;
     public final JavaType type;
     public final String name;
     public final JavaScope holder;
-
+    private final RegisterAssigner registerAssigner;
+    private final Register register;
     private Location location;
     private int address;
 
@@ -22,13 +18,14 @@ public class Variable {
 
     /**
      * Initiate a variable
+     *
      * @param holder
      * @param registerAssigner
      * @param type
      * @param name
      */
     public Variable(JavaScope holder, RegisterAssigner registerAssigner, JavaType type, String name)
-        throws JTAException {
+            throws JTAException {
         this.isTemporary = false;
         this.registerAssigner = registerAssigner;
         this.holder = holder;
@@ -41,21 +38,23 @@ public class Variable {
 
     /**
      * Get an instance of a temporary variable. Always invoke {#deleteIfIsTemp} after it is used.
+     *
      * @param registerAssigner the Register Assigner
-     * @param type the type of variable
+     * @param type             the type of variable
      */
     public static Variable getTemporary(RegisterAssigner registerAssigner, JavaType type)
-        throws JTAException {
+            throws JTAException {
         return new Variable(null, registerAssigner, type, "temp");
     }
 
     /**
      * Get an instance of a temporary variable. Always invoke {#deleteIfIsTemp} after it is used.
+     *
      * @param registerAssigner the Register Assigner
-     * @param type the type of variable
+     * @param type             the type of variable
      */
     public static Variable getGlobal(RegisterAssigner registerAssigner, JavaType type)
-        throws JTAException {
+            throws JTAException {
         return new Variable(null, registerAssigner, type, "temp");
     }
 
@@ -69,6 +68,7 @@ public class Variable {
 
     /**
      * Delete this variable if it is temporary. Always call this method after the variable is used.
+     *
      * @return true if this is a temporary variable, false otherwise.
      */
     public final boolean deleteIfIsTemp() {

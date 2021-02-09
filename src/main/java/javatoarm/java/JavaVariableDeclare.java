@@ -2,7 +2,6 @@ package javatoarm.java;
 
 import javatoarm.JTAException;
 
-import java.util.List;
 import java.util.Set;
 
 public class JavaVariableDeclare implements JavaClass.Member, JavaStatement {

@@ -2,11 +2,7 @@ package javatoarm.parser;
 
 import javatoarm.JTAException;
 import javatoarm.java.JavaClass;
-import javatoarm.token.BracketToken;
-import javatoarm.token.JavaLexer;
-import javatoarm.token.KeywordToken;
-import javatoarm.token.SplitterToken;
-import javatoarm.token.Token;
+import javatoarm.token.*;
 import javatoarm.token.operator.AssignmentOperator;
 
 import java.util.ArrayList;
@@ -55,7 +51,7 @@ public class ClassParser {
             return true;
         } else {
             throw new JTAException.UnexpectedToken(
-                "class, public, or package-private", nextToken.toString());
+                    "class, public, or package-private", nextToken.toString());
         }
     }
 

@@ -39,6 +39,7 @@ public class RegisterAssigner {
     /**
      * Release the register. This method should be invoked when the variable holding the register
      * goes out of scope.
+     *
      * @param register the holder
      */
     public void release(Register register) {

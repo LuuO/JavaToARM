@@ -1,8 +1,8 @@
 package javatoarm.token;
 
 public class SplitterToken implements Token {
-    public static final SplitterToken COMMA  = new SplitterToken(',');
-    public static final SplitterToken SEMI_COLON  = new SplitterToken(';');
+    public static final SplitterToken COMMA = new SplitterToken(',');
+    public static final SplitterToken SEMI_COLON = new SplitterToken(';');
 
     public final char splitter;
 

@@ -26,6 +26,7 @@ public class JavaClass {
 
     public interface Member {
         JavaType type();
+
         String name();
     }
 }

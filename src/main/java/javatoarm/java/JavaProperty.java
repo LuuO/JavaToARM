@@ -22,8 +22,6 @@ public enum JavaProperty {
     }
 
     public interface Validator {
-        void validate(JavaProperty property) throws JTAException;
-
         Validator CLASS_MEMBER = new Validator() {
             @Override
             public void validate(JavaProperty property) throws JTAException {
@@ -32,7 +30,6 @@ public enum JavaProperty {
                 }
             }
         };
-
         Validator CLASS = new Validator() {
             @Override
             public void validate(JavaProperty property) throws JTAException {
@@ -41,5 +38,7 @@ public enum JavaProperty {
                 }
             }
         };
+
+        void validate(JavaProperty property) throws JTAException;
     }
 }

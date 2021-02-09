@@ -22,7 +22,7 @@ public class JavaName implements JavaRightValue, JavaLeftValue, JavaExpression {
         return String.join(".", path);
     }
 
-    public String toSimpleName() throws JTAException{
+    public String toSimpleName() throws JTAException {
         if (path.size() != 1) {
             throw new JTAException.InvalidName(toString() + " is not a valid simple name");
         }

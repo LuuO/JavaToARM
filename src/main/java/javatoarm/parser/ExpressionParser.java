@@ -98,7 +98,7 @@ public class ExpressionParser {
     }
 
     private static void parseIncrementDecrement(List<ExpressionElement> elements)
-        throws JTAException {
+            throws JTAException {
 
         for (int i = 0; i < elements.size(); i++) {
             OperatorToken operator = elements.get(i).operator;
@@ -111,14 +111,14 @@ public class ExpressionParser {
                     i--;
                     JavaName variable = (JavaName) elements.get(i).expression;
                     JavaExpression expression = new JavaIncrementDecrementExpression(
-                        variable, true, idOperator.isIncrement);
+                            variable, true, idOperator.isIncrement);
                     setElement(elements, i, expression);
 
                 } else if (i < elements.size() &&
-                    elements.get(i).expression instanceof JavaName) {
+                        elements.get(i).expression instanceof JavaName) {
                     JavaName variable = (JavaName) elements.get(i).expression;
                     JavaExpression expression = new JavaIncrementDecrementExpression(
-                        variable, false, idOperator.isIncrement);
+                            variable, false, idOperator.isIncrement);
                     setElement(elements, i, expression);
 
                 } else {
@@ -135,7 +135,7 @@ public class ExpressionParser {
                 OperatorToken.Unary unaryOperator = (OperatorToken.Unary) operator;
 
                 if (unaryOperator instanceof PlusMinus && i != 0
-                    && elements.get(i - 1).expression != null) {
+                        && elements.get(i - 1).expression != null) {
                     continue;
                 }
 
@@ -168,7 +168,7 @@ public class ExpressionParser {
                         elements.remove(i);
                         JavaExpression operandRight = elements.get(i).expression;
                         setElement(elements, i,
-                            new BinaryExpression(operator, operandLeft, operandRight));
+                                new BinaryExpression(operator, operandLeft, operandRight));
 
                     } else if (operator.getPrecedenceLevel() > level) {
                         throw new AssertionError();

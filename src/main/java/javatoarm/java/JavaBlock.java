@@ -4,7 +4,6 @@ import javatoarm.JTAException;
 import javatoarm.Register;
 import javatoarm.RegisterAssigner;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,7 +16,7 @@ public class JavaBlock extends JavaScope implements JavaCode {
     }
 
     public Register toAssembly(boolean returnRegister, JavaType returnType, RegisterAssigner registers
-                     ) throws JTAException {
+    ) throws JTAException {
         // 
 
         // if var delcar

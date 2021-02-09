@@ -4,7 +4,9 @@ import javatoarm.JTAException;
 import javatoarm.java.JavaClass;
 import javatoarm.java.JavaFile;
 import javatoarm.java.JavaName;
-import javatoarm.token.*;
+import javatoarm.token.JavaLexer;
+import javatoarm.token.KeywordToken;
+import javatoarm.token.Token;
 
 import java.util.ArrayList;
 import java.util.HashSet;

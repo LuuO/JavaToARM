@@ -46,9 +46,8 @@ public interface AssignmentOperator extends OperatorToken.Binary {
         public final OperatorToken.Binary implicitOperator;
 
         private Compound(OperatorToken.Binary operator) throws IllegalArgumentException {
-            if (!(operator instanceof ArithmeticOperator) &&
-                !(operator instanceof Bitwise)) {
-                // TODO: shift
+            if (!(operator instanceof ArithmeticOperator) && !(operator instanceof Bitwise)) {
+                // TODO: shift?
                 throw new IllegalArgumentException();
             }
 

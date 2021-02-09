@@ -2,21 +2,16 @@ package javatoarm.token;
 
 import javatoarm.JTAException;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 public class JavaLexer implements Iterator<Token> {
     private static final Set<Character> symbols =
-        Set.of(';', '{', '}', '(', ')', '[', ']', '.', ',',
-            '=', '+', '-', '*', '/', '&', '|', '%', '^', '!',
-            '\'', '"', '?', ':', '<', '>', '~');
+            Set.of(';', '{', '}', '(', ')', '[', ']', '.', ',',
+                    '=', '+', '-', '*', '/', '&', '|', '%', '^', '!',
+                    '\'', '"', '?', ':', '<', '>', '~');
     private static final Set<String> longOperators =
-        Set.of("++", "--", "==", "!=", "::", "+=", "-=", "*=", "/=", "%=", "<=", ">=", "//", "/*",
-            "*/"); // TODO: support longer operators
+            Set.of("++", "--", "==", "!=", "::", "+=", "-=", "*=", "/=", "%=", "<=", ">=", "//", "/*",
+                    "*/"); // TODO: support longer operators
 
     private final List<String> words;
     private final Stack<Integer> checkPoints;
@@ -29,13 +24,12 @@ public class JavaLexer implements Iterator<Token> {
     }
 
     /**
-     *
      * @param c
      * @return
      */
     public static boolean isNameableChar(char c) {
         return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
-            || (c >= '0' && c <= '9') || c == '$' || c == '_';
+                || (c >= '0' && c <= '9') || c == '$' || c == '_';
     }
 
     private List<String> scan(String code) throws JTAException.UnknownCharacter {

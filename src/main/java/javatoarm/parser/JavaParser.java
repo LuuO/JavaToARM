@@ -16,10 +16,6 @@ public class JavaParser {
         this.lexer = lexer;
     }
 
-    public JavaFile toJavaTree() throws JTAException {
-        return FileParser.parseFile(lexer);
-    }
-
     public static void eatSemiColons(JavaLexer lexer) {
         Token semicolon = new SplitterToken(';');
         while (lexer.hasNext() && lexer.peek().equals(semicolon)) {
@@ -128,5 +124,9 @@ public class JavaParser {
         }
 
         throw new JTAException.UnexpectedToken("name or ';'", "EOF");
+    }
+
+    public JavaFile toJavaTree() throws JTAException {
+        return FileParser.parseFile(lexer);
     }
 }

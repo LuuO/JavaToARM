@@ -1,10 +1,10 @@
 package javatoarm.java;
 
-import javatoarm.JTAException;
-
 public interface JavaStatement extends JavaCode {
-    JavaStatement BREAK = new JavaStatement() { };
-    JavaStatement RETURN = new JavaStatement() { };
+    JavaStatement BREAK = new JavaStatement() {
+    };
+    JavaStatement RETURN = new JavaStatement() {
+    };
 
     class Return implements JavaStatement {
         public final JavaExpression returnValue;

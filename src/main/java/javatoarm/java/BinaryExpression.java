@@ -1,9 +1,8 @@
 package javatoarm.java;
 
-import javatoarm.token.operator.ArithmeticOperator;
 import javatoarm.token.operator.OperatorToken;
 
-public class BinaryExpression implements JavaExpression{
+public class BinaryExpression implements JavaExpression {
     OperatorToken.Binary operator;
     JavaExpression operandLeft, operandRight;
 
