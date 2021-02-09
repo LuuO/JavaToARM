@@ -25,15 +25,15 @@ public class JavaParser {
         this.lexer = lexer;
     }
 
+    public JavaFile toJavaTree() throws JTAException {
+        return FileParser.parseFile(lexer);
+    }
+
     public static void eatSemiColons(JavaLexer lexer) {
         Token semicolon = new SplitterToken(';');
         while (lexer.hasNext() && lexer.peek().equals(semicolon)) {
             lexer.next();
         }
-    }
-
-    public JavaFile toJavaTree() throws JTAException {
-        return FileParser.parseFile(lexer);
     }
 
     public static JavaImmediate parseConstant(JavaType type, JavaLexer lexer) throws JTAException {
@@ -105,8 +105,7 @@ public class JavaParser {
         } else {
             throw new JTAException.UnexpectedToken("data type", token);
         }
-        if (checkIsArray && lexer.peek().equals(BracketToken.SQUARE_L)) {
-            lexer.next();
+        if (checkIsArray && lexer.nextIf(BracketToken.SQUARE_L)) {
             lexer.next(BracketToken.SQUARE_R);
             type = JavaType.getArrayTypeOf(type);
         }

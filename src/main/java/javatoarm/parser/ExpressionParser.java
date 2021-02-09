@@ -1,19 +1,8 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.ArrayAccessExpression;
-import javatoarm.java.BinaryExpression;
-import javatoarm.java.JavaAssignment;
-import javatoarm.java.JavaFunctionCall;
-import javatoarm.java.JavaImmediate;
-import javatoarm.java.JavaExpression;
-import javatoarm.java.JavaIncrementDecrementExpression;
-import javatoarm.java.JavaUnaryExpression;
-import javatoarm.java.JavaName;
-import javatoarm.token.BracketToken;
-import javatoarm.token.JavaLexer;
-import javatoarm.token.Token;
-import javatoarm.token.ValueToken;
+import javatoarm.java.*;
+import javatoarm.token.*;
 import javatoarm.token.operator.AssignmentOperator;
 import javatoarm.token.operator.IncrementDecrement;
 import javatoarm.token.operator.OperatorToken;
@@ -38,7 +27,7 @@ public class ExpressionParser {
                     throw new JTAException.InvalidOperation("Not an array");
                 }
                 JavaExpression array = elements.pop().expression;
-                addElement(elements, new ArrayAccessExpression(array, index));
+                addElement(elements, new JavaArrayElement(array, index));
 
             } else if (token.equals(BracketToken.ROUND_L)) {
                 if (elements.peek().expression instanceof JavaName) {
@@ -59,10 +48,17 @@ public class ExpressionParser {
             } else if (token instanceof ValueToken) {
                 JavaImmediate constant = new JavaImmediate(((ValueToken) token));
                 addElement(elements, constant);
+            } else if (token instanceof StringToken) {
+                JavaName name = new JavaName(token.toString());
+                addElement(elements, name);
             } else {
                 lexer.rewind();
                 break;
             }
+        }
+
+        if (elements.size() == 0) {
+            throw new JTAException.UnexpectedToken("expression", lexer.peek());
         }
 
         // TODO: performance
@@ -138,7 +134,7 @@ public class ExpressionParser {
                 OperatorToken.Unary unaryOperator = (OperatorToken.Unary) operator;
 
                 if (unaryOperator instanceof PlusMinus && i != 0
-                    && elements.get(i - 1).expression instanceof JavaName) {
+                    && elements.get(i - 1).expression != null) {
                     continue;
                 }
 
@@ -181,24 +177,30 @@ public class ExpressionParser {
         }
     }
 
-    private static void parseAssignment(List<ExpressionElement> elements) {
+    private static void parseAssignment(List<ExpressionElement> elements) throws JTAException {
         for (int i = elements.size() - 1; i >= 0; i--) {
             OperatorToken operator = elements.get(i).operator;
             if (operator instanceof AssignmentOperator) {
                 AssignmentOperator assignment = (AssignmentOperator) operator;
-                // TODO: check index
                 i--;
-                // TODO: check type
-                JavaName variable = (JavaName) elements.remove(i).expression;
+                if (i < 0) {
+                    throw new JTAException.InvalidOperation("missing left value");
+                }
+                JavaExpression leftExpression = elements.remove(i).expression;
+                if (!(leftExpression instanceof JavaLeftValue)) {
+                    throw new JTAException.InvalidOperation("not a left value");
+                }
+                JavaLeftValue leftValue = (JavaLeftValue) leftExpression;
                 elements.remove(i);
+                //TODO: check index
                 JavaExpression value = elements.get(i).expression;
 
                 if (assignment instanceof AssignmentOperator.Compound) {
                     OperatorToken.Binary implicit = ((AssignmentOperator.Compound) assignment).implicitOperator;
-                    value = new BinaryExpression(implicit, variable, value);
+                    value = new BinaryExpression(implicit, leftExpression, value);
                 }
 
-                setElement(elements, i, new JavaAssignment(variable, value));
+                setElement(elements, i, new JavaAssignment(leftValue, value));
             }
         }
     }

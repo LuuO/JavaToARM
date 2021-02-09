@@ -18,19 +18,22 @@ public class StatementParser {
             throws JTAException {
 
         /* control statement */
-        if (lexer.peek() instanceof KeywordToken) {
-            KeywordToken keywordToken = (KeywordToken) lexer.next();
-            switch (keywordToken.keyword) {
-                case _break:
+        Token next = lexer.peek();
+        if (next instanceof KeywordToken) {
+            KeywordToken.Keyword keyword = ((KeywordToken) next).keyword;
+            switch (keyword) {
+                case _break -> {
+                    lexer.next();
                     return JavaStatement.BREAK;
-                case _return:
+                }
+                case _return -> {
+                    lexer.next();
                     if (lexer.peek().equals(SplitterToken.SEMI_COLON)) {
                         return new JavaStatement.Return();
                     } else {
                         return new JavaStatement.Return(ExpressionParser.parse(lexer));
                     }
-                default:
-                    throw new UnsupportedOperationException();
+                }
             }
         }
 
@@ -71,15 +74,15 @@ public class StatementParser {
                 countString++;
             } else if (token.equals(SplitterToken.COMMA)) {
                 /* Commas only appear in variable declarations */
-                lexer.createCheckPoint();
+                lexer.returnToLastCheckPoint();
                 return true;
             } else if (token instanceof AssignmentOperator) {
-                lexer.createCheckPoint();
+                lexer.returnToLastCheckPoint();
                 return token instanceof AssignmentOperator.Simple && countString == 2;
             } else if (token.equals(BracketToken.SQUARE_L)) {
                 /* array declaration */
                 Token next = lexer.peek();
-                lexer.createCheckPoint();
+                lexer.returnToLastCheckPoint();
                 return next.equals(BracketToken.SQUARE_R);
             } else if (token.equals(SplitterToken.SEMI_COLON)) {
                 /* short statement: int a; */

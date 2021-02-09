@@ -77,7 +77,7 @@ public class ControlParser {
     private static JavaExpression parseConditionInBrackets(JavaLexer lexer) throws JTAException {
         lexer.next(BracketToken.ROUND_L);
         JavaExpression condition = ExpressionParser.parse(lexer);
-        lexer.next(BracketToken.ROUND_L);
+        lexer.next(BracketToken.ROUND_R);
         return condition;
     }
 }
