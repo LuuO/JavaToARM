@@ -192,6 +192,26 @@ public class JavaLexer implements Iterator<Token> {
         }
     }
 
+    public boolean nextIf(Token target) {
+        Token next = getNextToken();
+        if (next.equals(target)) {
+            nextIndex += 1;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean nextIf(KeywordToken.Keyword keyword) {
+        Token next = getNextToken();
+        if (next instanceof KeywordToken && ((KeywordToken) next).keyword == keyword) {
+            nextIndex += 1;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     enum State {
         WHITESPACE, NAME, SYMBOL, COMMENT_SL, COMMENT_ML
     }

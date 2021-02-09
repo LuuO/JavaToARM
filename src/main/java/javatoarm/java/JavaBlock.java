@@ -5,13 +5,15 @@ import javatoarm.Register;
 import javatoarm.RegisterAssigner;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class JavaBlock extends JavaScope implements JavaCode {
-    List<JavaCode> codes = new ArrayList<>();
+    public final List<JavaCode> codes;
 
-    protected JavaBlock(JavaScope parent) {
+    public JavaBlock(JavaScope parent, List<JavaCode> body) {
         super(false, parent);
+        this.codes = Collections.unmodifiableList(body);
     }
 
     public Register toAssembly(boolean returnRegister, JavaType returnType, RegisterAssigner registers

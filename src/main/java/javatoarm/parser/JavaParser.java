@@ -33,7 +33,7 @@ public class JavaParser {
     }
 
     public JavaFile toJavaTree() throws JTAException {
-        return JavaParserFile.parseFile(lexer);
+        return FileParser.parseFile(lexer);
     }
 
     public static JavaImmediate parseConstant(JavaType type, JavaLexer lexer) throws JTAException {

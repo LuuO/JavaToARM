@@ -1,7 +1,7 @@
 package javatoarm.java;
 
 /**
- * Super type of JavaBlock and JavaStatement
+ * Super type of all Java execution code.
  */
 public interface JavaCode {
 

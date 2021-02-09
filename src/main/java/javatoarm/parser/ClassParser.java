@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Methods for parsing a Java Class
  */
-public class JavaParserClass {
+public class ClassParser {
 
     public static JavaClass parse(JavaLexer lexer) throws JTAException {
         boolean isPublic = parseAccess(lexer);
@@ -69,12 +69,12 @@ public class JavaParserClass {
             Token next = lexer.next();
             if (SplitterToken.isSemiColon(next)) {
                 lexer.returnToLastCheckPoint();
-                return JavaParserField.parse(lexer);
+                return FieldParser.parse(lexer);
             } else if (next.equals(BracketToken.CURLY_L) && !foundEqual) {
                 // Because we found a '{' and did not encounter a '=', it is a function
                 // if we found '=', we know it is a field. e.g. int[] a = {1, 2};
                 lexer.returnToLastCheckPoint();
-                return JavaParserFunction.parse(lexer);
+                return FunctionParser.parse(lexer);
             }
 
             if (next.equals(equal)) {

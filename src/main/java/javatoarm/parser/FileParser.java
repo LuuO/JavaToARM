@@ -13,19 +13,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class JavaParserFile {
+public class FileParser {
 
     public static JavaFile parseFile(JavaLexer lexer) throws JTAException {
         lexer.next(new KeywordToken(KeywordToken.Keyword._package));
-        List<String> packagePath = JavaParserFile.getPackagePath(lexer);
+        List<String> packagePath = FileParser.getPackagePath(lexer);
         JavaParser.eatSemiColons(lexer);
 
-        Set<List<String>> imports = JavaParserFile.getImports(lexer);
+        Set<List<String>> imports = FileParser.getImports(lexer);
         JavaParser.eatSemiColons(lexer);
 
         List<JavaClass> classes = new ArrayList<>();
         while (lexer.hasNext()) {
-            classes.add(JavaParserClass.parse(lexer));
+            classes.add(ClassParser.parse(lexer));
             JavaParser.eatSemiColons(lexer);
         }
 

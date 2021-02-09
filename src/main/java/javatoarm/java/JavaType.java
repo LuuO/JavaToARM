@@ -7,8 +7,10 @@ public class JavaType {
     public static JavaType BOOL = new JavaType("boolean", null);
     public static JavaType INT = new JavaType("int", null);
     public static JavaType DOUBLE = new JavaType("double", null);
+    public static JavaType FLOAT = new JavaType("float", null);
     public static JavaType BYTE = new JavaType("byte", null);
     public static JavaType LONG = new JavaType("byte", null);
+    public static JavaType SHORT = new JavaType("short", null);
 
     public final String name;
     public final JavaType elementType;
@@ -26,9 +28,11 @@ public class JavaType {
         return switch (keywordToken.keyword) {
             case _boolean -> BOOL;
             case _double -> DOUBLE;
+            case _float -> FLOAT;
             case _byte -> BYTE;
             case _int -> INT;
             case _long -> LONG;
+            case _short -> SHORT;
             default -> null;
         };
     }

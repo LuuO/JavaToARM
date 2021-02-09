@@ -32,7 +32,7 @@ public abstract class JTAException extends Exception {
 
     public static class UnsupportedProperty extends JTAException {
         public UnsupportedProperty(JavaProperty property) {
-            super("Unsupported property: " + property);
+            super("Unsupported: " + property);
         }
     }
 
@@ -75,6 +75,12 @@ public abstract class JTAException extends Exception {
     public static class InvalidExpression extends JTAException {
         public InvalidExpression(JavaExpression expression) {
             super("Not a statement");
+        }
+    }
+
+    public static class Unsupported extends JTAException {
+        public Unsupported(String message) {
+            super(message);
         }
     }
 }

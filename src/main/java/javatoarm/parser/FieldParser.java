@@ -12,7 +12,7 @@ import javatoarm.token.operator.AssignmentOperator;
 
 import java.util.Set;
 
-public class JavaParserField {
+public class FieldParser {
 
     public static JavaVariableDeclare parse(JavaLexer lexer) throws JTAException {
         Set<JavaProperty> properties =

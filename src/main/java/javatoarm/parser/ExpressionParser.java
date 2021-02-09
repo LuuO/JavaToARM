@@ -4,11 +4,12 @@ import javatoarm.JTAException;
 import javatoarm.java.ArrayAccessExpression;
 import javatoarm.java.BinaryExpression;
 import javatoarm.java.JavaAssignment;
+import javatoarm.java.JavaFunctionCall;
 import javatoarm.java.JavaImmediate;
 import javatoarm.java.JavaExpression;
 import javatoarm.java.JavaIncrementDecrementExpression;
 import javatoarm.java.JavaUnaryExpression;
-import javatoarm.java.JavaVariable;
+import javatoarm.java.JavaName;
 import javatoarm.token.BracketToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.Token;
@@ -18,26 +19,41 @@ import javatoarm.token.operator.IncrementDecrement;
 import javatoarm.token.operator.OperatorToken;
 import javatoarm.token.operator.PlusMinus;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class ExpressionParser {
 
     public static JavaExpression parse(JavaLexer lexer) throws JTAException {
-        ArrayList<ExpressionElement> elements = new ArrayList<>();
+        Stack<ExpressionElement> elements = new Stack<>();
 
         while (true) {
             Token token = lexer.next();
 
-            // TODO: support type casting, object creation
+            // TODO: support type casting, new Object creation, ternary
             if (token.equals(BracketToken.SQUARE_L)) {
-                JavaExpression expression = parse(lexer);
+                JavaExpression index = parse(lexer);
                 lexer.next(BracketToken.SQUARE_R);
-                addElement(elements, new ArrayAccessExpression(expression));
+                if (elements.peek().expression == null) {
+                    throw new JTAException.InvalidOperation("Not an array");
+                }
+                JavaExpression array = elements.pop().expression;
+                addElement(elements, new ArrayAccessExpression(array, index));
+
             } else if (token.equals(BracketToken.ROUND_L)) {
-                JavaExpression expression = parse(lexer);
-                lexer.next(BracketToken.ROUND_R);
-                addElement(elements, expression);
+                if (elements.peek().expression instanceof JavaName) {
+                    // Function call
+                    lexer.rewind();
+                    String name = elements.pop().expression.toString();
+                    List<JavaExpression> arguments = FunctionParser.parseCallArguments(lexer);
+                    addElement(elements, new JavaFunctionCall(name, arguments));
+                } else {
+                    // sub expression
+                    JavaExpression expression = parse(lexer);
+                    lexer.next(BracketToken.ROUND_R);
+                    addElement(elements, expression);
+                }
+
             } else if (token instanceof OperatorToken) {
                 addElement(elements, (OperatorToken) token);
             } else if (token instanceof ValueToken) {
@@ -49,12 +65,9 @@ public class ExpressionParser {
             }
         }
 
-        // TODO: support function calls and array indexing and new initialization
         // TODO: performance
         parseIncrementDecrement(elements);
         parseUnaryExpression(elements);
-
-        // TODO: shift, relational, ternary
         parseBinaryExpression(elements);
         parseAssignment(elements);
 
@@ -97,16 +110,16 @@ public class ExpressionParser {
                 elements.remove(i);
 
                 // TODO: check index, is variable
-                if (i > 0 && elements.get(i - 1).expression instanceof JavaVariable) {
+                if (i > 0 && elements.get(i - 1).expression instanceof JavaName) {
                     i--;
-                    JavaVariable variable = (JavaVariable) elements.get(i).expression;
+                    JavaName variable = (JavaName) elements.get(i).expression;
                     JavaExpression expression = new JavaIncrementDecrementExpression(
                         variable, true, idOperator.isIncrement);
                     setElement(elements, i, expression);
 
                 } else if (i < elements.size() &&
-                    elements.get(i).expression instanceof JavaVariable) {
-                    JavaVariable variable = (JavaVariable) elements.get(i).expression;
+                    elements.get(i).expression instanceof JavaName) {
+                    JavaName variable = (JavaName) elements.get(i).expression;
                     JavaExpression expression = new JavaIncrementDecrementExpression(
                         variable, false, idOperator.isIncrement);
                     setElement(elements, i, expression);
@@ -125,7 +138,7 @@ public class ExpressionParser {
                 OperatorToken.Unary unaryOperator = (OperatorToken.Unary) operator;
 
                 if (unaryOperator instanceof PlusMinus && i != 0
-                    && elements.get(i - 1).expression instanceof JavaVariable) {
+                    && elements.get(i - 1).expression instanceof JavaName) {
                     continue;
                 }
 
@@ -176,7 +189,7 @@ public class ExpressionParser {
                 // TODO: check index
                 i--;
                 // TODO: check type
-                JavaVariable variable = (JavaVariable) elements.remove(i).expression;
+                JavaName variable = (JavaName) elements.remove(i).expression;
                 elements.remove(i);
                 JavaExpression value = elements.get(i).expression;
 
