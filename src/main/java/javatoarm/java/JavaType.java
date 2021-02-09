@@ -3,6 +3,7 @@ package javatoarm.java;
 import javatoarm.token.KeywordToken;
 
 public class JavaType {
+    public static JavaType STRING = new JavaType("String", null);
     public static JavaType NULL = new JavaType("null", null);
     public static JavaType BOOL = new JavaType("boolean", null);
     public static JavaType INT = new JavaType("int", null);
@@ -20,8 +21,8 @@ public class JavaType {
         this.elementType = elementType;
     }
 
-    public static JavaType get(String name) {
-        return new JavaType(name, null);
+    public static JavaType get(JavaName name) {
+        return new JavaType(name.toString(), null);
     }
 
     public static JavaType get(KeywordToken keywordToken) {
@@ -43,10 +44,6 @@ public class JavaType {
         }
         return new JavaType(type.name + "[]", type);
     }
-
-//    public boolean is(String name, boolean isArray) {
-//        return this.name.equals(name) && this.isArray == isArray;
-//    }
 
     @Override
     public int hashCode() {

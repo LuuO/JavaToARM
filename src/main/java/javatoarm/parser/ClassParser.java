@@ -19,7 +19,7 @@ public class ClassParser {
 
     public static JavaClass parse(JavaLexer lexer) throws JTAException {
         boolean isPublic = parseAccess(lexer);
-        String className = JavaParser.parseName(lexer);
+        String className = JavaParser.parseSimpleName(lexer);
 
         lexer.next(BracketToken.CURLY_L);
         JavaParser.eatSemiColons(lexer);

@@ -4,7 +4,12 @@ import javatoarm.token.operator.ArithmeticOperator;
 import javatoarm.token.operator.OperatorToken;
 
 public class BinaryExpression implements JavaExpression{
-    public BinaryExpression(OperatorToken.Binary operator, JavaExpression operandLeft, JavaExpression operandRight) {
+    OperatorToken.Binary operator;
+    JavaExpression operandLeft, operandRight;
 
+    public BinaryExpression(OperatorToken.Binary operator, JavaExpression operandLeft, JavaExpression operandRight) {
+        this.operator = operator;
+        this.operandLeft = operandLeft;
+        this.operandRight = operandRight;
     }
 }

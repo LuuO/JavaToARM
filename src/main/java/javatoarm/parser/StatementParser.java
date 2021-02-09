@@ -40,7 +40,7 @@ public class StatementParser {
         /* object creation or expression */
         if (isObjectCreation(lexer)) {
             JavaType type = JavaParser.parseType(lexer, true);
-            String name = JavaParser.parseName(lexer);
+            String name = JavaParser.parseSimpleName(lexer);
             JavaRightValue initialValue = null;
             if (lexer.peek() instanceof AssignmentOperator.Simple) {
                 lexer.next();
@@ -54,8 +54,11 @@ public class StatementParser {
 
         } else {
             JavaExpression expression = ExpressionParser.parse(lexer);
-            //TODO check if the expression is a statement
-            return null;
+            if (expression instanceof JavaStatement) {
+                return (JavaStatement) expression;
+            } else {
+                throw new JTAException.NotAStatement();
+            }
         }
     }
 
@@ -70,23 +73,27 @@ public class StatementParser {
         lexer.createCheckPoint();
         for (int countString = 0; countString <= 2; ) {
             Token token = lexer.next();
-            if (token instanceof StringToken) {
+            if (token instanceof NameToken) {
                 countString++;
             } else if (token.equals(SplitterToken.COMMA)) {
                 /* Commas only appear in variable declarations */
                 lexer.returnToLastCheckPoint();
                 return true;
+
             } else if (token instanceof AssignmentOperator) {
                 lexer.returnToLastCheckPoint();
                 return token instanceof AssignmentOperator.Simple && countString == 2;
+
             } else if (token.equals(BracketToken.SQUARE_L)) {
                 /* array declaration */
                 Token next = lexer.peek();
                 lexer.returnToLastCheckPoint();
                 return next.equals(BracketToken.SQUARE_R);
+
             } else if (token.equals(SplitterToken.SEMI_COLON)) {
                 /* short statement: int a; */
                 return true;
+
             } else {
                 lexer.returnToLastCheckPoint();
                 return false;
@@ -105,11 +112,13 @@ public class StatementParser {
             JavaExpression size = ExpressionParser.parse(lexer);
             lexer.next(BracketToken.SQUARE_R);
             return new JavaNewArray(type, size);
+
         } else if (next.equals(BracketToken.ROUND_L)) {
             /* initialize objects */
             List<JavaExpression> arguments = FunctionParser.parseCallArguments(lexer);
             lexer.next(BracketToken.ROUND_R);
             return new JavaFunctionCall(type, arguments);
+
         } else {
             throw new JTAException.UnexpectedToken("'[' or ')'", next);
         }

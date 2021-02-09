@@ -8,21 +8,47 @@ import javatoarm.java.JavaType;
 public interface ValueToken extends Token {
 
     static ValueToken get(String s) {
-        return switch (s) {
-            case "null" -> new Null();
-            case "true" -> new Boolean(true);
-            case "false" -> new Boolean(false);
-            default -> Integer.get(s);
-        };
-    }
-
-    @Override
-    default Token.Type getTokenType() {
-        return Token.Type.VALUE;
+        switch (s) {
+            case "null":
+                return new Null();
+            case "true":
+                return new Boolean(true);
+            case "false":
+                return new Boolean(false);
+            default:
+                if (s.startsWith("\"")) {
+                    return new StringToken(s);
+                } else {
+                    return Integer.get(s);
+                }
+        }
     }
 
     JavaType getType();
+
     Object getValue();
+
+    class StringToken implements ValueToken {
+        public final String value;
+
+        private StringToken(String value) {
+            this.value = value;
+        }
+
+        public static StringToken get(String s) {
+            return new StringToken(s.substring(1, s.length() - 1));
+        }
+
+        @Override
+        public JavaType getType() {
+            return JavaType.STRING;
+        }
+
+        @Override
+        public Object getValue() {
+            return value;
+        }
+    }
 
     class Null implements ValueToken {
         @Override
@@ -72,6 +98,32 @@ public interface ValueToken extends Token {
         @Override
         public JavaType getType() {
             return JavaType.INT;
+        }
+
+        @Override
+        public Object getValue() {
+            return value;
+        }
+    }
+
+    class Decimal implements ValueToken {
+        public final double value;
+
+        private Decimal(double value) {
+            this.value = value;
+        }
+
+        public static Decimal get(String s) {
+            try {
+                return new Decimal(Double.parseDouble(s));
+            } catch (NumberFormatException nfe) {
+                return null;
+            }
+        }
+
+        @Override
+        public JavaType getType() {
+            return JavaType.DOUBLE;
         }
 
         @Override

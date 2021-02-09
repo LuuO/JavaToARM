@@ -83,6 +83,12 @@ public abstract class JTAException extends Exception {
             super(message);
         }
     }
+
+    public static class InvalidName extends JTAException {
+        public InvalidName(String message) {
+            super(message);
+        }
+    }
 }
 
 

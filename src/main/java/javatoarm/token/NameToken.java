@@ -1,22 +1,19 @@
 package javatoarm.token;
 
-public class StringToken implements Token, CharSequence {
+public class NameToken implements Token, CharSequence {
     private final String string;
 
-    public StringToken(String s) {
+    public NameToken(String s) {
+        if (!isValidName(s))
+            throw new IllegalArgumentException();
         string = s;
     }
 
-    @Override
-    public Type getTokenType() {
-        return Type.STRING;
-    }
-
-    public boolean isValidName() {
-        if (string.length() == 0 || Character.isDigit(string.charAt(0))) {
+    public static boolean isValidName(String name) {
+        if (name.length() == 0 || Character.isDigit(name.charAt(0))) {
             return false;
         }
-        for (char c : string.toCharArray()) {
+        for (char c : name.toCharArray()) {
             if (!JavaLexer.isNameableChar(c)) {
                 return false;
             }

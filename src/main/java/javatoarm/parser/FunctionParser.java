@@ -23,7 +23,7 @@ public class FunctionParser {
         Set<JavaProperty> properties =
             JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
         JavaType returnType = JavaParser.parseType(lexer, true);
-        String methodName = JavaParser.parseName(lexer);
+        String methodName = JavaParser.parseSimpleName(lexer);
         List<JavaVariableDeclare> arguments = parseArgumentDeclares(lexer);
 
         JavaBlock body = CodeParser.parseBlock(lexer);
@@ -39,7 +39,7 @@ public class FunctionParser {
         if (!lexer.peek().equals(BracketToken.ROUND_R)) {
             for (; ; ) {
                 JavaType type = JavaParser.parseType(lexer, true);
-                String name = JavaParser.parseName(lexer);
+                String name = JavaParser.parseSimpleName(lexer);
                 arguments.add(new JavaVariableDeclare(
                     Collections.emptySet(), type, name, null));
 

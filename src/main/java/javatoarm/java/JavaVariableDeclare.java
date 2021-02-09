@@ -1,5 +1,7 @@
 package javatoarm.java;
 
+import javatoarm.JTAException;
+
 import java.util.List;
 import java.util.Set;
 
@@ -10,7 +12,7 @@ public class JavaVariableDeclare implements JavaClass.Member, JavaStatement {
     private final Set<JavaProperty> properties;
 
     public JavaVariableDeclare(Set<JavaProperty> properties, JavaType type,
-                               String name, JavaRightValue initialValue) {
+                               String name, JavaRightValue initialValue) throws JTAException {
         this.type = type;
         this.name = name;
         this.properties = properties; // TODO: validate properties

@@ -22,11 +22,6 @@ public class BracketToken implements Token {
     }
 
     @Override
-    public Type getTokenType() {
-        return Type.BRACKET;
-    }
-
-    @Override
     public int hashCode() {
         return bracket;
     }

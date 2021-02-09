@@ -12,11 +12,6 @@ public interface OperatorToken extends Token {
         return token;
     }
 
-    @Override
-    default Token.Type getTokenType() {
-        return Token.Type.OPERATOR;
-    }
-
     Type getOperatorType();
 
     int getPrecedenceLevel();

@@ -23,8 +23,8 @@ public class ExpressionParser {
             if (token.equals(BracketToken.SQUARE_L)) {
                 JavaExpression index = parse(lexer);
                 lexer.next(BracketToken.SQUARE_R);
-                if (elements.peek().expression == null) {
-                    throw new JTAException.InvalidOperation("Not an array");
+                if (elements.isEmpty() || elements.peek().expression == null) {
+                    throw new JTAException.InvalidOperation("Invalid array access");
                 }
                 JavaExpression array = elements.pop().expression;
                 addElement(elements, new JavaArrayElement(array, index));
@@ -48,8 +48,9 @@ public class ExpressionParser {
             } else if (token instanceof ValueToken) {
                 JavaImmediate constant = new JavaImmediate(((ValueToken) token));
                 addElement(elements, constant);
-            } else if (token instanceof StringToken) {
-                JavaName name = new JavaName(token.toString());
+            } else if (token instanceof NameToken) {
+                lexer.rewind();
+                JavaName name = JavaParser.parseNamePath(lexer);
                 addElement(elements, name);
             } else {
                 lexer.rewind();

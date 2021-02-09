@@ -15,6 +15,9 @@ public interface Token {
             if ((token = BracketToken.get(c)) != null) {
                 return token;
             }
+            if ((token = MemberAccessToken.get(c)) != null) {
+                return token;
+            }
         }
 
         if ((token = ValueToken.get(word)) != null) {
@@ -27,13 +30,11 @@ public interface Token {
             return token;
         }
 
-        return new StringToken(word);
+        return new NameToken(word);
     }
 
-    Type getTokenType();
-
     enum Type {
-        SPLITTER, BRACKET, VALUE, OPERATOR, KEYWORD, STRING, CONTEXT_DEPENDENT
+        SPLITTER, BRACKET, VALUE, OPERATOR, KEYWORD, STRING, MEMBER_ACCESS
     }
 
 }

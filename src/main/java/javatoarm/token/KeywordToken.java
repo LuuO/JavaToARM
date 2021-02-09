@@ -17,11 +17,6 @@ public class KeywordToken implements Token {
     }
 
     @Override
-    public Type getTokenType() {
-        return Type.KEYWORD;
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj instanceof KeywordToken) {
             KeywordToken that = (KeywordToken) obj;

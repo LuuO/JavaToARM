@@ -5,6 +5,7 @@ import java.util.HashSet;
 public class JavaFile {
 
     public static int fibonacci(int n) {
+        System.out.println("fibo start");
         if (n <= 1) {
             return n;
         }

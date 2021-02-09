@@ -29,11 +29,6 @@ public class SplitterToken implements Token {
     }
 
     @Override
-    public Type getTokenType() {
-        return Type.SPLITTER;
-    }
-
-    @Override
     public int hashCode() {
         return splitter;
     }

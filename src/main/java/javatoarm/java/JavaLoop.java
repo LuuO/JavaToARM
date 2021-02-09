@@ -1,10 +1,19 @@
 package javatoarm.java;
 
 public class JavaLoop extends JavaScope implements JavaCode {
+    JavaStatement initial;
+    JavaExpression condition;
+    JavaStatement increment;
     JavaCode body;
+    boolean isDoWhile;
 
     private JavaLoop(JavaCode body, JavaStatement initial, JavaExpression condition, JavaStatement increment, boolean isDoWhile) {
-        super(false, null);
+        super(false, null); //TODO
+        this.initial = initial;
+        this.condition = condition;
+        this.increment = increment;
+        this.isDoWhile = isDoWhile;
+        this.body = body;
     }
 
     public static JavaLoop forLoop(JavaCode body, JavaStatement initial, JavaExpression condition, JavaStatement increment) {

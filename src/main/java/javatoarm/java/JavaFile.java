@@ -1,12 +1,11 @@
 package javatoarm.java;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class JavaFile {
-    public final List<String> _package;
-    public final Set<List<String>> imports;
+    public final JavaName packageName;
+    public final Set<JavaName> imports;
     private final List<JavaClass> classes;
 
     /*
@@ -14,14 +13,10 @@ public class JavaFile {
             classes contains only one public class
      */
 
-    public JavaFile(List<String> _package, Set<List<String>> imports, List<JavaClass> classes) {
-        if (_package.size() == 0) {
-            throw new IllegalArgumentException();
-        }
-
+    public JavaFile(JavaName packageName, Set<JavaName> imports, List<JavaClass> classes) {
         assertOnePublic(classes);
 
-        this._package = _package;
+        this.packageName = packageName;
         this.imports = imports;
         this.classes = classes;
     }

@@ -16,7 +16,7 @@ public class JavaLexer implements Iterator<Token> {
             '\'', '"', '?', ':', '<', '>', '~');
     private static final Set<String> longOperators =
         Set.of("++", "--", "==", "!=", "::", "+=", "-=", "*=", "/=", "%=", "<=", ">=", "//", "/*",
-            "*/");
+            "*/"); // TODO: support longer operators
 
     private final List<String> words;
     private final Stack<Integer> checkPoints;
@@ -28,6 +28,11 @@ public class JavaLexer implements Iterator<Token> {
         this.checkPoints = new Stack<>();
     }
 
+    /**
+     *
+     * @param c
+     * @return
+     */
     public static boolean isNameableChar(char c) {
         return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
             || (c >= '0' && c <= '9') || c == '$' || c == '_';
@@ -50,22 +55,29 @@ public class JavaLexer implements Iterator<Token> {
                     } else if (symbols.contains(c)) {
                         state = State.SYMBOL;
                         word.append(c);
+                    } else if (c == '"') {
+                        state = State.STRING;
+                        word.append(c);
                     } else {
                         throw new JTAException.UnknownCharacter(c);
                     }
                     break;
                 case NAME: /* a word (int, String, class, className, 100, ...) */
-                    if (Character.isWhitespace(c)) {
-                        state = State.WHITESPACE;
-                        collectAndClear(word, words);
-                    } else if (isNameableChar(c)) {
-                        word.append(c);
-                    } else if (symbols.contains(c)) {
-                        state = State.SYMBOL;
-                        collectAndClear(word, words);
+                    if (isNameableChar(c)) {
                         word.append(c);
                     } else {
-                        throw new JTAException.UnknownCharacter(c);
+                        collectAndClear(word, words);
+                        if (Character.isWhitespace(c)) {
+                            state = State.WHITESPACE;
+                        } else if (symbols.contains(c)) {
+                            state = State.SYMBOL;
+                            word.append(c);
+                        } else if (c == '"') {
+                            state = State.STRING;
+                            word.append(c);
+                        } else {
+                            throw new JTAException.UnknownCharacter(c);
+                        }
                     }
                     break;
                 case SYMBOL: /* last char is a symbol (+, ], }, =, ...) */
@@ -81,6 +93,10 @@ public class JavaLexer implements Iterator<Token> {
                         collectAndClear(word, words);
                     } else if (isNameableChar(c)) {
                         state = State.NAME;
+                        collectAndClear(word, words);
+                        word.append(c);
+                    } else if (c == '"') {
+                        state = State.STRING;
                         collectAndClear(word, words);
                         word.append(c);
                     } else if (symbols.contains(c)) {
@@ -113,6 +129,15 @@ public class JavaLexer implements Iterator<Token> {
                         word.append(c);
                     } else {
                         word.setLength(0);
+                    }
+                    break;
+                case STRING:
+                    if (c == '"') {
+                        word.append(c);
+                        collectAndClear(word, words);
+                        state = State.WHITESPACE;
+                    } else {
+                        word.append(c);
                     }
                     break;
             }
@@ -213,6 +238,6 @@ public class JavaLexer implements Iterator<Token> {
     }
 
     enum State {
-        WHITESPACE, NAME, SYMBOL, COMMENT_SL, COMMENT_ML
+        WHITESPACE, NAME, SYMBOL, COMMENT_SL, COMMENT_ML, STRING
     }
 }

@@ -1,17 +1,8 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.JavaImmediate;
-import javatoarm.java.JavaFile;
-import javatoarm.java.JavaProperty;
-import javatoarm.java.JavaType;
-import javatoarm.token.BracketToken;
-import javatoarm.token.JavaLexer;
-import javatoarm.token.KeywordToken;
-import javatoarm.token.SplitterToken;
-import javatoarm.token.StringToken;
-import javatoarm.token.Token;
-import javatoarm.token.ValueToken;
+import javatoarm.java.*;
+import javatoarm.token.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -76,7 +67,7 @@ public class JavaParser {
 
     public static Set<JavaProperty> parseProperties(JavaLexer lexer,
                                                     JavaProperty.Validator validator)
-        throws JTAException {
+            throws JTAException {
 
         Set<JavaProperty> properties = new HashSet<>();
 
@@ -100,8 +91,9 @@ public class JavaParser {
             if (type == null) {
                 throw new JTAException.UnexpectedToken("data type", token);
             }
-        } else if (token instanceof StringToken) {
-            type = JavaType.get(token.toString());
+        } else if (token instanceof NameToken) {
+            lexer.rewind();
+            type = JavaType.get(parseNamePath(lexer));
         } else {
             throw new JTAException.UnexpectedToken("data type", token);
         }
@@ -112,11 +104,29 @@ public class JavaParser {
         return type;
     }
 
-    public static String parseName(JavaLexer lexer) throws JTAException {
-        Token token = lexer.next();
-        if (!(token instanceof StringToken)) {
-            throw new JTAException.UnexpectedToken("variable name", token);
+    public static String parseSimpleName(JavaLexer lexer) throws JTAException {
+        return lexer.next(NameToken.class).toString();
+    }
+
+    public static JavaName parseNamePath(JavaLexer lexer) throws JTAException {
+        List<String> path = new ArrayList<>(7);
+
+        while (lexer.hasNext()) {
+            Token token = lexer.next();
+            if (token instanceof NameToken) {
+                path.add(token.toString());
+            } else if (token instanceof MemberAccessToken) {
+                path.add(parseSimpleName(lexer));
+            } else {
+                lexer.rewind();
+                if (path.size() == 0) {
+                    throw new JTAException.UnexpectedToken("name", token.toString());
+                } else {
+                    return new JavaName(path);
+                }
+            }
         }
-        return token.toString();
+
+        throw new JTAException.UnexpectedToken("name or ';'", "EOF");
     }
 }
