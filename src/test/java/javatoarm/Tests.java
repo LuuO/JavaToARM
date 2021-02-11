@@ -1,5 +1,6 @@
 package javatoarm;
 
+import javatoarm.arm.ARMCompiler;
 import javatoarm.java.JavaFile;
 import javatoarm.parser.JavaParser;
 import javatoarm.token.JavaLexer;
@@ -20,6 +21,7 @@ public class Tests {
         JavaLexer lexer = new JavaLexer(code);
         JavaParser parser = new JavaParser(lexer);
         JavaFile file = parser.toJavaTree();
+        file.compileTo(new ARMCompiler());
         System.out.println(file);
     }
 

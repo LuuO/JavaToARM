@@ -5,6 +5,7 @@ import javatoarm.java.JavaAssignment;
 import javatoarm.java.JavaFunctionCall;
 import javatoarm.java.JavaIncrementDecrement;
 import javatoarm.java.JavaLeftValue;
+import javatoarm.java.expression.ComparisonExpression;
 import javatoarm.java.expression.JavaArrayElement;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.expression.JavaImmediate;
@@ -17,6 +18,7 @@ import javatoarm.token.NameToken;
 import javatoarm.token.Token;
 import javatoarm.token.ValueToken;
 import javatoarm.token.operator.AssignmentOperator;
+import javatoarm.token.operator.Comparison;
 import javatoarm.token.operator.IncrementDecrement;
 import javatoarm.token.operator.OperatorToken;
 import javatoarm.token.operator.PlusMinus;
@@ -180,8 +182,14 @@ public class ExpressionParser {
                         JavaExpression operandLeft = elements.remove(i).expression;
                         elements.remove(i);
                         JavaExpression operandRight = elements.get(i).expression;
-                        setElement(elements, i,
-                            new NumericExpression(operator, operandLeft, operandRight));
+                        JavaExpression combined;
+                        if (operator instanceof Comparison) {
+                            combined = new ComparisonExpression((Comparison) operator, operandLeft,
+                                operandRight);
+                        } else {
+                            combined = new NumericExpression(operator, operandLeft, operandRight);
+                        }
+                        setElement(elements, i, combined);
 
                     } else if (operator.getPrecedenceLevel() > level) {
                         throw new AssertionError();

@@ -25,7 +25,7 @@ public class RegisterAssigner {
             case X86_64 -> throw new UnsupportedOperationException();
         };
         this.isa = isa;
-        holders = new LocalVariable[numberOfRegisters];
+        holders = new Variable[numberOfRegisters];
         registers = new Register[numberOfRegisters];
         for (int i = 0; i < numberOfRegisters; i++) {
             registers[i] = new Register(i, isa);
@@ -59,6 +59,7 @@ public class RegisterAssigner {
                     if (holders[i] == null) {
                         holders[i] = argument;
                     }
+                    return registers[i];
                 }
                 throw new JTAException.Unsupported("too many arguments");
             default:
