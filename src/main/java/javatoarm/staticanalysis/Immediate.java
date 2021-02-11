@@ -8,6 +8,7 @@ public class Immediate implements Variable {
     public final JavaType type;
     public final Object value;
     public final RegisterAssigner registerAssigner;
+    private TemporaryVariable temp = null;
 
     public Immediate(JavaType type, Object immediateValue, RegisterAssigner registerAssigner) {
         this.type = type;
@@ -16,11 +17,29 @@ public class Immediate implements Variable {
     }
 
     public TemporaryVariable getTemporary() throws JTAException {
-        return new TemporaryVariable(registerAssigner, type);
+        if (temp == null) {
+            temp = new TemporaryVariable(registerAssigner, type);
+        }
+        return temp;
     }
 
     @Override
     public JavaType getType() {
         return type;
+    }
+
+    @Override
+    public void delete() {
+        if (temp != null) {
+            temp.delete();
+            temp = null;
+        }
+    }
+
+    @Override
+    public boolean deleteIfIsTemp() {
+        boolean isTemp = temp.deleteIfIsTemp();
+        temp = null;
+        return isTemp;
     }
 }

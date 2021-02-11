@@ -34,7 +34,7 @@ public class ComparisonExpression implements JavaExpression {
     public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
         compileToConditionCode(subroutine, parent);
         TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, JavaType.BOOL);
-        subroutine.saveComparisonResult(operator.condition, result);
+        subroutine.saveBooleanResult(operator.condition, result);
         return result;
     }
 }

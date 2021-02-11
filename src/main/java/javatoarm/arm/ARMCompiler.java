@@ -1,6 +1,7 @@
 package javatoarm.arm;
 
 import javatoarm.assembly.Compiler;
+import javatoarm.assembly.Condition;
 import javatoarm.assembly.Subroutine;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class ARMCompiler implements Compiler {
 
     @Override
     public String toString() {
-        return super.toString();
+        return text.toString();
     }
 
     @Override
@@ -26,7 +27,7 @@ public class ARMCompiler implements Compiler {
 
     @Override
     public void addJumpLabel(String label) {
-        ARMInstruction.branch(text, ARMInstruction.OP.B, label);
+        ARMInstruction.branch(text, Condition.ALWAYS, OP.B, label);
     }
 
     @Override
