@@ -6,7 +6,6 @@ import javatoarm.java.JavaFile;
 import javatoarm.java.expression.JavaName;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.KeywordToken;
-import javatoarm.token.Token;
 
 import java.util.ArrayList;
 import java.util.HashSet;

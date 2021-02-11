@@ -10,7 +10,8 @@ public class MemoryOffset implements Variable {
     public final RegisterAssigner registerAssigner;
     public final int shift;
 
-    public MemoryOffset(Variable array, Variable index, int shift, RegisterAssigner registerAssigner)
+    public MemoryOffset(Variable array, Variable index, int shift,
+                        RegisterAssigner registerAssigner)
         throws JTAException {
         this.array = array;
         this.index = index;

@@ -103,7 +103,8 @@ public class ARMSubroutine implements Subroutine {
     }
 
     @Override
-    public void addALU(OperatorToken.Binary operator, Variable left, Variable right, Variable result)
+    public void addALU(OperatorToken.Binary operator, Variable left, Variable right,
+                       Variable result)
         throws JTAException {
         Register leftReg = use(left);
         Register resultRegister = prepareStore(result);
@@ -175,7 +176,9 @@ public class ARMSubroutine implements Subroutine {
     public void addFunctionCall(String targetLabel, Register result, List<Variable> varArguments)
         throws JTAException {
 
-        if (varArguments.size() > 4) throw new UnsupportedOperationException();
+        if (varArguments.size() > 4) {
+            throw new UnsupportedOperationException();
+        }
 
         List<Register> saved = new ArrayList<>(callerSave);
         saved.remove(result);

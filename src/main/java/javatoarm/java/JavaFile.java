@@ -48,7 +48,7 @@ public class JavaFile {
             }
         }
 
-        compiler.markGlobalLabel("CLASS_" + firstClass.name);
+        compiler.markGlobalLabel("class_" + firstClass.name);
         firstClass.compileTo(compiler, is);
         for (JavaClass c : classes) {
             c.compileTo(compiler, is);

@@ -1,5 +1,7 @@
 package javatoarm.assembly;
 
+import javatoarm.JTAException;
+
 public interface Compiler {
 
     void markGlobalLabel(String label);
@@ -13,4 +15,6 @@ public interface Compiler {
     void commitSubroutine(Subroutine subroutine);
 
     void addEmptyLine();
+
+    String toCompleteProgram(String starterClass, int stackPosition) throws JTAException;
 }

@@ -25,7 +25,7 @@ public class Tests {
         JavaFile file = parser.toJavaTree();
         Compiler compiler = new ARMCompiler();
         file.compileTo(compiler, InstructionSet.ARMv7);
-        System.out.println(compiler.toString());
+        System.out.println(compiler.toCompleteProgram("FIBB", 5000));
     }
 
     @Test

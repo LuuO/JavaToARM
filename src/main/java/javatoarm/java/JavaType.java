@@ -14,6 +14,7 @@ public class JavaType {
     public static JavaType BYTE = new JavaType("byte", null);
     public static JavaType LONG = new JavaType("byte", null);
     public static JavaType SHORT = new JavaType("short", null);
+    public static JavaType VOID = new JavaType("void", null);
 
     public final String name;
     public final JavaType elementType;
@@ -24,6 +25,9 @@ public class JavaType {
     }
 
     public static JavaType get(JavaName name) throws JTAException {
+        if (name.toSimpleName().equals("String")) {
+            return STRING;
+        }
         throw new JTAException.Unsupported("user defined types are not supported");
         // return new JavaType(name.toString(), null);
     }
@@ -37,6 +41,7 @@ public class JavaType {
             case _int -> INT;
             case _long -> LONG;
             case _short -> SHORT;
+            case _void -> VOID;
             default -> null;
         };
     }

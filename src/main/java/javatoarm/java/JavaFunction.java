@@ -10,12 +10,11 @@ import java.util.Set;
 
 public class JavaFunction implements JavaClass.Member {
     public final boolean isPublic;
+    public final String startLabel, epilogueLabel;
     private final JavaType returnType;
     private final String name;
     private final List<JavaVariableDeclare> arguments;
     private final JavaBlock body;
-
-    public final String startLabel, epilogueLabel;
 
     public JavaFunction(Set<JavaProperty> properties, JavaType returnType,
                         String name, List<JavaVariableDeclare> arguments, JavaBlock body)
