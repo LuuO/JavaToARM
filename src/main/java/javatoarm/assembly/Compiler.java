@@ -1,11 +1,11 @@
 package javatoarm.assembly;
 
-import java.util.List;
-
 public interface Compiler {
 
     void markGlobalLabel(String label);
+
     void addJumpLabel(String label);
+
     void addLabel(String label);
 
     Subroutine newSubroutine();

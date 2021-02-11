@@ -4,8 +4,9 @@ public class NameToken implements Token, CharSequence {
     private final String string;
 
     public NameToken(String s) {
-        if (!isValidName(s))
+        if (!isValidName(s)) {
             throw new IllegalArgumentException();
+        }
         string = s;
     }
 

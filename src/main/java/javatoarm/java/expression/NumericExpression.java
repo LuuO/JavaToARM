@@ -13,7 +13,8 @@ public class NumericExpression implements JavaExpression {
     OperatorToken.Binary operator;
     JavaExpression operandLeft, operandRight;
 
-    public NumericExpression(OperatorToken.Binary operator, JavaExpression operandLeft, JavaExpression operandRight) {
+    public NumericExpression(OperatorToken.Binary operator, JavaExpression operandLeft,
+                             JavaExpression operandRight) {
         this.operator = operator;
         this.operandLeft = operandLeft;
         this.operandRight = operandRight;

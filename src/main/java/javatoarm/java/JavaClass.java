@@ -2,22 +2,19 @@ package javatoarm.java;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
-import javatoarm.assembly.Subroutine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class JavaClass {
+    private final Map<String, JavaFunction.Interface> functionInterfaces;
     boolean isPublic; /* package-private or public*/
     String name;
     List<JavaVariableDeclare> fields;
     LinkedList<JavaFunction> functions;
-    private final Map<String, JavaFunction.Interface> functionInterfaces;
 
     public JavaClass(boolean isPublic, String name, List<Member> members)
         throws JTAException {

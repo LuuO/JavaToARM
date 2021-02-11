@@ -1,6 +1,6 @@
-package javatoarm;
+package javatoarm.assembly;
 
-import javatoarm.assembly.InstructionSet;
+import javatoarm.JTAException;
 import javatoarm.staticanalysis.LocalVariable;
 import javatoarm.staticanalysis.Variable;
 

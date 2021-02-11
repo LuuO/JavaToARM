@@ -1,20 +1,20 @@
 package javatoarm.java.expression;
 
-import javatoarm.Condition;
 import javatoarm.JTAException;
+import javatoarm.assembly.Condition;
 import javatoarm.assembly.Subroutine;
 import javatoarm.java.JavaScope;
 import javatoarm.java.JavaType;
 import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.Comparison;
-import javatoarm.token.operator.OperatorToken;
 
 public class ComparisonExpression implements JavaExpression {
     Comparison operator;
     JavaExpression operandLeft, operandRight;
 
-    public ComparisonExpression(Comparison operator, JavaExpression operandLeft, JavaExpression operandRight) {
+    public ComparisonExpression(Comparison operator, JavaExpression operandLeft,
+                                JavaExpression operandRight) {
         this.operator = operator;
         this.operandLeft = operandLeft;
         this.operandRight = operandRight;

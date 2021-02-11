@@ -1,9 +1,8 @@
 package javatoarm.staticanalysis;
 
 import javatoarm.JTAException;
-import javatoarm.Location;
-import javatoarm.Register;
-import javatoarm.RegisterAssigner;
+import javatoarm.assembly.Register;
+import javatoarm.assembly.RegisterAssigner;
 import javatoarm.java.JavaScope;
 import javatoarm.java.JavaType;
 
@@ -12,7 +11,7 @@ public class LocalVariable implements Variable {
     public final String name;
     public final JavaScope holder;
     private final RegisterAssigner registerAssigner;
-    private Register register;
+    private final Register register;
     private boolean isDeleted = false;
 
     /**
@@ -29,7 +28,7 @@ public class LocalVariable implements Variable {
     }
 
     protected LocalVariable(JavaScope holder, RegisterAssigner registerAssigner, JavaType condition,
-                         String name, boolean isArgument)
+                            String name, boolean isArgument)
         throws JTAException {
         this.registerAssigner = registerAssigner;
         this.holder = holder;

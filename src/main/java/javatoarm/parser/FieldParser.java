@@ -16,7 +16,7 @@ public class FieldParser {
 
     public static JavaVariableDeclare parse(JavaLexer lexer) throws JTAException {
         Set<JavaProperty> properties =
-                JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
+            JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
         JavaType condition = JavaParser.parseType(lexer, true);
         String name = JavaParser.parseSimpleName(lexer);
 

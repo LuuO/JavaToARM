@@ -1,7 +1,7 @@
 package javatoarm.java;
 
-import javatoarm.Condition;
 import javatoarm.JTAException;
+import javatoarm.assembly.Condition;
 import javatoarm.assembly.Subroutine;
 import javatoarm.java.expression.ComparisonExpression;
 import javatoarm.java.expression.JavaExpression;
@@ -9,13 +9,12 @@ import javatoarm.java.statement.JavaStatement;
 import javatoarm.staticanalysis.Variable;
 
 public class JavaLoop implements JavaCode {
+    public final String endLabel, startLabel, conditionLabel;
     JavaStatement initial;
     JavaExpression condition;
     JavaStatement increment;
     JavaCode body;
     boolean isDoWhile;
-
-    public final String endLabel, startLabel, conditionLabel;
 
     private JavaLoop(JavaCode body, JavaStatement initial, JavaExpression condition,
                      JavaStatement increment, boolean isDoWhile) {

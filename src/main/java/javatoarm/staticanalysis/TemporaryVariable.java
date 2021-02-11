@@ -1,8 +1,8 @@
 package javatoarm.staticanalysis;
 
 import javatoarm.JTAException;
-import javatoarm.Register;
-import javatoarm.RegisterAssigner;
+import javatoarm.assembly.Register;
+import javatoarm.assembly.RegisterAssigner;
 import javatoarm.java.JavaType;
 
 public class TemporaryVariable implements Variable {

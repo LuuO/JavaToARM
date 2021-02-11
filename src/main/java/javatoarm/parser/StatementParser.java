@@ -1,10 +1,19 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.*;
+import javatoarm.java.JavaFunctionCall;
+import javatoarm.java.JavaNewArray;
+import javatoarm.java.JavaRightValue;
+import javatoarm.java.JavaType;
+import javatoarm.java.JavaVariableDeclare;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.statement.JavaStatement;
-import javatoarm.token.*;
+import javatoarm.token.BracketToken;
+import javatoarm.token.JavaLexer;
+import javatoarm.token.KeywordToken;
+import javatoarm.token.NameToken;
+import javatoarm.token.SplitterToken;
+import javatoarm.token.Token;
 import javatoarm.token.operator.AssignmentOperator;
 
 import java.util.HashSet;
@@ -17,7 +26,7 @@ public class StatementParser {
         TODO: Support int a, b, c; int a[], b, c;
      */
     public static JavaStatement parse(JavaLexer lexer)
-            throws JTAException {
+        throws JTAException {
 
         /* control statement */
         Token next = lexer.peek();

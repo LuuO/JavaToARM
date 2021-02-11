@@ -1,6 +1,4 @@
-package javatoarm;
-
-import javatoarm.assembly.InstructionSet;
+package javatoarm.assembly;
 
 public class Register {
     public final int index;

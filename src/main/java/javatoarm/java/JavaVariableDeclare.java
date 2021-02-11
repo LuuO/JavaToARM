@@ -48,7 +48,8 @@ public class JavaVariableDeclare implements JavaClass.Member, JavaStatement {
             if (!(initialValue instanceof JavaExpression)) {
                 throw new JTAException.Unsupported("");
             }
-            Variable initial = ((JavaExpression) initialValue).compileExpression(subroutine, parent);
+            Variable initial =
+                ((JavaExpression) initialValue).compileExpression(subroutine, parent);
             subroutine.addAssignment(variable, initial);
         }
     }

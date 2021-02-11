@@ -1,7 +1,11 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.*;
+import javatoarm.java.JavaBlock;
+import javatoarm.java.JavaFunction;
+import javatoarm.java.JavaProperty;
+import javatoarm.java.JavaType;
+import javatoarm.java.JavaVariableDeclare;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.token.BracketToken;
 import javatoarm.token.JavaLexer;
@@ -17,7 +21,7 @@ public class FunctionParser {
 
     public static JavaFunction parse(JavaLexer lexer) throws JTAException {
         Set<JavaProperty> properties =
-                JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
+            JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
         JavaType returnType = JavaParser.parseType(lexer, true);
         String methodName = JavaParser.parseSimpleName(lexer);
         List<JavaVariableDeclare> arguments = parseArgumentDeclares(lexer);
@@ -27,7 +31,8 @@ public class FunctionParser {
         return new JavaFunction(properties, returnType, methodName, arguments, body);
     }
 
-    private static List<JavaVariableDeclare> parseArgumentDeclares(JavaLexer lexer) throws JTAException {
+    private static List<JavaVariableDeclare> parseArgumentDeclares(JavaLexer lexer)
+        throws JTAException {
         SplitterToken comma = new SplitterToken(',');
         List<JavaVariableDeclare> arguments = new ArrayList<>();
 
@@ -37,7 +42,7 @@ public class FunctionParser {
                 JavaType condition = JavaParser.parseType(lexer, true);
                 String name = JavaParser.parseSimpleName(lexer);
                 arguments.add(new JavaVariableDeclare(
-                        Collections.emptySet(), condition, name, null));
+                    Collections.emptySet(), condition, name, null));
 
                 Token next = lexer.next();
                 if (next.equals(BracketToken.ROUND_R)) {
@@ -59,7 +64,7 @@ public class FunctionParser {
      * @throws JTAException
      */
     public static List<JavaExpression> parseCallArguments(JavaLexer lexer)
-            throws JTAException {
+        throws JTAException {
         List<JavaExpression> arguments = new ArrayList<>();
         lexer.next(BracketToken.ROUND_L);
         if (!lexer.peek().equals(BracketToken.ROUND_R)) {

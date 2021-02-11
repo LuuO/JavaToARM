@@ -1,10 +1,16 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.*;
+import javatoarm.java.JavaCode;
+import javatoarm.java.JavaIfElse;
+import javatoarm.java.JavaLoop;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.statement.JavaStatement;
-import javatoarm.token.*;
+import javatoarm.token.BracketToken;
+import javatoarm.token.JavaLexer;
+import javatoarm.token.KeywordToken;
+import javatoarm.token.SplitterToken;
+import javatoarm.token.Token;
 
 /**
  * Represents control codes such as if-else and loops.

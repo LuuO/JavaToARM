@@ -19,7 +19,8 @@ public class JavaUnaryExpression implements JavaExpression {
     @Override
     public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
         Variable operand = this.operand.compileExpression(subroutine, parent);
-        TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, operand.getType());
+        TemporaryVariable result =
+            new TemporaryVariable(parent.registerAssigner, operand.getType());
         subroutine.addALU(operator, operand, result);
         operand.deleteIfIsTemp();
         return result;

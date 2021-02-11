@@ -2,10 +2,10 @@ package javatoarm.java.expression;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
-import javatoarm.staticanalysis.LocalVariable;
 import javatoarm.java.JavaLeftValue;
 import javatoarm.java.JavaRightValue;
 import javatoarm.java.JavaScope;
+import javatoarm.staticanalysis.LocalVariable;
 
 import java.util.List;
 
@@ -17,8 +17,9 @@ public class JavaName implements JavaRightValue, JavaLeftValue, JavaExpression {
     }
 
     public JavaName(List<String> path) {
-        if (path.size() == 0)
+        if (path.size() == 0) {
             throw new IllegalArgumentException();
+        }
         this.path = path;
     }
 
@@ -35,7 +36,8 @@ public class JavaName implements JavaRightValue, JavaLeftValue, JavaExpression {
     }
 
     @Override
-    public LocalVariable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
+    public LocalVariable compileExpression(Subroutine subroutine, JavaScope parent)
+        throws JTAException {
         if (path.size() > 1) {
             throw new JTAException.Unsupported("Member access is not supported yet");
         }

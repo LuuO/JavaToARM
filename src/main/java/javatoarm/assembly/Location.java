@@ -1,4 +1,4 @@
-package javatoarm;
+package javatoarm.assembly;
 
 /**
  * Represent where the variable is stored.

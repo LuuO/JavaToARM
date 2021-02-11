@@ -1,12 +1,11 @@
 package javatoarm.java;
 
-import javatoarm.Condition;
 import javatoarm.JTAException;
+import javatoarm.assembly.Condition;
 import javatoarm.assembly.Subroutine;
 import javatoarm.java.expression.ComparisonExpression;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.staticanalysis.Variable;
-import javatoarm.token.operator.Comparison;
 
 public class JavaIfElse implements JavaCode {
     JavaExpression condition;

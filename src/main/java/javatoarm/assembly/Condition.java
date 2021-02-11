@@ -1,4 +1,4 @@
-package javatoarm;
+package javatoarm.assembly;
 
 public enum Condition {
     EQUAL, UNEQUAL, GREATER, LESS, GREATER_EQUAL, LESS_EQUAL, ALWAYS, NEVER;

@@ -1,14 +1,21 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.*;
-import javatoarm.java.expression.NumericExpression;
+import javatoarm.java.JavaAssignment;
+import javatoarm.java.JavaFunctionCall;
+import javatoarm.java.JavaIncrementDecrement;
+import javatoarm.java.JavaLeftValue;
 import javatoarm.java.expression.JavaArrayElement;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.expression.JavaImmediate;
 import javatoarm.java.expression.JavaName;
 import javatoarm.java.expression.JavaUnaryExpression;
-import javatoarm.token.*;
+import javatoarm.java.expression.NumericExpression;
+import javatoarm.token.BracketToken;
+import javatoarm.token.JavaLexer;
+import javatoarm.token.NameToken;
+import javatoarm.token.Token;
+import javatoarm.token.ValueToken;
 import javatoarm.token.operator.AssignmentOperator;
 import javatoarm.token.operator.IncrementDecrement;
 import javatoarm.token.operator.OperatorToken;
@@ -104,7 +111,7 @@ public class ExpressionParser {
     }
 
     private static void parseIncrementDecrement(List<ExpressionElement> elements)
-            throws JTAException {
+        throws JTAException {
 
         for (int i = 0; i < elements.size(); i++) {
             OperatorToken operator = elements.get(i).operator;
@@ -117,14 +124,14 @@ public class ExpressionParser {
                     i--;
                     JavaName variable = (JavaName) elements.get(i).expression;
                     JavaExpression expression = new JavaIncrementDecrement(
-                            variable, true, idOperator.isIncrement);
+                        variable, true, idOperator.isIncrement);
                     setElement(elements, i, expression);
 
                 } else if (i < elements.size() &&
-                        elements.get(i).expression instanceof JavaName) {
+                    elements.get(i).expression instanceof JavaName) {
                     JavaName variable = (JavaName) elements.get(i).expression;
                     JavaExpression expression = new JavaIncrementDecrement(
-                            variable, false, idOperator.isIncrement);
+                        variable, false, idOperator.isIncrement);
                     setElement(elements, i, expression);
 
                 } else {
@@ -141,7 +148,7 @@ public class ExpressionParser {
                 OperatorToken.Unary unaryOperator = (OperatorToken.Unary) operator;
 
                 if (unaryOperator instanceof PlusMinus && i != 0
-                        && elements.get(i - 1).expression != null) {
+                    && elements.get(i - 1).expression != null) {
                     continue;
                 }
 
@@ -174,7 +181,7 @@ public class ExpressionParser {
                         elements.remove(i);
                         JavaExpression operandRight = elements.get(i).expression;
                         setElement(elements, i,
-                                new NumericExpression(operator, operandLeft, operandRight));
+                            new NumericExpression(operator, operandLeft, operandRight));
 
                     } else if (operator.getPrecedenceLevel() > level) {
                         throw new AssertionError();
@@ -203,7 +210,8 @@ public class ExpressionParser {
                 JavaExpression value = elements.get(i).expression;
 
                 if (assignment instanceof AssignmentOperator.Compound) {
-                    OperatorToken.Binary implicit = ((AssignmentOperator.Compound) assignment).implicitOperator;
+                    OperatorToken.Binary implicit =
+                        ((AssignmentOperator.Compound) assignment).implicitOperator;
                     value = new NumericExpression(implicit, leftExpression, value);
                 }
 

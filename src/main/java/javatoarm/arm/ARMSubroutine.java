@@ -1,10 +1,9 @@
 package javatoarm.arm;
 
-import javatoarm.Condition;
 import javatoarm.JTAException;
-import javatoarm.Register;
+import javatoarm.assembly.Condition;
+import javatoarm.assembly.Register;
 import javatoarm.assembly.Subroutine;
-import javatoarm.staticanalysis.LocalVariable;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.Logical;
 import javatoarm.token.operator.OperatorToken;

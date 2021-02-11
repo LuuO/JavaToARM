@@ -1,6 +1,6 @@
 package javatoarm.token.operator;
 
-import javatoarm.Condition;
+import javatoarm.assembly.Condition;
 
 public class Comparison implements OperatorToken.Binary {
     public final Condition condition;

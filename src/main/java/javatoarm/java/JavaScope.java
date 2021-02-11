@@ -1,12 +1,11 @@
 package javatoarm.java;
 
 import javatoarm.JTAException;
-import javatoarm.RegisterAssigner;
 import javatoarm.assembly.InstructionSet;
+import javatoarm.assembly.RegisterAssigner;
 import javatoarm.staticanalysis.Argument;
 import javatoarm.staticanalysis.LocalVariable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

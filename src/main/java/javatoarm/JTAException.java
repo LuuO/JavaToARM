@@ -1,8 +1,8 @@
 package javatoarm;
 
-import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.JavaProperty;
 import javatoarm.java.JavaType;
+import javatoarm.java.expression.JavaExpression;
 import javatoarm.token.Token;
 
 public abstract class JTAException extends Exception {

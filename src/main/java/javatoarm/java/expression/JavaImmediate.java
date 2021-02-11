@@ -2,10 +2,10 @@ package javatoarm.java.expression;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
-import javatoarm.staticanalysis.Immediate;
 import javatoarm.java.JavaRightValue;
 import javatoarm.java.JavaScope;
 import javatoarm.java.JavaType;
+import javatoarm.staticanalysis.Immediate;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.ValueToken;
 

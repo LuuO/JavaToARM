@@ -1,10 +1,19 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.*;
+import javatoarm.java.JavaFile;
+import javatoarm.java.JavaProperty;
+import javatoarm.java.JavaType;
 import javatoarm.java.expression.JavaImmediate;
 import javatoarm.java.expression.JavaName;
-import javatoarm.token.*;
+import javatoarm.token.BracketToken;
+import javatoarm.token.JavaLexer;
+import javatoarm.token.KeywordToken;
+import javatoarm.token.MemberAccessToken;
+import javatoarm.token.NameToken;
+import javatoarm.token.SplitterToken;
+import javatoarm.token.Token;
+import javatoarm.token.ValueToken;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -65,7 +74,7 @@ public class JavaParser {
 
     public static Set<JavaProperty> parseProperties(JavaLexer lexer,
                                                     JavaProperty.Validator validator)
-            throws JTAException {
+        throws JTAException {
 
         Set<JavaProperty> properties = new HashSet<>();
 

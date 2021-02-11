@@ -1,7 +1,7 @@
 package javatoarm.staticanalysis;
 
 import javatoarm.JTAException;
-import javatoarm.RegisterAssigner;
+import javatoarm.assembly.RegisterAssigner;
 import javatoarm.java.JavaType;
 
 public class Immediate implements Variable {

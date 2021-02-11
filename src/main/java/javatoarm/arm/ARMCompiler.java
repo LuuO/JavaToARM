@@ -6,9 +6,9 @@ import javatoarm.assembly.Subroutine;
 import java.util.List;
 
 public class ARMCompiler implements Compiler {
+    private final StringBuilder text;
     List<String> globalLabels;
     List<String> jumpTable;
-    private final StringBuilder text;
 
     public ARMCompiler() {
         text = new StringBuilder();
