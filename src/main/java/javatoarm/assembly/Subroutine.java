@@ -5,6 +5,8 @@ import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.Logical;
 import javatoarm.token.operator.OperatorToken;
 
+import java.util.List;
+
 public interface Subroutine {
     void addReturn(Variable returnValue) throws JTAException;
 
@@ -15,7 +17,8 @@ public interface Subroutine {
     void addJump(Condition condition, String targetLabel);
 
     // TODO: use enum to replace OperatorToken
-    void addALU(OperatorToken operator, Variable left, Variable right, Variable result);
+    void addALU(OperatorToken.Binary operator, Variable left, Variable right, Variable result)
+        throws JTAException;
 
     void addALU(OperatorToken operator, Variable operand, Variable result);
 
@@ -28,10 +31,16 @@ public interface Subroutine {
 
     void addIncrementDecrement(Variable variable, boolean increase) throws JTAException;
 
-    void addFunctionCall(String targetLabel, Register result);
+    void addFunctionCall(String targetLabel, Register result, List<Variable> arguments)
+        throws JTAException;
 
     void saveBooleanResult(Condition condition, Variable result) throws JTAException;
 
     void checkCondition(Variable condition);
 
+    void addComment(String comment);
+
+    void addEmptyLine();
+
+    void pushCalleeSave();
 }

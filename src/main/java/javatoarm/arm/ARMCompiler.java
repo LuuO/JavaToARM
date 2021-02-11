@@ -47,4 +47,9 @@ public class ARMCompiler implements Compiler {
         }
         text.append(subroutine);
     }
+
+    @Override
+    public void addEmptyLine() {
+        text.append('\n');
+    }
 }

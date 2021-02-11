@@ -27,12 +27,9 @@ public interface JavaStatement extends JavaCode {
 
         @Override
         public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
-            if (returnValue == null) {
-                subroutine.addReturn();
-            } else {
+            if (returnValue != null) {
                 Variable returnVariable = returnValue.compileExpression(subroutine, parent);
                 subroutine.addReturn(returnVariable);
-                returnVariable.deleteIfIsTemp();
             }
             subroutine.addJump(Condition.ALWAYS, parent.getEpilogueLabel());
         }

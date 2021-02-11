@@ -36,7 +36,11 @@ public class JavaFunctionCall implements JavaExpression, JavaStatement {
         JavaType returnType = parent.getFunctionReturnType(name,
             arguments.stream().map(Variable::getType).collect(Collectors.toList()));
         TemporaryVariable returnValue = new TemporaryVariable(parent.registerAssigner, returnType);
-        subroutine.addFunctionCall("function_" + name, returnValue.getRegister());
+        subroutine.addEmptyLine();
+        subroutine.addComment("calling " + name);
+        subroutine.addFunctionCall("function_" + name, returnValue.getRegister(), arguments);
+        subroutine.addEmptyLine();
+
         arguments.forEach(Variable::deleteIfIsTemp);
         return returnValue;
     }

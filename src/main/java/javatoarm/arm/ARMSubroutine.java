@@ -12,9 +12,18 @@ import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.Logical;
 import javatoarm.token.operator.OperatorToken;
+import javatoarm.token.operator.PlusMinus;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ARMSubroutine implements Subroutine {
     private final static Register R0 = new Register(0, InstructionSet.ARMv7);
+    private final static List<Register> callerSave = List.of(0, 1, 2, 3, 14).stream()
+        .map(index -> new Register(index, InstructionSet.ARMv7)).collect(Collectors.toList());
+    private final static List<Register> arguments = List.of(0, 1, 2, 3).stream()
+        .map(index -> new Register(index, InstructionSet.ARMv7)).collect(Collectors.toList());
     private final StringBuilder text;
 
     public ARMSubroutine() {
@@ -74,7 +83,6 @@ public class ARMSubroutine implements Subroutine {
     public void addReturn(Variable returnValue) throws JTAException {
         Register value = use(returnValue);
         ARMInstruction.move(text, Condition.ALWAYS, R0, value);
-        addReturn();
         returnValue.deleteIfIsTemp();
     }
 
@@ -95,8 +103,29 @@ public class ARMSubroutine implements Subroutine {
     }
 
     @Override
-    public void addALU(OperatorToken operator, Variable left, Variable right, Variable result) {
+    public void addALU(OperatorToken.Binary operator, Variable left, Variable right, Variable result)
+        throws JTAException {
+        Register leftReg = use(left);
+        Register resultRegister = prepareStore(result);
+        if (operator instanceof PlusMinus) {
+            PlusMinus pm = (PlusMinus) operator;
+            OP op = pm.isPlus ? OP.ADD : OP.SUB;
 
+            if (right instanceof Immediate &&
+                (Integer) ((Immediate) right).value < 0x800) {
+                ARMInstruction.instruction(
+                    text, op, resultRegister, leftReg, (Integer) ((Immediate) right).value);
+            } else {
+                Register rightReg = use(right);
+                ARMInstruction.instruction(text, op, resultRegister, leftReg, rightReg);
+            }
+
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        left.deleteIfIsTemp();
+        right.deleteIfIsTemp();
+        store(resultRegister, result);
     }
 
     @Override
@@ -115,8 +144,16 @@ public class ARMSubroutine implements Subroutine {
     @Override
     public void addCompare(Variable left, Variable right) throws JTAException {
         Register leftReg = use(left);
-        Register rightReg = use(right);
-        ARMInstruction.instruction(text, OP.CMP, leftReg, rightReg);
+        if (right instanceof Immediate &&
+            (Integer) ((Immediate) right).value < 0x800) {
+
+            ARMInstruction.instruction(text, OP.CMP, leftReg, (Integer) ((Immediate) right).value);
+
+        } else {
+            Register rightReg = use(right);
+            ARMInstruction.instruction(text, OP.CMP, leftReg, rightReg);
+        }
+
         left.deleteIfIsTemp();
         right.deleteIfIsTemp();
     }
@@ -135,13 +172,28 @@ public class ARMSubroutine implements Subroutine {
     }
 
     @Override
-    public void addFunctionCall(String targetLabel, Register result) {
-        ARMInstruction.pushCallerSave(text);
+    public void addFunctionCall(String targetLabel, Register result, List<Variable> varArguments)
+        throws JTAException {
+
+        if (varArguments.size() > 4) throw new UnsupportedOperationException();
+
+        List<Register> saved = new ArrayList<>(callerSave);
+        saved.remove(result);
+        ARMInstruction.push(text, saved);
+
+        /* Move function arguments */
+        List<Register> argumentsToPass = new ArrayList<>(varArguments.size());
+        for (Variable argument : varArguments) {
+            argumentsToPass.add(use(argument));
+        }
+        ARMInstruction.push(text, argumentsToPass);
+        ARMInstruction.pop(text, arguments.subList(0, argumentsToPass.size()));
+
         ARMInstruction.branch(text, Condition.ALWAYS, OP.BL, targetLabel);
         if (result != null) {
             ARMInstruction.move(text, Condition.ALWAYS, result, R0);
         }
-        ARMInstruction.popCallerSave(text);
+        ARMInstruction.pop(text, saved);
     }
 
     @Override
@@ -155,6 +207,21 @@ public class ARMSubroutine implements Subroutine {
     @Override
     public void checkCondition(Variable condition) {
 
+    }
+
+    @Override
+    public void addComment(String comment) {
+        text.append("\t\t//").append(comment).append('\n');
+    }
+
+    @Override
+    public void addEmptyLine() {
+        text.append('\n');
+    }
+
+    @Override
+    public void pushCalleeSave() {
+        ARMInstruction.pushCalleeSave(text);
     }
 
     @Override

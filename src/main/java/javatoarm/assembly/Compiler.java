@@ -11,4 +11,6 @@ public interface Compiler {
     Subroutine newSubroutine();
 
     void commitSubroutine(Subroutine subroutine);
+
+    void addEmptyLine();
 }

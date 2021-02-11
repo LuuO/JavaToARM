@@ -55,8 +55,12 @@ public class JavaFunction implements JavaClass.Member {
         JavaScope scope = JavaScope.newFunctionScope(classScope, this, arguments);
         Subroutine subroutine = compiler.newSubroutine();
 
+        subroutine.addEmptyLine();
+        subroutine.addEmptyLine();
         subroutine.addLabel(startLabel);
+        subroutine.pushCalleeSave();
         body.compileCode(subroutine, scope);
+        subroutine.addEmptyLine();
         subroutine.addLabel("function_" + name + "_end");
         subroutine.addReturn();
 

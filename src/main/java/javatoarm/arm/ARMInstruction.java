@@ -3,22 +3,36 @@ package javatoarm.arm;
 import javatoarm.assembly.Condition;
 import javatoarm.assembly.Register;
 
+import java.util.List;
+
 public class ARMInstruction {
 
     public static void instruction(StringBuilder text, OP op, Register Rd, Register Rn) {
         text.append("\t\t%s\t\t%s, %s\n".formatted(op.name(), Rd, Rn));
     }
 
+    public static void instruction(StringBuilder text, OP op, Register Rd, int imm) {
+        text.append("\t\t%s\t\t%s, #%d\n".formatted(op.name(), Rd, imm));
+    }
+
+    public static void instruction(StringBuilder text, OP op, Register Rd, Register Rn,
+                                   Register Rm) {
+        text.append("\t\t%s\t\t%s, %s, %s\n".formatted(op.name(), Rd, Rn, Rm));
+    }
+
     public static void instruction(StringBuilder text, OP op, Register Rd, Register Rn, int imm) {
-        text.append("\t\t%s\t\t%s, %s, %d\n".formatted(op.name(), Rd, Rn, imm));
+        text.append("\t\t%s\t\t%s, %s, #%d\n".formatted(op.name(), Rd, Rn, imm));
     }
 
     public static void move(StringBuilder text, Condition condition, Register Rd, Register Rn) {
+        if (Rd.equals(Rn)) {
+            return;
+        }
         text.append("\t\tMOV%s\t\t%s, %s\n".formatted(toCode(condition), Rd, Rn));
     }
 
     public static void move(StringBuilder text, Condition condition, Register Rd, int imm) {
-        text.append("\t\tMOV%s\t\t%s, %d\n".formatted(toCode(condition), Rd, imm));
+        text.append("\t\tMOV%s\t\t%s, #%d\n".formatted(toCode(condition), Rd, imm));
     }
 
     public static void store(StringBuilder text, Condition condition,
@@ -31,20 +45,34 @@ public class ARMInstruction {
         text.append("\t\tMOV\t\tPC, LR\n");
     }
 
-    public static void pushCallerSave(StringBuilder text) {
-        text.append("\t\tPUSH\t{R1-R3, LR}\n"); //TODO R11?
+    public static void push(StringBuilder text, List<Register> registers) {
+        if (text.isEmpty()) {
+            return;
+        }
+        text.append("\t\tPUSH\t{").append(registers.get(0));
+        for (int i = 1; i < registers.size(); i++) {
+            text.append(", ").append(registers.get(i));
+        }
+        text.append("}\n");
     }
 
     public static void pushCalleeSave(StringBuilder text) {
-        text.append("\t\tPUSH\t\t{R4-R11}\n"); //TODO R11?
+        text.append("\t\tPUSH\t{R4-R11}\n");
     }
 
-    public static void popCallerSave(StringBuilder text) {
-        text.append("\t\tPOP\t\t{R1-R3, LR}\n"); //TODO R11?
+    public static void pop(StringBuilder text, List<Register> registers) {
+        if (text.isEmpty()) {
+            return;
+        }
+        text.append("\t\tPOP\t\t{").append(registers.get(0));
+        for (int i = 1; i < registers.size(); i++) {
+            text.append(", ").append(registers.get(i));
+        }
+        text.append("}\n");
     }
 
     public static void popCalleeSave(StringBuilder text) {
-        text.append("\t\tPOP\t\t{R4-R11}\n"); //TODO R11?
+        text.append("\t\tPOP\t\t{R4-R11}\n");
     }
 
     public static void branch(StringBuilder text, Condition condition, OP op, String label) {
