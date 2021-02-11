@@ -1,6 +1,7 @@
 package javatoarm.java.statement;
 
 import javatoarm.JTAException;
+import javatoarm.assembly.Condition;
 import javatoarm.assembly.Subroutine;
 import javatoarm.java.JavaCode;
 import javatoarm.java.JavaLoop;
@@ -33,6 +34,7 @@ public interface JavaStatement extends JavaCode {
                 subroutine.addReturn(returnVariable);
                 returnVariable.deleteIfIsTemp();
             }
+            subroutine.addJump(Condition.ALWAYS, parent.getEpilogueLabel());
         }
     }
 

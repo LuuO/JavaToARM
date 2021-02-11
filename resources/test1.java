@@ -2,7 +2,7 @@ package javatoarm.java;
 
 import java.util.HashSet;
 
-public class JavaFile {
+public class FIBB {
 
     public static int fibonacci(int n) {
         // System.out.println("fibo start");

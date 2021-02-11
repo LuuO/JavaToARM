@@ -19,33 +19,44 @@ public class JavaScope {
     public final RegisterAssigner registerAssigner;
     private final Map<String, LocalVariable> variables;
     private final JavaClass javaClass;
+    private final JavaFunction function;
 
     // JavaCode owner - breakable
-    private JavaScope(JavaScope parent, JavaCode owner, JavaClass javaClass) {
+    private JavaScope(JavaScope parent, JavaCode owner, JavaClass javaClass, JavaFunction function,
+                      RegisterAssigner registerAssigner) {
         this.variables = new HashMap<>();
         this.parent = parent;
         this.owner = owner;
         this.javaClass = javaClass;
-        if (parent != null) {
-            registerAssigner = parent.registerAssigner;
-        } else {
-            registerAssigner = new RegisterAssigner(InstructionSet.ARMv7);
-        }
+        this.function = function;
+        this.registerAssigner = registerAssigner;
+    }
+
+    private JavaScope(JavaScope parent, JavaCode owner) {
+        this.variables = new HashMap<>();
+        this.parent = parent;
+        this.owner = owner;
+        this.javaClass = parent.javaClass;
+        this.function = parent.function;
+        this.registerAssigner = parent.registerAssigner;
     }
 
     public static JavaScope newChildScope(JavaScope parent, JavaCode owner) {
-        return new JavaScope(parent, owner, parent.javaClass);
+        return new JavaScope(parent, owner);
     }
 
-    public static JavaScope newClassScope(JavaClass javaClass) {
-        return new JavaScope(null, null, javaClass);
+    public static JavaScope newClassScope(JavaClass javaClass, InstructionSet is) {
+        return new JavaScope(null, null,
+            javaClass, null, new RegisterAssigner(is));
     }
 
-    public static JavaScope newFunctionScope(JavaScope classScope,
+    public static JavaScope newFunctionScope(JavaScope classScope, JavaFunction function,
                                              List<JavaVariableDeclare> arguments)
         throws JTAException {
 
-        JavaScope functionScope = new JavaScope(classScope, null, classScope.javaClass);
+        JavaScope functionScope =
+            new JavaScope(classScope, null, classScope.javaClass,
+                function, classScope.registerAssigner);
         functionScope.declareArguments(arguments);
         return functionScope;
     }
@@ -66,6 +77,10 @@ public class JavaScope {
         throws JTAException {
         // TODO: check arguments
         return javaClass.getFunctionInterface(name).returnType;
+    }
+
+    public final String getEpilogueLabel() {
+        return function.epilogueLabel;
     }
 
     public final LocalVariable declareVariable(JavaType type, String name) throws JTAException {

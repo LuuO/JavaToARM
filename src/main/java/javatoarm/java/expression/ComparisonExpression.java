@@ -26,7 +26,7 @@ public class ComparisonExpression implements JavaExpression {
 
     public void compileToConditionCode(Subroutine parent, JavaScope scope) throws JTAException {
         Variable left = operandLeft.compileExpression(parent, scope);
-        Variable right = operandLeft.compileExpression(parent, scope);
+        Variable right = operandRight.compileExpression(parent, scope);
         parent.addCompare(left, right);
     }
 

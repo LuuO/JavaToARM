@@ -33,7 +33,6 @@ public class FileParser {
     }
 
     public static Set<JavaName> getImports(JavaLexer lexer) throws JTAException {
-        Token importToken = new KeywordToken(KeywordToken.Keyword._import);
         Set<JavaName> imports = new HashSet<>();
 
         while (lexer.hasNext()) {

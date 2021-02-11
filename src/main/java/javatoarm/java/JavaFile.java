@@ -2,6 +2,7 @@ package javatoarm.java;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
+import javatoarm.assembly.InstructionSet;
 import javatoarm.java.expression.JavaName;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class JavaFile {
         }
     }
 
-    public void compileTo(Compiler compiler) throws JTAException {
+    public void compileTo(Compiler compiler, InstructionSet is) throws JTAException {
         JavaClass firstClass = classes.get(0);
         for (int i = 0; i < classes.size(); i++) {
             if (classes.get(i).isPublic) {
@@ -48,9 +49,9 @@ public class JavaFile {
         }
 
         compiler.markGlobalLabel("CLASS_" + firstClass.name);
-        firstClass.compileTo(compiler);
+        firstClass.compileTo(compiler, is);
         for (JavaClass c : classes) {
-            c.compileTo(compiler);
+            c.compileTo(compiler, is);
         }
     }
 

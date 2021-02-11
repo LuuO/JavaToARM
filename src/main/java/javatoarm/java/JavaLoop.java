@@ -24,9 +24,9 @@ public class JavaLoop implements JavaCode {
         this.isDoWhile = isDoWhile;
         this.body = body;
 
-        endLabel = "loop_" + toString() + "_end";
-        startLabel = "loop_" + toString() + "_start";
-        conditionLabel = "loop_" + toString() + "_condition";
+        endLabel = "loop_" + JavaCode.labelUID(this) + "_end";
+        startLabel = "loop_" + JavaCode.labelUID(this) + "_start";
+        conditionLabel = "loop_" + JavaCode.labelUID(this) + "_condition";
     }
 
     public static JavaLoop forLoop(JavaCode body, JavaStatement initial, JavaExpression condition,

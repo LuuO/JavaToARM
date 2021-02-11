@@ -15,6 +15,8 @@ public class JavaFunction implements JavaClass.Member {
     private final List<JavaVariableDeclare> arguments;
     private final JavaBlock body;
 
+    public final String startLabel, epilogueLabel;
+
     public JavaFunction(Set<JavaProperty> properties, JavaType returnType,
                         String name, List<JavaVariableDeclare> arguments, JavaBlock body)
         throws JTAException {
@@ -23,6 +25,9 @@ public class JavaFunction implements JavaClass.Member {
         this.name = name;
         this.arguments = arguments;
         this.body = body;
+
+        startLabel = "function_" + name;
+        epilogueLabel = startLabel + "_end";
 
         isPublic = properties.contains(JavaProperty.PUBLIC);
         for (JavaVariableDeclare arg : arguments) {
@@ -47,10 +52,13 @@ public class JavaFunction implements JavaClass.Member {
     }
 
     public void compileTo(Compiler compiler, JavaScope classScope) throws JTAException {
-        JavaScope scope = JavaScope.newFunctionScope(classScope, arguments);
+        JavaScope scope = JavaScope.newFunctionScope(classScope, this, arguments);
         Subroutine subroutine = compiler.newSubroutine();
 
+        subroutine.addLabel(startLabel);
         body.compileCode(subroutine, scope);
+        subroutine.addLabel("function_" + name + "_end");
+        subroutine.addReturn();
 
         scope.outOfScope();
         compiler.commitSubroutine(subroutine);

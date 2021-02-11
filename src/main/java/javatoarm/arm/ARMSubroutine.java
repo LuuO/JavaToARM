@@ -27,8 +27,9 @@ public class ARMSubroutine implements Subroutine {
         } else if (source instanceof TemporaryVariable) {
             return ((TemporaryVariable) source).getRegister();
         } else if (source instanceof Immediate) {
-            TemporaryVariable temp = ((Immediate) source).getTemporary();
-            ARMInstruction.move(text, Condition.ALWAYS, R0, temp.getRegister());
+            Immediate imm = ((Immediate) source);
+            TemporaryVariable temp = imm.getTemporary();
+            ARMInstruction.move(text, Condition.ALWAYS, temp.getRegister(), (Integer) imm.value);
             return temp.getRegister();
         } else {
             throw new UnsupportedOperationException();
@@ -79,6 +80,7 @@ public class ARMSubroutine implements Subroutine {
 
     @Override
     public void addReturn() {
+        ARMInstruction.popCalleeSave(text);
         ARMInstruction.returnInstruction(text);
     }
 
@@ -153,5 +155,10 @@ public class ARMSubroutine implements Subroutine {
     @Override
     public void checkCondition(Variable condition) {
 
+    }
+
+    @Override
+    public String toString() {
+        return text.toString();
     }
 }

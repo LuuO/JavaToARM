@@ -8,4 +8,9 @@ import javatoarm.assembly.Subroutine;
  */
 public interface JavaCode {
     void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException;
+
+    static String labelUID(Object obj) {
+        String string = obj.toString();
+        return string.substring(string.indexOf('@') + 1);
+    }
 }

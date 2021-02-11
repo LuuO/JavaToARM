@@ -2,6 +2,7 @@ package javatoarm.java;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
+import javatoarm.assembly.InstructionSet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,16 +54,16 @@ public class JavaClass {
         return result;
     }
 
-    public void compileTo(Compiler compiler) throws JTAException {
-        JavaScope scope = JavaScope.newClassScope(this);
+    public void compileTo(Compiler compiler, InstructionSet is) throws JTAException {
+        JavaScope scope = JavaScope.newClassScope(this, is);
 
-        compiler.addLabel("CLASS_" + name);
+        compiler.addLabel("class_" + name);
         if (fields.size() != 0) {
             throw new JTAException.Unsupported("class fields not supported yet");
         }
         for (JavaFunction f : functions) {
             if (f.isPublic) {
-                compiler.addJumpLabel("FUNCTION_" + f.name());
+                compiler.addJumpLabel("function_" + f.name());
             }
         }
         for (JavaFunction f : functions) {
