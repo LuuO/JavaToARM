@@ -26,12 +26,12 @@ public class ARMCompiler implements Compiler {
 
     @Override
     public void addJumpLabel(String label) {
-        text.append("\tB\t").append(label).append('\n');
+        ARMInstruction.branch(text, ARMInstruction.OP.B, label);
     }
 
     @Override
     public void addLabel(String label) {
-        text.append(label).append(':').append('\n');
+        ARMInstruction.label(text, label);
     }
 
     @Override

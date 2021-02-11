@@ -19,7 +19,7 @@ public class ARMSubroutine implements Subroutine {
 
     }
 
-    private void store(Variable source, Variable target) throws JTAException {
+    private void store(int register, Variable target) throws JTAException {
 
     }
 
@@ -36,7 +36,7 @@ public class ARMSubroutine implements Subroutine {
 
     @Override
     public void addLabel(String label) {
-
+        ARMInstruction.label(text, label);
     }
 
     @Override
@@ -82,7 +82,12 @@ public class ARMSubroutine implements Subroutine {
 
     @Override
     public void addFunctionCall(String targetLabel, Register result) {
-
+        ARMInstruction.pushCallerSave(text);
+        ARMInstruction.branch(text, ARMInstruction.OP.BL, targetLabel);
+        if (result != null) {
+            ARMInstruction.instruction(text, ARMInstruction.OP.MOV, 0, result.index);
+        }
+        ARMInstruction.popCallerSave(text);
     }
 
     @Override
