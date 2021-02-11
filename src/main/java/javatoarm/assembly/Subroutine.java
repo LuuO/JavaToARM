@@ -43,4 +43,6 @@ public interface Subroutine {
     void addEmptyLine();
 
     void pushCalleeSave();
+
+    void malloc(Variable size, Register result) throws JTAException;
 }

@@ -228,6 +228,17 @@ public class ARMSubroutine implements Subroutine {
     }
 
     @Override
+    public void malloc(Variable size, Register result) throws JTAException {
+        List<Register> saved = new ArrayList<>(callerSave);
+        saved.remove(result);
+        ARMInstruction.push(text, saved);
+        ARMInstruction.move(text, Condition.ALWAYS, R0, use(size));
+        ARMInstruction.branch(text, Condition.ALWAYS, OP.BL, "_malloc");
+        ARMInstruction.move(text, Condition.ALWAYS, result, R0);
+        ARMInstruction.pop(text, saved);
+    }
+
+    @Override
     public String toString() {
         return text.toString();
     }
