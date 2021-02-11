@@ -1,9 +1,14 @@
-package javatoarm.java;
+package javatoarm.java.statement;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
+import javatoarm.java.JavaClass;
+import javatoarm.java.JavaNewArray;
+import javatoarm.java.JavaProperty;
+import javatoarm.java.JavaRightValue;
+import javatoarm.java.JavaScope;
+import javatoarm.java.JavaType;
 import javatoarm.java.expression.JavaExpression;
-import javatoarm.java.statement.JavaStatement;
 import javatoarm.staticanalysis.LocalVariable;
 import javatoarm.staticanalysis.Variable;
 
@@ -45,12 +50,19 @@ public class JavaVariableDeclare implements JavaClass.Member, JavaStatement {
     public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
         LocalVariable variable = parent.declareVariable(type, name);
         if (initialValue != null) {
-            if (!(initialValue instanceof JavaExpression)) {
-                throw new JTAException.Unsupported("");
+            if (initialValue instanceof JavaExpression) {
+                Variable initial =
+                    ((JavaExpression) initialValue).compileExpression(subroutine, parent);
+                subroutine.addAssignment(variable, initial);
+            } else if (initialValue instanceof JavaNewArray) {
+                JavaExpression sizeExpression =
+                    ((JavaNewArray) initialValue).memorySize();
+                Variable size = sizeExpression.compileExpression(subroutine, parent);
+                subroutine.malloc(size, variable.getRegister());
+                size.deleteIfIsTemp();
+            } else {
+                throw new UnsupportedOperationException();
             }
-            Variable initial =
-                ((JavaExpression) initialValue).compileExpression(subroutine, parent);
-            subroutine.addAssignment(variable, initial);
         }
     }
 }

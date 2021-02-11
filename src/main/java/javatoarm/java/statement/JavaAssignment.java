@@ -1,9 +1,10 @@
-package javatoarm.java;
+package javatoarm.java.statement;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
+import javatoarm.java.JavaLeftValue;
+import javatoarm.java.JavaScope;
 import javatoarm.java.expression.JavaExpression;
-import javatoarm.java.statement.JavaStatement;
 import javatoarm.staticanalysis.Variable;
 
 public class JavaAssignment implements JavaExpression, JavaStatement {

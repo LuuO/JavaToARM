@@ -86,6 +86,11 @@ public class ARMInstruction {
         text.append(label).append(":\n");
     }
 
+    public static void load(StringBuilder text, Register Rd, Register base, Register index,
+                            int leftShift) {
+        text.append("\t\tLDR\t\t%s, [%s, %s, LSL#%d]\n".formatted(Rd, base, index, leftShift));
+    }
+
     private static String toCode(Condition condition) {
         return switch (condition) {
             case EQUAL -> "EQ";

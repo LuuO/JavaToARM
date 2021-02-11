@@ -9,6 +9,7 @@ public class MemoryOffset implements Variable {
     public final Variable array, index;
     public final RegisterAssigner registerAssigner;
     public final int shift;
+    private TemporaryVariable temp = null;
 
     public MemoryOffset(Variable array, Variable index, int shift,
                         RegisterAssigner registerAssigner)
@@ -21,7 +22,30 @@ public class MemoryOffset implements Variable {
     }
 
     public TemporaryVariable getTemporary() throws JTAException {
-        return new TemporaryVariable(registerAssigner, type);
+        if (temp == null) {
+            temp = new TemporaryVariable(registerAssigner, type);
+        }
+        return temp;
+    }
+
+    @Override
+    public void delete() {
+        if (temp != null) {
+            temp.delete();
+            temp = null;
+        }
+        array.delete();
+        index.delete();
+    }
+
+    @Override
+    public void deleteIfIsTemp() {
+        if (temp != null) {
+            temp.delete();
+            temp = null;
+        }
+        array.deleteIfIsTemp();
+        index.deleteIfIsTemp();
     }
 
     @Override

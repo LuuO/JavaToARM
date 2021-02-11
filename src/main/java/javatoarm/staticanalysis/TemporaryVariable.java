@@ -26,9 +26,8 @@ public class TemporaryVariable implements Variable {
     }
 
     @Override
-    public boolean deleteIfIsTemp() {
+    public void deleteIfIsTemp() {
         delete();
-        return true;
     }
 
     @Override

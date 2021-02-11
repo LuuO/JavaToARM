@@ -1,13 +1,13 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.JavaFunctionCall;
 import javatoarm.java.JavaNewArray;
 import javatoarm.java.JavaRightValue;
 import javatoarm.java.JavaType;
-import javatoarm.java.JavaVariableDeclare;
 import javatoarm.java.expression.JavaExpression;
+import javatoarm.java.statement.JavaFunctionCall;
 import javatoarm.java.statement.JavaStatement;
+import javatoarm.java.statement.JavaVariableDeclare;
 import javatoarm.token.BracketToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.KeywordToken;

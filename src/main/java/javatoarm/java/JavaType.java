@@ -66,4 +66,17 @@ public class JavaType {
         }
         return false;
     }
+
+    /**
+     * Get the size of the type.
+     * TODO: improve
+     *
+     * @return number of bytes that one element of the type will occupy.
+     */
+    public int size() {
+        if (equals(INT) || equals(FLOAT)) {
+            return 4;
+        }
+        throw new UnsupportedOperationException();
+    }
 }

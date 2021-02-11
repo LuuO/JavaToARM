@@ -3,6 +3,7 @@ package javatoarm.java;
 import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
 import javatoarm.assembly.InstructionSet;
+import javatoarm.java.statement.JavaVariableDeclare;
 
 import java.util.ArrayList;
 import java.util.HashMap;

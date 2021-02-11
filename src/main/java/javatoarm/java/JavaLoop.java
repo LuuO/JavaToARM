@@ -53,26 +53,32 @@ public class JavaLoop implements JavaCode {
     @Override
     public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
         JavaScope scope = JavaScope.newChildScope(parent, this);
+        subroutine.addEmptyLine();
+        subroutine.addComment("loop");
 
         initial.compileCode(subroutine, scope);
+        if (!isDoWhile) {
+            subroutine.addJump(Condition.ALWAYS, conditionLabel);
+        }
 
         subroutine.addLabel(startLabel);
         body.compileCode(subroutine, scope);
         increment.compileCode(subroutine, scope);
 
         subroutine.addLabel(conditionLabel);
-        Condition opposite;
+        Condition jumpCondition;
         if (condition instanceof ComparisonExpression) {
             ComparisonExpression comparison = (ComparisonExpression) condition;
             comparison.compileToConditionCode(subroutine, scope);
-            opposite = comparison.getCondition().opposite();
+            jumpCondition = comparison.getCondition();
         } else {
             Variable condition = this.condition.compileExpression(subroutine, scope);
             subroutine.checkCondition(condition);
-            opposite = Condition.EQUAL; // Zero -> false
+            jumpCondition = Condition.UNEQUAL; // Non-Zero -> true
         }
-        subroutine.addJump(opposite, startLabel);
+        subroutine.addJump(jumpCondition, startLabel);
 
         subroutine.addLabel(endLabel);
+        subroutine.addEmptyLine();
     }
 }

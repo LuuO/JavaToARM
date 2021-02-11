@@ -3,6 +3,7 @@ package javatoarm.java;
 import javatoarm.JTAException;
 import javatoarm.assembly.InstructionSet;
 import javatoarm.assembly.RegisterAssigner;
+import javatoarm.java.statement.JavaVariableDeclare;
 import javatoarm.staticanalysis.Argument;
 import javatoarm.staticanalysis.LocalVariable;
 

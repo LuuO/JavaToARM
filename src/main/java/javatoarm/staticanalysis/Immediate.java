@@ -37,12 +37,10 @@ public class Immediate implements Variable {
     }
 
     @Override
-    public boolean deleteIfIsTemp() {
+    public void deleteIfIsTemp() {
         if (temp != null) {
-            boolean isTemp = temp.deleteIfIsTemp();
+            temp.deleteIfIsTemp();
             temp = null;
-            return isTemp;
         }
-        return true;
     }
 }

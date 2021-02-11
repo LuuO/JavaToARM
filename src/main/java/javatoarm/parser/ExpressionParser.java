@@ -1,8 +1,6 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.JavaAssignment;
-import javatoarm.java.JavaFunctionCall;
 import javatoarm.java.JavaIncrementDecrement;
 import javatoarm.java.JavaLeftValue;
 import javatoarm.java.expression.ComparisonExpression;
@@ -12,6 +10,8 @@ import javatoarm.java.expression.JavaImmediate;
 import javatoarm.java.expression.JavaName;
 import javatoarm.java.expression.JavaUnaryExpression;
 import javatoarm.java.expression.NumericExpression;
+import javatoarm.java.statement.JavaAssignment;
+import javatoarm.java.statement.JavaFunctionCall;
 import javatoarm.token.BracketToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.NameToken;

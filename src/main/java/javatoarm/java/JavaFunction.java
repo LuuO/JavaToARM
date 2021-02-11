@@ -3,6 +3,7 @@ package javatoarm.java;
 import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
 import javatoarm.assembly.Subroutine;
+import javatoarm.java.statement.JavaVariableDeclare;
 
 import java.util.Collections;
 import java.util.List;

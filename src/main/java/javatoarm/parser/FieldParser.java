@@ -4,7 +4,7 @@ import javatoarm.JTAException;
 import javatoarm.java.JavaProperty;
 import javatoarm.java.JavaRightValue;
 import javatoarm.java.JavaType;
-import javatoarm.java.JavaVariableDeclare;
+import javatoarm.java.statement.JavaVariableDeclare;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.SplitterToken;
 import javatoarm.token.Token;

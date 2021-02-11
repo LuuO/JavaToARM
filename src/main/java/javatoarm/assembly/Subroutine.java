@@ -36,7 +36,7 @@ public interface Subroutine {
 
     void saveBooleanResult(Condition condition, Variable result) throws JTAException;
 
-    void checkCondition(Variable condition);
+    void checkCondition(Variable condition) throws JTAException;
 
     void addComment(String comment);
 

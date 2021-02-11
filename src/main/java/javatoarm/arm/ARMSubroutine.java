@@ -10,6 +10,7 @@ import javatoarm.staticanalysis.LocalVariable;
 import javatoarm.staticanalysis.MemoryOffset;
 import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
+import javatoarm.token.operator.ArithmeticOperator;
 import javatoarm.token.operator.Logical;
 import javatoarm.token.operator.OperatorToken;
 import javatoarm.token.operator.PlusMinus;
@@ -40,6 +41,13 @@ public class ARMSubroutine implements Subroutine {
             TemporaryVariable temp = imm.getTemporary();
             ARMInstruction.move(text, Condition.ALWAYS, temp.getRegister(), (Integer) imm.value);
             return temp.getRegister();
+        } else if (source instanceof MemoryOffset) {
+            MemoryOffset memoryOffset = ((MemoryOffset) source);
+            Register result = memoryOffset.getTemporary().getRegister();
+            Register array = use(memoryOffset.array);
+            Register index = use(memoryOffset.index);
+            ARMInstruction.load(text, result, array, index, memoryOffset.shift);
+            return result;
         } else {
             throw new UnsupportedOperationException();
         }
@@ -59,8 +67,8 @@ public class ARMSubroutine implements Subroutine {
 
     private void store(Register source, Variable target) throws JTAException {
         if (target instanceof LocalVariable) {
-            Register register = ((LocalVariable) target).getRegister();
-            ARMInstruction.move(text, Condition.ALWAYS, source, register);
+            Register targetReg = ((LocalVariable) target).getRegister();
+            ARMInstruction.move(text, Condition.ALWAYS, targetReg, source);
 
         } else if (target instanceof MemoryOffset) {
             MemoryOffset memoryOffset = (MemoryOffset) target;
@@ -71,8 +79,8 @@ public class ARMSubroutine implements Subroutine {
             ARMInstruction.store(text, Condition.ALWAYS, source, base, index, shift);
 
         } else if (target instanceof TemporaryVariable) {
-            Register register = ((TemporaryVariable) target).getRegister();
-            ARMInstruction.move(text, Condition.ALWAYS, source, register);
+            Register targetReg = ((TemporaryVariable) target).getRegister();
+            ARMInstruction.move(text, Condition.ALWAYS, targetReg, source);
 
         } else {
             throw new UnsupportedOperationException();
@@ -121,6 +129,9 @@ public class ARMSubroutine implements Subroutine {
                 ARMInstruction.instruction(text, op, resultRegister, leftReg, rightReg);
             }
 
+        } else if (operator instanceof ArithmeticOperator.Multiply) {
+            Register rightReg = use(right);
+            ARMInstruction.instruction(text, OP.MUL, resultRegister, leftReg, rightReg);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -136,8 +147,8 @@ public class ARMSubroutine implements Subroutine {
 
     @Override
     public void addAssignment(Variable left, Variable right) throws JTAException {
-        Register src = use(left);
-        store(src, right);
+        Register src = use(right);
+        store(src, left);
         left.deleteIfIsTemp();
         right.deleteIfIsTemp();
     }
@@ -208,8 +219,10 @@ public class ARMSubroutine implements Subroutine {
     }
 
     @Override
-    public void checkCondition(Variable condition) {
-
+    public void checkCondition(Variable condition) throws JTAException {
+        Register register = use(condition);
+        ARMInstruction.instruction(text, OP.CMP, register, 0);
+        condition.deleteIfIsTemp();
     }
 
     @Override

@@ -29,11 +29,8 @@ public interface Variable {
 
     /**
      * Delete this variable if it is temporary. Always call this method after the variable is used.
-     *
-     * @return true if this is a temporary variable, false otherwise.
      */
-    default boolean deleteIfIsTemp() {
-        return false;
+    default void deleteIfIsTemp() {
     }
 
     JavaType getType();
