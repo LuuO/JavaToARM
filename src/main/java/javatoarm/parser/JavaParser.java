@@ -2,6 +2,8 @@ package javatoarm.parser;
 
 import javatoarm.JTAException;
 import javatoarm.java.*;
+import javatoarm.java.expression.JavaImmediate;
+import javatoarm.java.expression.JavaName;
 import javatoarm.token.*;
 
 import java.util.ArrayList;

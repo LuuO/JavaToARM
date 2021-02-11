@@ -3,7 +3,7 @@ package javatoarm.parser;
 import javatoarm.JTAException;
 import javatoarm.java.JavaClass;
 import javatoarm.java.JavaFile;
-import javatoarm.java.JavaName;
+import javatoarm.java.expression.JavaName;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.KeywordToken;
 import javatoarm.token.Token;

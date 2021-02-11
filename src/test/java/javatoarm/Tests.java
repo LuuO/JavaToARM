@@ -22,4 +22,14 @@ public class Tests {
         JavaFile file = parser.toJavaTree();
         System.out.println(file);
     }
+
+    @Test
+    public void test_string() throws IOException, JTAException {
+        assertTrue(true);
+        String code = Files.readString(Path.of("resources/String.java"));
+        JavaLexer lexer = new JavaLexer(code);
+        JavaParser parser = new JavaParser(lexer);
+        JavaFile file = parser.toJavaTree();
+        System.out.println(file);
+    }
 }

@@ -2,6 +2,8 @@ package javatoarm.parser;
 
 import javatoarm.JTAException;
 import javatoarm.java.*;
+import javatoarm.java.expression.JavaExpression;
+import javatoarm.java.statement.JavaStatement;
 import javatoarm.token.*;
 
 /**

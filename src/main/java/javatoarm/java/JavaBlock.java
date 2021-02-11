@@ -1,30 +1,24 @@
 package javatoarm.java;
 
 import javatoarm.JTAException;
-import javatoarm.Register;
-import javatoarm.RegisterAssigner;
+import javatoarm.assembly.Subroutine;
 
 import java.util.Collections;
 import java.util.List;
 
-public class JavaBlock extends JavaScope implements JavaCode {
+public class JavaBlock implements JavaCode {
     public final List<JavaCode> codes;
 
-    public JavaBlock(JavaScope parent, List<JavaCode> body) {
-        super(false, parent);
+    public JavaBlock(List<JavaCode> body) {
         this.codes = Collections.unmodifiableList(body);
     }
 
-    public Register toAssembly(boolean returnRegister, JavaType returnType, RegisterAssigner registers
-    ) throws JTAException {
-        // 
-
-        // if var delcar
-        // declareVariable(type, name);
-        // to use
-        // getVariable(name);
-
-        outOfScope();
-        return null;
+    @Override
+    public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
+        JavaScope scope = JavaScope.newChildScope(parent, this);
+        for (JavaCode code : codes) {
+            code.compileCode(subroutine, scope);
+        }
+        scope.outOfScope();
     }
 }

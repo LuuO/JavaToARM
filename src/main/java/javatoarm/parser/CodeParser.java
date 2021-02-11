@@ -33,7 +33,7 @@ public class CodeParser {
             JavaParser.eatSemiColons(lexer);
         }
 
-        return new JavaBlock(null, body);
+        return new JavaBlock(body);
     }
 
 }

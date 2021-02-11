@@ -1,5 +1,9 @@
 package javatoarm.java;
 
+import javatoarm.JTAException;
+import javatoarm.assembly.Compiler;
+import javatoarm.java.expression.JavaName;
+
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +35,22 @@ public class JavaFile {
                     hasPublic = true;
                 }
             }
+        }
+    }
+
+    public void compileTo(Compiler compiler) throws JTAException {
+        JavaClass firstClass = classes.get(0);
+        for (int i = 0; i < classes.size(); i++) {
+            if (classes.get(i).isPublic) {
+                firstClass = classes.remove(i);
+                break;
+            }
+        }
+
+        compiler.markGlobalLabel("CLASS_" + firstClass.name);
+        firstClass.compileTo(compiler);
+        for (JavaClass c : classes) {
+            c.compileTo(compiler);
         }
     }
 

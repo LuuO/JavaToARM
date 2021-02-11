@@ -1,6 +1,6 @@
 package javatoarm;
 
-import javatoarm.java.JavaExpression;
+import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.JavaProperty;
 import javatoarm.java.JavaType;
 import javatoarm.token.Token;
@@ -44,13 +44,13 @@ public abstract class JTAException extends Exception {
 
     public static class VariableAlreadyDeclared extends JTAException {
         public VariableAlreadyDeclared(String name) {
-            super("Variable \"" + name + "\" is already declared.");
+            super("LocalVariable \"" + name + "\" is already declared.");
         }
     }
 
     public static class TypeMismatch extends JTAException {
         public TypeMismatch(JavaType expected, JavaType actual) {
-            super("Unexpected Type: " + actual + ", expected: " + expected);
+            super("Unexpected Condition: " + actual + ", expected: " + expected);
         }
     }
 
@@ -89,6 +89,25 @@ public abstract class JTAException extends Exception {
             super(message);
         }
     }
+
+    public static class NotInALoop extends JTAException {
+        public NotInALoop(String message) {
+            super(message);
+        }
+    }
+
+    public static class FunctionAlreadyDeclared extends JTAException {
+        public FunctionAlreadyDeclared(String message) {
+            super(message);
+        }
+    }
+
+    public static class UnknownFunction extends JTAException {
+        public UnknownFunction(String message) {
+            super(message);
+        }
+    }
+
 }
 
 

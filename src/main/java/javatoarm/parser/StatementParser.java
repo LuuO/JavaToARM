@@ -2,6 +2,8 @@ package javatoarm.parser;
 
 import javatoarm.JTAException;
 import javatoarm.java.*;
+import javatoarm.java.expression.JavaExpression;
+import javatoarm.java.statement.JavaStatement;
 import javatoarm.token.*;
 import javatoarm.token.operator.AssignmentOperator;
 
@@ -24,7 +26,11 @@ public class StatementParser {
             switch (keyword) {
                 case _break -> {
                     lexer.next();
-                    return JavaStatement.BREAK;
+                    return new JavaStatement.Break();
+                }
+                case _continue -> {
+                    lexer.next();
+                    return new JavaStatement.Continue();
                 }
                 case _return -> {
                     lexer.next();
@@ -39,7 +45,7 @@ public class StatementParser {
 
         /* object creation or expression */
         if (isObjectCreation(lexer)) {
-            JavaType type = JavaParser.parseType(lexer, true);
+            JavaType condition = JavaParser.parseType(lexer, true);
             String name = JavaParser.parseSimpleName(lexer);
             JavaRightValue initialValue = null;
             if (lexer.peek() instanceof AssignmentOperator.Simple) {
@@ -50,7 +56,7 @@ public class StatementParser {
                     initialValue = ExpressionParser.parse(lexer);
                 }
             }
-            return new JavaVariableDeclare(new HashSet<>(), type, name, initialValue);
+            return new JavaVariableDeclare(new HashSet<>(), condition, name, initialValue);
 
         } else {
             JavaExpression expression = ExpressionParser.parse(lexer);
@@ -105,19 +111,19 @@ public class StatementParser {
 
     private static JavaRightValue parseNewInit(JavaLexer lexer) throws JTAException {
         lexer.next(new KeywordToken(KeywordToken.Keyword._new));
-        JavaType type = JavaParser.parseType(lexer, false);
+        JavaType condition = JavaParser.parseType(lexer, false);
         Token next = lexer.next();
         if (next.equals(BracketToken.SQUARE_L)) {
             /* array */
             JavaExpression size = ExpressionParser.parse(lexer);
             lexer.next(BracketToken.SQUARE_R);
-            return new JavaNewArray(type, size);
+            return new JavaNewArray(condition, size);
 
         } else if (next.equals(BracketToken.ROUND_L)) {
             /* initialize objects */
             List<JavaExpression> arguments = FunctionParser.parseCallArguments(lexer);
             lexer.next(BracketToken.ROUND_R);
-            return new JavaFunctionCall(type, arguments);
+            return new JavaFunctionCall(condition, arguments);
 
         } else {
             throw new JTAException.UnexpectedToken("'[' or ')'", next);

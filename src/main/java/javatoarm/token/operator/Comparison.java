@@ -1,15 +1,17 @@
 package javatoarm.token.operator;
 
-public class Comparison implements OperatorToken.Binary {
-    private final Type type;
+import javatoarm.Condition;
 
-    private Comparison(Type type) {
-        this.type = type;
+public class Comparison implements OperatorToken.Binary {
+    public final Condition condition;
+
+    private Comparison(Condition condition) {
+        this.condition = condition;
     }
 
     public static Comparison get(String operator) {
         try {
-            return new Comparison(Type.get(operator));
+            return new Comparison(Condition.getFromSymbol(operator));
         } catch (IllegalArgumentException e) {
             return null;
         }
@@ -17,7 +19,7 @@ public class Comparison implements OperatorToken.Binary {
 
     @Override
     public int getPrecedenceLevel() {
-        return switch (type) {
+        return switch (condition) {
             case EQUAL, UNEQUAL -> 8;
             default -> 9;
         };
@@ -26,21 +28,5 @@ public class Comparison implements OperatorToken.Binary {
     @Override
     public OperatorToken.Binary.Type getBinaryOperatorType() {
         return OperatorToken.Binary.Type.COMPARISON;
-    }
-
-    public enum Type {
-        EQUAL, UNEQUAL, GREATER, LESS, GREATER_EQUAL, LESS_EQUAL;
-
-        public static Type get(String name) throws IllegalArgumentException {
-            return switch (name) {
-                case "==" -> EQUAL;
-                case "!=" -> UNEQUAL;
-                case ">" -> GREATER;
-                case "<" -> LESS;
-                case ">=" -> GREATER_EQUAL;
-                case "<=" -> LESS_EQUAL;
-                default -> throw new IllegalArgumentException();
-            };
-        }
     }
 }

@@ -1,23 +1,25 @@
 package javatoarm;
 
+import javatoarm.assembly.InstructionSet;
+
 public class Register {
     public final int index;
-    private final ISA isa;
+    private final InstructionSet isa;
 
-    public Register(int index, ISA isa) {
+    public Register(int index, InstructionSet isa) {
         this.index = index;
         this.isa = isa;
 
-        if (isa == ISA.ARM && index > 16) {
+        if (isa == InstructionSet.ARMv7 && index > 16) {
             throw new IllegalArgumentException();
-        } else if (isa == ISA.X86_64) {
+        } else if (isa == InstructionSet.X86_64) {
             throw new UnsupportedOperationException();
         }
     }
 
     public boolean hasSpecialPurpose() {
         return switch (isa) {
-            case ARM -> index >= 13;
+            case ARMv7 -> index >= 13;
             case X86_64 -> throw new UnsupportedOperationException();
         };
     }
@@ -39,7 +41,7 @@ public class Register {
     @Override
     public String toString() {
         return switch (isa) {
-            case ARM -> switch (index) {
+            case ARMv7 -> switch (index) {
                 case 13 -> "SP";
                 case 14 -> "LR";
                 case 15 -> "PC";

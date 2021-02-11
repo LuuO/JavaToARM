@@ -1,6 +1,15 @@
 package javatoarm.java;
 
+import javatoarm.JTAException;
+import javatoarm.assembly.Subroutine;
+import javatoarm.java.expression.JavaExpression;
+import javatoarm.java.statement.JavaStatement;
+import javatoarm.staticanalysis.TemporaryVariable;
+import javatoarm.staticanalysis.Variable;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class JavaFunctionCall implements JavaExpression, JavaStatement {
     JavaType dataType;
@@ -15,5 +24,26 @@ public class JavaFunctionCall implements JavaExpression, JavaStatement {
     public JavaFunctionCall(JavaType dataType, List<JavaExpression> arguments) {
         this.dataType = dataType;
         this.arguments = arguments;
+    }
+
+    @Override
+    public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
+        List<Variable> arguments = new ArrayList<>();
+        for (JavaExpression argument : this.arguments) {
+            arguments.add(argument.compileExpression(subroutine, parent));
+        }
+
+        JavaType returnType = parent.getFunctionReturnType(name,
+            arguments.stream().map(Variable::getType).collect(Collectors.toList()));
+        TemporaryVariable returnValue = new TemporaryVariable(parent.registerAssigner, returnType);
+        subroutine.addFunctionCall("function_" + name, returnValue.getRegister());
+        arguments.forEach(Variable::deleteIfIsTemp);
+        return returnValue;
+    }
+
+    @Override
+    public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
+        Variable returnValue = compileExpression(subroutine, parent);
+        returnValue.deleteIfIsTemp();
     }
 }

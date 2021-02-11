@@ -1,5 +1,7 @@
 package javatoarm.java;
 
+import javatoarm.JTAException;
+import javatoarm.java.expression.JavaName;
 import javatoarm.token.KeywordToken;
 
 public class JavaType {
@@ -21,8 +23,9 @@ public class JavaType {
         this.elementType = elementType;
     }
 
-    public static JavaType get(JavaName name) {
-        return new JavaType(name.toString(), null);
+    public static JavaType get(JavaName name) throws JTAException {
+        throw new JTAException.Unsupported("user defined types are not supported");
+        // return new JavaType(name.toString(), null);
     }
 
     public static JavaType get(KeywordToken keywordToken) {

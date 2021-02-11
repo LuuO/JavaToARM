@@ -1,9 +1,14 @@
 package javatoarm;
 
+import javatoarm.assembly.InstructionSet;
+import javatoarm.staticanalysis.LocalVariable;
+import javatoarm.staticanalysis.Variable;
+
 public class RegisterAssigner {
 
     public static String SP = "sp";
 
+    private final InstructionSet isa;
     private final Register[] registers;
     private final Variable[] holders;
 
@@ -14,12 +19,13 @@ public class RegisterAssigner {
             variableNames.get(i) stores the name of the variable correspond to Register i.
      */
 
-    public RegisterAssigner(ISA isa) {
+    public RegisterAssigner(InstructionSet isa) {
         int numberOfRegisters = switch (isa) {
-            case ARM -> 16;
+            case ARMv7 -> 16;
             case X86_64 -> throw new UnsupportedOperationException();
         };
-        holders = new Variable[numberOfRegisters];
+        this.isa = isa;
+        holders = new LocalVariable[numberOfRegisters];
         registers = new Register[numberOfRegisters];
         for (int i = 0; i < numberOfRegisters; i++) {
             registers[i] = new Register(i, isa);
@@ -44,5 +50,19 @@ public class RegisterAssigner {
      */
     public void release(Register register) {
         holders[register.index] = null;
+    }
+
+    public Register requestArgumentRegister(LocalVariable argument) throws JTAException {
+        switch (isa) {
+            case ARMv7:
+                for (int i = 0; i < 4; i++) {
+                    if (holders[i] == null) {
+                        holders[i] = argument;
+                    }
+                }
+                throw new JTAException.Unsupported("too many arguments");
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 }

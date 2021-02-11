@@ -1,6 +1,11 @@
-package javatoarm.java;
+package javatoarm.java.expression;
 
 import javatoarm.JTAException;
+import javatoarm.assembly.Subroutine;
+import javatoarm.staticanalysis.LocalVariable;
+import javatoarm.java.JavaLeftValue;
+import javatoarm.java.JavaRightValue;
+import javatoarm.java.JavaScope;
 
 import java.util.List;
 
@@ -27,5 +32,14 @@ public class JavaName implements JavaRightValue, JavaLeftValue, JavaExpression {
             throw new JTAException.InvalidName(toString() + " is not a valid simple name");
         }
         return path.get(0);
+    }
+
+    @Override
+    public LocalVariable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
+        if (path.size() > 1) {
+            throw new JTAException.Unsupported("Member access is not supported yet");
+        }
+
+        return parent.getVariable(toSimpleName());
     }
 }

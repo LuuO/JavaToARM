@@ -2,6 +2,12 @@ package javatoarm.parser;
 
 import javatoarm.JTAException;
 import javatoarm.java.*;
+import javatoarm.java.expression.NumericExpression;
+import javatoarm.java.expression.JavaArrayElement;
+import javatoarm.java.expression.JavaExpression;
+import javatoarm.java.expression.JavaImmediate;
+import javatoarm.java.expression.JavaName;
+import javatoarm.java.expression.JavaUnaryExpression;
 import javatoarm.token.*;
 import javatoarm.token.operator.AssignmentOperator;
 import javatoarm.token.operator.IncrementDecrement;
@@ -19,7 +25,7 @@ public class ExpressionParser {
         while (true) {
             Token token = lexer.next();
 
-            // TODO: support type casting, new Object creation, ternary
+            // TODO: support condition casting, new Object creation, ternary
             if (token.equals(BracketToken.SQUARE_L)) {
                 JavaExpression index = parse(lexer);
                 lexer.next(BracketToken.SQUARE_R);
@@ -110,14 +116,14 @@ public class ExpressionParser {
                 if (i > 0 && elements.get(i - 1).expression instanceof JavaName) {
                     i--;
                     JavaName variable = (JavaName) elements.get(i).expression;
-                    JavaExpression expression = new JavaIncrementDecrementExpression(
+                    JavaExpression expression = new JavaIncrementDecrement(
                             variable, true, idOperator.isIncrement);
                     setElement(elements, i, expression);
 
                 } else if (i < elements.size() &&
                         elements.get(i).expression instanceof JavaName) {
                     JavaName variable = (JavaName) elements.get(i).expression;
-                    JavaExpression expression = new JavaIncrementDecrementExpression(
+                    JavaExpression expression = new JavaIncrementDecrement(
                             variable, false, idOperator.isIncrement);
                     setElement(elements, i, expression);
 
@@ -139,7 +145,7 @@ public class ExpressionParser {
                     continue;
                 }
 
-                // TODO: check index, type
+                // TODO: check index, condition
                 JavaExpression operand = elements.remove(i + 1).expression;
                 setElement(elements, i, new JavaUnaryExpression(unaryOperator, operand));
             }
@@ -163,12 +169,12 @@ public class ExpressionParser {
                     if (operator.getPrecedenceLevel() == level) {
                         // TODO: check index
                         i--;
-                        // TODO: check type
+                        // TODO: check condition
                         JavaExpression operandLeft = elements.remove(i).expression;
                         elements.remove(i);
                         JavaExpression operandRight = elements.get(i).expression;
                         setElement(elements, i,
-                                new BinaryExpression(operator, operandLeft, operandRight));
+                                new NumericExpression(operator, operandLeft, operandRight));
 
                     } else if (operator.getPrecedenceLevel() > level) {
                         throw new AssertionError();
@@ -198,7 +204,7 @@ public class ExpressionParser {
 
                 if (assignment instanceof AssignmentOperator.Compound) {
                     OperatorToken.Binary implicit = ((AssignmentOperator.Compound) assignment).implicitOperator;
-                    value = new BinaryExpression(implicit, leftExpression, value);
+                    value = new NumericExpression(implicit, leftExpression, value);
                 }
 
                 setElement(elements, i, new JavaAssignment(leftValue, value));

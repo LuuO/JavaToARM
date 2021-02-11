@@ -39,7 +39,7 @@ public class JavaLexer implements Iterator<Token> {
 
         for (char c : code.toCharArray()) {
             switch (state) {
-                // TODO: add string support
+                // TODO: add char, @, \n support
                 case WHITESPACE: /* last char is whitespace */
                     if (Character.isWhitespace(c)) {
                         continue;

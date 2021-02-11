@@ -1,26 +1,75 @@
 package javatoarm.java;
 
+import javatoarm.JTAException;
+import javatoarm.assembly.Compiler;
+import javatoarm.assembly.Subroutine;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class JavaClass {
     boolean isPublic; /* package-private or public*/
     String name;
     List<JavaVariableDeclare> fields;
-    List<JavaFunction> functions;
+    LinkedList<JavaFunction> functions;
+    private final Map<String, JavaFunction.Interface> functionInterfaces;
 
-    public JavaClass(boolean isPublic, String name, List<Member> members) {
+    public JavaClass(boolean isPublic, String name, List<Member> members)
+        throws JTAException {
+
         this.isPublic = isPublic;
         this.name = name;
         this.fields = new ArrayList<>();
-        this.functions = new ArrayList<>();
+        this.functions = new LinkedList<>();
+        this.functionInterfaces = new HashMap<>();
 
         for (Member m : members) {
             if (m instanceof JavaVariableDeclare) {
                 fields.add((JavaVariableDeclare) m);
             } else {
-                functions.add((JavaFunction) m);
+                JavaFunction function = (JavaFunction) m;
+                if (function.isPublic) {
+                    functions.addFirst(function);
+                } else {
+                    functions.addLast(function);
+                }
             }
+        }
+        for (JavaFunction function : functions) {
+            JavaFunction.Interface functionInterface = function.getInterface();
+            if (functionInterfaces.put(functionInterface.name, functionInterface) != null) {
+                throw new JTAException.FunctionAlreadyDeclared(functionInterface.name);
+            }
+        }
+    }
+
+    public JavaFunction.Interface getFunctionInterface(String name) throws JTAException {
+        JavaFunction.Interface result = functionInterfaces.get(name);
+        if (result == null) {
+            throw new JTAException.UnknownFunction(name);
+        }
+        return result;
+    }
+
+    public void compileTo(Compiler compiler) throws JTAException {
+        JavaScope scope = JavaScope.newClassScope(this);
+
+        compiler.addLabel("CLASS_" + name);
+        if (fields.size() != 0) {
+            throw new JTAException.Unsupported("class fields not supported yet");
+        }
+        for (JavaFunction f : functions) {
+            if (f.isPublic) {
+                compiler.addJumpLabel("FUNCTION_" + f.name());
+            }
+        }
+        for (JavaFunction f : functions) {
+            f.compileTo(compiler, scope);
         }
     }
 

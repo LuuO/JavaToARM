@@ -2,6 +2,7 @@ package javatoarm.parser;
 
 import javatoarm.JTAException;
 import javatoarm.java.*;
+import javatoarm.java.expression.JavaExpression;
 import javatoarm.token.BracketToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.SplitterToken;
@@ -33,10 +34,10 @@ public class FunctionParser {
         lexer.next(BracketToken.ROUND_L);
         if (!lexer.peek().equals(BracketToken.ROUND_R)) {
             for (; ; ) {
-                JavaType type = JavaParser.parseType(lexer, true);
+                JavaType condition = JavaParser.parseType(lexer, true);
                 String name = JavaParser.parseSimpleName(lexer);
                 arguments.add(new JavaVariableDeclare(
-                        Collections.emptySet(), type, name, null));
+                        Collections.emptySet(), condition, name, null));
 
                 Token next = lexer.next();
                 if (next.equals(BracketToken.ROUND_R)) {
