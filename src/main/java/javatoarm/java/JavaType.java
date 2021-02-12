@@ -28,8 +28,7 @@ public class JavaType {
         if (name.toSimpleName().equals("String")) {
             return STRING;
         }
-        throw new JTAException.Unsupported("user defined types are not supported");
-        // return new JavaType(name.toString(), null);
+        return new JavaType(name.toString(), null);
     }
 
     public static JavaType get(KeywordToken keywordToken) {

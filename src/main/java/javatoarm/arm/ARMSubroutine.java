@@ -14,7 +14,9 @@ import javatoarm.token.operator.OperatorToken;
 import javatoarm.token.operator.PlusMinus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ARMSubroutine implements Subroutine {
@@ -23,9 +25,13 @@ public class ARMSubroutine implements Subroutine {
         .map(i -> R[i]).collect(Collectors.toList());
     private final static List<Register> arguments = List.of(0, 1, 2, 3).stream()
         .map(i -> R[i]).collect(Collectors.toList());
-    private final StringBuilder text;
+
+    private final Map<String, Integer> constants;
+    private StringBuilder text;
+    private String finalized;
 
     public ARMSubroutine() {
+        constants = new HashMap<>();
         text = new StringBuilder();
     }
 
@@ -38,7 +44,16 @@ public class ARMSubroutine implements Subroutine {
         } else if (source instanceof Immediate) {
             Immediate imm = ((Immediate) source);
             TemporaryVariable temp = imm.getTemporary();
-            ARMInstruction.move(text, Condition.ALWAYS, temp.getRegister(), imm.toNumberRep());
+
+            if (imm.numberOfBitsLessThan(12)) {
+                ARMInstruction.move(text, Condition.ALWAYS, temp.getRegister(), imm.toNumberRep());
+            } else {
+                Integer immValue = imm.toNumberRep();
+                String label = "constant_" + immValue;
+                constants.put(label, immValue);
+                ARMInstruction.load(text, temp.getRegister(), label);
+                ARMInstruction.load(text, temp.getRegister(), temp.getRegister());
+            }
             return temp.getRegister();
 
         } else if (source instanceof MemoryOffset) {
@@ -264,6 +279,15 @@ public class ARMSubroutine implements Subroutine {
 
     @Override
     public String toString() {
-        return text.toString();
+        if (text != null) {
+            if (!constants.isEmpty()) {
+                text.append(".data\n");
+                constants.forEach((label, value) -> ARMInstruction.labelValuePair(text, label, value));
+                text.append(".text\n");
+            }
+            finalized = text.toString();
+            text = null;
+        }
+        return finalized;
     }
 }

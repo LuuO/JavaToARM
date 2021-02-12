@@ -100,6 +100,14 @@ public class ARMInstruction {
         text.append("\t\tLDR\t\t%s, =%s\n".formatted(Rd, label));
     }
 
+    public static void load(StringBuilder text, Register des, Register src) {
+        text.append("\t\tLDR\t\t%s, [%s]\n".formatted(des, src));
+    }
+
+    public static void labelValuePair(StringBuilder text, String label, Integer value) {
+        text.append("%s:\t.word %s\n".formatted(label, value));
+    }
+
     private static String toCode(Condition condition) {
         return switch (condition) {
             case EQUAL -> "EQ";
