@@ -9,11 +9,9 @@ import javatoarm.assembly.Subroutine;
 
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.IntStream;
 
 public class ARMCompiler implements Compiler {
-    private final static Register[] R = IntStream.range(0, 16).boxed()
-        .map(i -> new Register(i, InstructionSet.ARMv7)).toArray(Register[]::new);
+    private final static Register[] R = ARMLibrary.Registers;
 
     private final StringBuilder text;
     List<String> globalLabels;
@@ -26,6 +24,11 @@ public class ARMCompiler implements Compiler {
     @Override
     public String toString() {
         return text.toString();
+    }
+
+    @Override
+    public InstructionSet instructionSet() {
+        return InstructionSet.ARMv7;
     }
 
     @Override

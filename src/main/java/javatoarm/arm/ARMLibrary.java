@@ -1,8 +1,14 @@
 package javatoarm.arm;
 
+import javatoarm.assembly.InstructionSet;
+import javatoarm.assembly.Register;
+
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class ARMLibrary {
+    public final static Register[] Registers = IntStream.range(0, 16).boxed()
+        .map(i -> new Register(i, InstructionSet.ARMv7)).toArray(Register[]::new);
 
     public static String start(String entryClass, int mainOffset, int stackPosition,
                                List<String> initializations) {
@@ -52,6 +58,8 @@ public class ARMLibrary {
 
     public static String heapStartLabel() {
         return """
+                        
+            .data
             heap_start:		.word 0xEEEEEEEE
             """;
     }

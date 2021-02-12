@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ARMSubroutine implements Subroutine {
-    private final static Register R0 = new Register(0, InstructionSet.ARMv7);
+    private final static Register[] R = ARMLibrary.Registers;
     private final static List<Register> callerSave = List.of(0, 1, 2, 3, 14).stream()
         .map(index -> new Register(index, InstructionSet.ARMv7)).collect(Collectors.toList());
     private final static List<Register> arguments = List.of(0, 1, 2, 3).stream()
@@ -90,7 +90,7 @@ public class ARMSubroutine implements Subroutine {
     @Override
     public void addReturn(Variable returnValue) throws JTAException {
         Register value = use(returnValue);
-        ARMInstruction.move(text, Condition.ALWAYS, R0, value);
+        ARMInstruction.move(text, Condition.ALWAYS, R[0], value);
         returnValue.deleteIfIsTemp();
     }
 
@@ -205,7 +205,7 @@ public class ARMSubroutine implements Subroutine {
 
         ARMInstruction.branch(text, Condition.ALWAYS, OP.BL, targetLabel);
         if (result != null) {
-            ARMInstruction.move(text, Condition.ALWAYS, result, R0);
+            ARMInstruction.move(text, Condition.ALWAYS, result, R[0]);
         }
         ARMInstruction.pop(text, saved);
     }
@@ -245,9 +245,9 @@ public class ARMSubroutine implements Subroutine {
         List<Register> saved = new ArrayList<>(callerSave);
         saved.remove(result);
         ARMInstruction.push(text, saved);
-        ARMInstruction.move(text, Condition.ALWAYS, R0, use(size));
+        ARMInstruction.move(text, Condition.ALWAYS, R[0], use(size));
         ARMInstruction.branch(text, Condition.ALWAYS, OP.BL, "_malloc");
-        ARMInstruction.move(text, Condition.ALWAYS, result, R0);
+        ARMInstruction.move(text, Condition.ALWAYS, result, R[0]);
         ARMInstruction.pop(text, saved);
     }
 

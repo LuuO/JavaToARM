@@ -6,6 +6,7 @@ import javatoarm.assembly.InstructionSet;
 import javatoarm.java.JavaFile;
 import javatoarm.parser.JavaParser;
 import javatoarm.token.JavaLexer;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -20,14 +21,10 @@ public class Tests {
     public void test() throws IOException, JTAException {
         assertTrue(true);
         String code = Files.readString(Path.of("resources/test1.java"));
-        JavaLexer lexer = new JavaLexer(code);
-        JavaParser parser = new JavaParser(lexer);
-        JavaFile file = parser.toJavaTree();
-        Compiler compiler = new ARMCompiler();
-        file.compileTo(compiler, InstructionSet.ARMv7);
-        System.out.println(compiler.toCompleteProgram("FIBB", 1024*1024));
+        System.out.println(JavaToARM.compileToARMv7(code, "Fibb", null));
     }
 
+    @Ignore
     @Test
     public void test_string() throws IOException, JTAException {
         assertTrue(true);
