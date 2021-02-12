@@ -3,12 +3,18 @@ package javatoarm.arm;
 import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
 import javatoarm.assembly.Condition;
+import javatoarm.assembly.InstructionSet;
+import javatoarm.assembly.Register;
 import javatoarm.assembly.Subroutine;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.IntStream;
 
 public class ARMCompiler implements Compiler {
+    private final static Register[] R = IntStream.range(0, 16).boxed()
+        .map(i -> new Register(i, InstructionSet.ARMv7)).toArray(Register[]::new);
+
     private final StringBuilder text;
     List<String> globalLabels;
     List<String> jumpTable;
@@ -56,40 +62,17 @@ public class ARMCompiler implements Compiler {
     }
 
     @Override
-    public String toCompleteProgram(String starterClass, int stackPosition)
+    public String toCompleteProgram(String entryClass, int stackPosition)
         throws JTAException {
-        StringBuilder program = new StringBuilder();
+        String classLabel = "class_" + entryClass;
         String javaFile = toString();
-        int mainOffset = findOffsetTo(javaFile, "class_" + starterClass, "function_main");
+        int mainOffset = findOffsetTo(javaFile, classLabel, "function_main");
 
-        program.append(".global\t_start\n.global\t_malloc\n");
-        program.append("_start:\n");
-        program.append("\t\tLDR\tR0, =stack_start\n");
-        program.append("\t\tLDR\tSP, [R0]\n");
-        program.append("\t\tLDR\tR0, =heap_start\n");
-        program.append("\t\tLDR\tR1, =heap_front\n");
-        program.append("\t\tSTR\tR0, [R1]\n");
-        program.append("\t\tLDR\tR0, =%s\n".formatted("class_" + starterClass));
-        program.append("\t\tADD\tR0, R0, #%d\n".formatted(mainOffset));
-        program.append("\t\tBLX\tR0\n");
-        program.append("IDLE:\n");
-        program.append("\t\tB\tIDLE\n\n");
-
-        program.append("_malloc:\n");
-        program.append("\t\tLDR\tR1, =heap_front\n");
-        program.append("\t\tLDR\tR2, [R1]\n");
-        program.append("\t\tADD\tR3, R2, R0\n");
-        program.append("\t\tSTR\tR3, [R1]\n");
-        program.append("\t\tMOV\tR0, R2\n");
-        program.append("\t\tMOV\tPC, LR\n\n");
-        program.append("stack_start:\t.word %d\n".formatted(stackPosition));
-        program.append("heap_front:\t\t.word 0xDEADBEFF\n\n\n\n");
-
-        program.append(javaFile);
-
-        program.append("\n\nheap_start:\n");
-        program.append("\n");
-        return program.toString();
+        return ARMLibrary.start(classLabel, mainOffset, stackPosition,
+            List.of(ARMLibrary.mallocInit())) +
+            ARMLibrary.malloc() +
+            javaFile +
+            ARMLibrary.heapStartLabel();
     }
 
     private int findOffsetTo(String javaFile, String className, String classFunction)
@@ -114,6 +97,6 @@ public class ARMCompiler implements Compiler {
                     "Cannot find %s in %s".formatted(classFunction, className));
             }
         }
-        return offset;
+        return offset * 4;
     }
 }

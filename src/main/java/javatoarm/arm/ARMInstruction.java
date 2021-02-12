@@ -91,6 +91,10 @@ public class ARMInstruction {
         text.append("\t\tLDR\t\t%s, [%s, %s, LSL#%d]\n".formatted(Rd, base, index, leftShift));
     }
 
+    public static void load(StringBuilder text, Register Rd, String label) {
+        text.append("\t\tLDR\t\t%s, =%s\n".formatted(Rd, label));
+    }
+
     private static String toCode(Condition condition) {
         return switch (condition) {
             case EQUAL -> "EQ";
