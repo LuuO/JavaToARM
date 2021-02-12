@@ -7,6 +7,7 @@ import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.OperatorToken;
 
+//TODO bool
 public class JavaUnaryExpression implements JavaExpression {
     OperatorToken operator;
     JavaExpression operand;
@@ -25,4 +26,5 @@ public class JavaUnaryExpression implements JavaExpression {
         operand.deleteIfIsTemp();
         return result;
     }
+
 }

@@ -78,7 +78,7 @@ public class StatementParser {
     }
 
     /* Determine if this is an object creation statement. */
-    private static boolean isObjectCreation(JavaLexer lexer) {
+    private static boolean isObjectCreation(JavaLexer lexer) throws JTAException {
 
         if (lexer.peek() instanceof KeywordToken) {
             KeywordToken keywordToken = (KeywordToken) lexer.peek();

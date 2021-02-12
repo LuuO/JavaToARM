@@ -1,37 +1,49 @@
 package javatoarm.java.expression;
 
 import javatoarm.JTAException;
+import javatoarm.assembly.Condition;
 import javatoarm.assembly.Subroutine;
 import javatoarm.java.JavaScope;
 import javatoarm.java.JavaType;
 import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
-import javatoarm.token.operator.Comparison;
 import javatoarm.token.operator.Logical;
-import javatoarm.token.operator.OperatorToken;
 
-public class NumericExpression implements JavaExpression {
-    OperatorToken.Binary operator;
+public class LogicalExpression implements BooleanExpression {
+    Logical operator;
     JavaExpression operandLeft, operandRight;
 
-    public NumericExpression(OperatorToken.Binary operator, JavaExpression operandLeft,
+    public LogicalExpression(Logical operator, JavaExpression operandLeft,
                              JavaExpression operandRight) {
         this.operator = operator;
         this.operandLeft = operandLeft;
         this.operandRight = operandRight;
-        if (operator instanceof Comparison || operator instanceof Logical) {
-            throw new IllegalArgumentException("Use BooleanExpression");
-        }
+    }
+
+    @Override
+    public Condition getCondition() {
+        return Condition.UNEQUAL;
+    }
+
+    @Override
+    public void compileToConditionCode(Subroutine subroutine, JavaScope parent)
+        throws JTAException {
+
+        compile(subroutine, parent, false);
     }
 
     @Override
     public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
-        Variable left = operandLeft.compileExpression(subroutine, parent);
-        Variable right = operandRight.compileExpression(subroutine, parent);
-        JavaType resultType = left.getType();
-        TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, resultType);
-        subroutine.addALU(operator, left, right, result);
-        return result;
+        return compile(subroutine, parent, true);
     }
 
+    private Variable compile(Subroutine subroutine, JavaScope parent, boolean saveResult)
+        throws JTAException {
+
+        Variable left = operandLeft.compileExpression(subroutine, parent);
+        Variable right = operandRight.compileExpression(subroutine, parent);
+        TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, JavaType.BOOL);
+        subroutine.addLogic(saveResult, operator.isAnd, left, right, result);
+        return result;
+    }
 }

@@ -27,7 +27,7 @@ public class JavaParser {
         this.lexer = lexer;
     }
 
-    public static void eatSemiColons(JavaLexer lexer) {
+    public static void eatSemiColons(JavaLexer lexer) throws JTAException {
         Token semicolon = new SplitterToken(';');
         while (lexer.hasNext() && lexer.peek().equals(semicolon)) {
             lexer.next();

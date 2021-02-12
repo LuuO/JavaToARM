@@ -19,7 +19,7 @@ public interface ValueToken extends Token {
                 if (s.startsWith("\"")) {
                     return new StringToken(s);
                 } else {
-                    return Integer.get(s);
+                    return Int.get(s);
                 }
         }
     }
@@ -80,16 +80,20 @@ public interface ValueToken extends Token {
         }
     }
 
-    class Integer implements ValueToken {
+    class Int implements ValueToken {
         public final int value;
 
-        private Integer(int value) {
+        private Int(int value) {
             this.value = value;
         }
 
-        public static Integer get(String s) {
+        public static Int get(String s) {
             try {
-                return new Integer(java.lang.Integer.parseInt(s));
+                if (s.startsWith("0x")) {
+                    return new Int(Integer.parseInt(s.substring(2), 16));
+                } else {
+                    return new Int(Integer.parseInt(s));
+                }
             } catch (NumberFormatException nfe) {
                 return null;
             }

@@ -14,8 +14,10 @@ public class Fibb {
     }
 
     public static void main(String[] args) {
-       int result1 = fibonacci(30); // 0xcb228
-       int result2 = fibonacci2(30); // 0xcb228
+        int R1 = false;
+        if (fibonacci(30) == 0xcb228 && fibonacci2(30) == 0xcb228 && 1 != 2) {
+            R1 = true;
+        }
     }
 
     public static int fibonacci2(int n) {

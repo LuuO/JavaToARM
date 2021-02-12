@@ -1,11 +1,13 @@
 package javatoarm.token;
 
+import javatoarm.JTAException;
+
 public class NameToken implements Token, CharSequence {
     private final String string;
 
-    public NameToken(String s) {
+    public NameToken(String s) throws JTAException {
         if (!isValidName(s)) {
-            throw new IllegalArgumentException();
+            throw new JTAException.InvalidName(s + " is an invalid name.");
         }
         string = s;
     }

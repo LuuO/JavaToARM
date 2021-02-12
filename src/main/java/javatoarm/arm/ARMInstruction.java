@@ -20,6 +20,11 @@ public class ARMInstruction {
         text.append("\t\t%s\t\t%s, %s, %s\n".formatted(op.name(), Rd, Rn, Rm));
     }
 
+    public static void instruction(StringBuilder text, OP op, boolean cc, Register Rd, Register Rn,
+                                   Register Rm) {
+        text.append("\t\t%s%s\t\t%s, %s, %s\n".formatted(op.name(), cc ? "S" : "", Rd, Rn, Rm));
+    }
+
     public static void instruction(StringBuilder text, OP op, Register Rd, Register Rn, int imm) {
         text.append("\t\t%s\t\t%s, %s, #%d\n".formatted(op.name(), Rd, Rn, imm));
     }

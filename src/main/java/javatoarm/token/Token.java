@@ -1,10 +1,11 @@
 package javatoarm.token;
 
+import javatoarm.JTAException;
 import javatoarm.token.operator.OperatorToken;
 
 public interface Token {
 
-    static Token getObject(String word) {
+    static Token getObject(String word) throws JTAException {
         Token token;
 
         if (word.length() == 1) {

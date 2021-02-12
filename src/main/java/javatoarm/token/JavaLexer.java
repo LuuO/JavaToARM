@@ -3,20 +3,19 @@ package javatoarm.token;
 import javatoarm.JTAException;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Stack;
 
-public class JavaLexer implements Iterator<Token> {
+public class JavaLexer {
     private static final Set<Character> symbols =
         Set.of(';', '{', '}', '(', ')', '[', ']', '.', ',',
             '=', '+', '-', '*', '/', '&', '|', '%', '^', '!',
             '\'', '"', '?', ':', '<', '>', '~');
     private static final Set<String> longOperators =
         Set.of("++", "--", "==", "!=", "::", "+=", "-=", "*=", "/=", "%=", "<=", ">=", "//", "/*",
-            "*/"); // TODO: support longer operators
+            "*/", "&&", "||"); // TODO: support longer operators
 
     private final List<String> words;
     private final Stack<Integer> checkPoints;
@@ -155,7 +154,7 @@ public class JavaLexer implements Iterator<Token> {
         builder.setLength(0);
     }
 
-    private Token getNextToken() {
+    private Token getNextToken() throws JTAException {
         if (!hasNext()) {
             throw new NoSuchElementException();
         }
@@ -163,19 +162,17 @@ public class JavaLexer implements Iterator<Token> {
         return Token.getObject(word);
     }
 
-    @Override
     public boolean hasNext() {
         return nextIndex < words.size();
     }
 
-    @Override
-    public Token next() {
+    public Token next() throws JTAException {
         Token token = getNextToken();
         nextIndex += 1;
         return token;
     }
 
-    public Token peek() {
+    public Token peek() throws JTAException {
         return getNextToken();
     }
 
@@ -198,7 +195,7 @@ public class JavaLexer implements Iterator<Token> {
         nextIndex = checkPoints.pop();
     }
 
-    public void next(Token expected) throws JTAException.UnexpectedToken {
+    public void next(Token expected) throws JTAException {
         Token next = getNextToken();
         nextIndex += 1;
         if (!expected.equals(next)) {
@@ -206,7 +203,7 @@ public class JavaLexer implements Iterator<Token> {
         }
     }
 
-    public Token next(Class<?> expected) throws JTAException.UnexpectedToken {
+    public Token next(Class<?> expected) throws JTAException {
         Token next = getNextToken();
         nextIndex += 1;
         if (next.getClass() != expected) {
@@ -216,7 +213,7 @@ public class JavaLexer implements Iterator<Token> {
         }
     }
 
-    public boolean nextIf(Token target) {
+    public boolean nextIf(Token target) throws JTAException {
         Token next = getNextToken();
         if (next.equals(target)) {
             nextIndex += 1;
@@ -226,7 +223,7 @@ public class JavaLexer implements Iterator<Token> {
         }
     }
 
-    public boolean nextIf(KeywordToken.Keyword keyword) {
+    public boolean nextIf(KeywordToken.Keyword keyword) throws JTAException {
         Token next = getNextToken();
         if (next instanceof KeywordToken && ((KeywordToken) next).keyword == keyword) {
             nextIndex += 1;

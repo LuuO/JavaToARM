@@ -1,5 +1,5 @@
 package javatoarm.arm;
 
 public enum OP {
-    B, BL, CMP, MOV, MVN, ADR, LDR, ADD, ADC, SUB, LSL, LSR, MUL
+    B, BL, CMP, MOV, MVN, ADR, LDR, ADD, ADC, AND, ORR, SUB, LSL, LSR, MUL
 }

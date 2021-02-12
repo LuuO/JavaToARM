@@ -12,8 +12,7 @@ public class MemoryOffset implements Variable {
     private TemporaryVariable temp = null;
 
     public MemoryOffset(Variable array, Variable index, int shift,
-                        RegisterAssigner registerAssigner)
-        throws JTAException {
+                        RegisterAssigner registerAssigner) {
         this.array = array;
         this.index = index;
         this.registerAssigner = registerAssigner;

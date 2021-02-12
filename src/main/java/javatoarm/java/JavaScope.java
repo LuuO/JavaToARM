@@ -71,6 +71,7 @@ public class JavaScope {
         if (var == null && parent != null) {
             return parent.getVariable(name);
         }
+        // TODO: error handling
         return var;
     }
 

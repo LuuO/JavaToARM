@@ -9,7 +9,7 @@ import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.Comparison;
 
-public class ComparisonExpression implements JavaExpression {
+public class ComparisonExpression implements BooleanExpression {
     Comparison operator;
     JavaExpression operandLeft, operandRight;
 
@@ -20,10 +20,12 @@ public class ComparisonExpression implements JavaExpression {
         this.operandRight = operandRight;
     }
 
+    @Override
     public Condition getCondition() {
         return operator.condition;
     }
 
+    @Override
     public void compileToConditionCode(Subroutine parent, JavaScope scope) throws JTAException {
         Variable left = operandLeft.compileExpression(parent, scope);
         Variable right = operandRight.compileExpression(parent, scope);

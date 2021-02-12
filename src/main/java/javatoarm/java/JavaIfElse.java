@@ -3,7 +3,7 @@ package javatoarm.java;
 import javatoarm.JTAException;
 import javatoarm.assembly.Condition;
 import javatoarm.assembly.Subroutine;
-import javatoarm.java.expression.ComparisonExpression;
+import javatoarm.java.expression.BooleanExpression;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.staticanalysis.Variable;
 
@@ -22,8 +22,8 @@ public class JavaIfElse implements JavaCode {
     @Override
     public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
         Condition opposite;
-        if (condition instanceof ComparisonExpression) {
-            ComparisonExpression comparison = (ComparisonExpression) condition;
+        if (condition instanceof BooleanExpression) {
+            BooleanExpression comparison = (BooleanExpression) condition;
             comparison.compileToConditionCode(subroutine, parent);
             opposite = comparison.getCondition().opposite();
         } else {

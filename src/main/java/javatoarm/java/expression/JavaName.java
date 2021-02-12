@@ -9,6 +9,7 @@ import javatoarm.staticanalysis.LocalVariable;
 
 import java.util.List;
 
+//TODO bool
 public class JavaName implements JavaRightValue, JavaLeftValue, JavaExpression {
     public final List<String> path;
 
@@ -44,4 +45,5 @@ public class JavaName implements JavaRightValue, JavaLeftValue, JavaExpression {
 
         return parent.getVariable(toSimpleName());
     }
+
 }

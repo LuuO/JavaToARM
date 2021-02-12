@@ -14,7 +14,7 @@ Step 2. Build
 gradle build
 ```
 
-Step 3. Compile
+Step 3. Compile your .java file
 ```
 java -cp build/classes/java/main/ javatoarm.JavaToARM "path/to/the_file_to_compile.java"
 ```
