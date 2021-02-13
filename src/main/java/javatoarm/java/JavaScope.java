@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * Represent an object that managers the resources accessible to the member of some scopes.
+ * Accessible resources include variables, functions, registers, class fields and loops to break.
  */
 public class JavaScope {
     public final JavaScope parent;
@@ -42,15 +43,31 @@ public class JavaScope {
         this.registerAssigner = parent.registerAssigner;
     }
 
+    /**
+     * Create a child scope of some other scope
+     * @param parent the parent scope
+     * @param owner
+     * @return the created scope
+     */
     public static JavaScope newChildScope(JavaScope parent, JavaCode owner) {
         return new JavaScope(parent, owner);
     }
+
 
     public static JavaScope newClassScope(JavaClass javaClass, InstructionSet is) {
         return new JavaScope(null, null,
             javaClass, null, new RegisterAssigner(is));
     }
 
+    /**
+     * Create a scope of some function
+     *
+     * @param classScope the scope of the class that contains the function
+     * @param function   the function
+     * @param arguments  arguments of the function
+     * @return the created scope
+     * @throws JTAException if error occurs
+     */
     public static JavaScope newFunctionScope(JavaScope classScope, JavaFunction function,
                                              List<JavaVariableDeclare> arguments)
         throws JTAException {
@@ -62,16 +79,29 @@ public class JavaScope {
         return functionScope;
     }
 
+    /**
+     * Notify the scope that it has gone out of scope.
+     * This method should always be invoked when it goes out of scope.
+     */
     public final void outOfScope() {
         variables.forEach((name, var) -> var.delete());
     }
 
-    public final LocalVariable getVariable(String name) {
+    /**
+     * Search a variable with the given name
+     * @param name name of the variable
+     * @return the variable found
+     * @throws JTAException.InvalidName if the variable is not found.
+     */
+    public final LocalVariable getVariable(String name) throws JTAException.InvalidName {
         LocalVariable var = variables.get(name);
-        if (var == null && parent != null) {
-            return parent.getVariable(name);
+        if (var == null) {
+            if (parent != null) {
+                return parent.getVariable(name);
+            } else {
+                throw new JTAException.InvalidName("Unknown variable name");
+            }
         }
-        // TODO: error handling
         return var;
     }
 

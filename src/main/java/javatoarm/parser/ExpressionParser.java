@@ -1,7 +1,6 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.JavaIncrementDecrement;
 import javatoarm.java.JavaLeftValue;
 import javatoarm.java.expression.JavaArrayElement;
 import javatoarm.java.expression.JavaExpression;
@@ -11,11 +10,12 @@ import javatoarm.java.expression.JavaUnaryExpression;
 import javatoarm.java.expression.NumericExpression;
 import javatoarm.java.statement.JavaAssignment;
 import javatoarm.java.statement.JavaFunctionCall;
+import javatoarm.java.statement.JavaIncrementDecrement;
 import javatoarm.token.BracketToken;
+import javatoarm.token.ImmediateToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.NameToken;
 import javatoarm.token.Token;
-import javatoarm.token.ValueToken;
 import javatoarm.token.operator.AssignmentOperator;
 import javatoarm.token.operator.IncrementDecrement;
 import javatoarm.token.operator.OperatorToken;
@@ -58,8 +58,8 @@ public class ExpressionParser {
 
             } else if (token instanceof OperatorToken) {
                 addElement(elements, (OperatorToken) token);
-            } else if (token instanceof ValueToken) {
-                JavaImmediate constant = new JavaImmediate(((ValueToken) token));
+            } else if (token instanceof ImmediateToken) {
+                JavaImmediate constant = new JavaImmediate(((ImmediateToken) token));
                 addElement(elements, constant);
             } else if (token instanceof NameToken) {
                 lexer.rewind();

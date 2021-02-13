@@ -11,8 +11,7 @@ import javatoarm.token.operator.OperatorToken;
 
 public interface JavaExpression extends JavaRightValue {
     static JavaExpression newBinary(OperatorToken.Binary operator,
-                                    JavaExpression operandLeft,
-                                    JavaExpression operandRight) {
+                                    JavaExpression operandLeft, JavaExpression operandRight) {
 
         if (operator instanceof Comparison) {
             return new ComparisonExpression((Comparison) operator, operandLeft, operandRight);

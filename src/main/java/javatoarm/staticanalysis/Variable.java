@@ -1,37 +1,29 @@
 package javatoarm.staticanalysis;
 
-import javatoarm.JTAException;
-import javatoarm.assembly.RegisterAssigner;
 import javatoarm.java.JavaType;
 
+/**
+ * Represents everything that can be used or store to in Java. It could be a variable, an immediate
+ * value, a temporary variable within an expression, a function argument, a value in memory,
+ * or other relevant things.
+ */
 public interface Variable {
-    /**
-     * Get an instance of a temporary variable. Always invoke {#deleteIfIsTemp} after it is used.
-     *
-     * @param registerAssigner the Register Assigner
-     * @param type             the type of variable
-     */
 
     /**
-     * Get an instance of a temporary variable. Always invoke {#deleteIfIsTemp} after it is used.
-     *
-     * @param registerAssigner the Register Assigner
-     * @param type             the type of variable
+     * Release all registers that the variable holds. This variable should no longer be used
+     * after this method is invoked.
      */
-    static LocalVariable getGlobal(RegisterAssigner registerAssigner, JavaType type)
-        throws JTAException {
-        throw new JTAException.Unsupported("global");
-        //return new LocalVariable(null, registerAssigner, type, "temp");
-    }
-
-    default void delete() {
-    }
+    void delete();
 
     /**
      * Delete this variable if it is temporary. Always call this method after the variable is used.
      */
-    default void deleteIfIsTemp() {
-    }
+    void deleteIfIsTemp();
 
+    /**
+     * Get the type of the variable
+     *
+     * @return the type of the variable
+     */
     JavaType getType();
 }

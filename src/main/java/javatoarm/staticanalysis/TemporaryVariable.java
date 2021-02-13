@@ -35,6 +35,7 @@ public class TemporaryVariable implements Variable {
         return type;
     }
 
+    @Override
     public void delete() {
         if (!isDeleted) {
             registerAssigner.release(register);

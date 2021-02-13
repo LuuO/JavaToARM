@@ -5,6 +5,9 @@ import javatoarm.java.JavaType;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.token.Token;
 
+/**
+ * Java to ARM checked exceptions
+ */
 public abstract class JTAException extends Exception {
     private JTAException(String message) {
         super(message);

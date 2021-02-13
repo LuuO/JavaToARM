@@ -7,13 +7,13 @@ import javatoarm.java.JavaType;
 import javatoarm.java.expression.JavaImmediate;
 import javatoarm.java.expression.JavaName;
 import javatoarm.token.BracketToken;
+import javatoarm.token.ImmediateToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.KeywordToken;
 import javatoarm.token.MemberAccessToken;
 import javatoarm.token.NameToken;
 import javatoarm.token.SplitterToken;
 import javatoarm.token.Token;
-import javatoarm.token.ValueToken;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,18 +40,18 @@ public class JavaParser {
         SplitterToken comma = new SplitterToken(',');
 
         if (type.elementType == null) {
-            Token next = lexer.next(ValueToken.class);
-            return new JavaImmediate(type, parseValue(type, (ValueToken) next));
+            Token next = lexer.next(ImmediateToken.class);
+            return new JavaImmediate(type, parseValue(type, (ImmediateToken) next));
         } else {
             lexer.next(leftCurly);
             JavaType elementType = type.elementType;
 
             List<Object> objects = new ArrayList<>();
             if (!lexer.peek().equals(rightCurly)) {
-                for (Token next = lexer.next(ValueToken.class); ;
-                     next = lexer.next(ValueToken.class)) {
+                for (Token next = lexer.next(ImmediateToken.class); ;
+                     next = lexer.next(ImmediateToken.class)) {
 
-                    objects.add(parseValue(elementType, (ValueToken) next));
+                    objects.add(parseValue(elementType, (ImmediateToken) next));
 
                     next = lexer.next();
                     if (next.equals(rightCurly)) {
@@ -65,11 +65,12 @@ public class JavaParser {
         }
     }
 
-    public static Object parseValue(JavaType type, ValueToken valueToken) throws JTAException {
-        if (!type.equals(valueToken.getType())) {
-            throw new JTAException.TypeMismatch(type, valueToken.getType());
+    public static Object parseValue(JavaType type, ImmediateToken immediateToken)
+        throws JTAException {
+        if (!type.equals(immediateToken.getType())) {
+            throw new JTAException.TypeMismatch(type, immediateToken.getType());
         }
-        return valueToken.getValue();
+        return immediateToken.getValue();
     }
 
     public static Set<JavaProperty> parseProperties(JavaLexer lexer,

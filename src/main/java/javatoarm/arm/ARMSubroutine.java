@@ -282,7 +282,8 @@ public class ARMSubroutine implements Subroutine {
         if (text != null) {
             if (!constants.isEmpty()) {
                 text.append(".data\n");
-                constants.forEach((label, value) -> ARMInstruction.labelValuePair(text, label, value));
+                constants
+                    .forEach((label, value) -> ARMInstruction.labelValuePair(text, label, value));
                 text.append(".text\n");
             }
             finalized = text.toString();

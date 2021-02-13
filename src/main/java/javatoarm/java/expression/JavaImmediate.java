@@ -7,7 +7,7 @@ import javatoarm.java.JavaScope;
 import javatoarm.java.JavaType;
 import javatoarm.staticanalysis.Immediate;
 import javatoarm.staticanalysis.Variable;
-import javatoarm.token.ValueToken;
+import javatoarm.token.ImmediateToken;
 
 //TODO bool
 public class JavaImmediate implements JavaRightValue, JavaExpression {
@@ -20,7 +20,7 @@ public class JavaImmediate implements JavaRightValue, JavaExpression {
         this.value = value;
     }
 
-    public JavaImmediate(ValueToken token) {
+    public JavaImmediate(ImmediateToken token) {
         this(token.getType(), token.getValue());
     }
 

@@ -41,6 +41,7 @@ public class ClassParser {
     /**
      * Parse the header of the class,
      *
+     * @param lexer the JavaLexer
      * @return true if the class is public, false if the class is package-private.
      */
     private static boolean parseAccess(JavaLexer lexer) throws JTAException {
@@ -59,6 +60,13 @@ public class ClassParser {
         }
     }
 
+    /**
+     * Parse a member of the class
+     *
+     * @param lexer the JavaLexer
+     * @return
+     * @throws JTAException
+     */
     private static JavaClass.Member getMember(JavaLexer lexer) throws JTAException {
         Token equal = new AssignmentOperator.Simple();
 

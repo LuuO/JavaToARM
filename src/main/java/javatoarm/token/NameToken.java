@@ -5,7 +5,7 @@ import javatoarm.JTAException;
 public class NameToken implements Token, CharSequence {
     private final String string;
 
-    public NameToken(String s) throws JTAException {
+    public NameToken(String s) throws JTAException.InvalidName {
         if (!isValidName(s)) {
             throw new JTAException.InvalidName(s + " is an invalid name.");
         }

@@ -1,10 +1,10 @@
-package javatoarm.java;
+package javatoarm.java.statement;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
+import javatoarm.java.JavaScope;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.expression.JavaName;
-import javatoarm.java.statement.JavaStatement;
 import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 

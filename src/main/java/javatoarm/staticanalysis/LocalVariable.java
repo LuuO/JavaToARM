@@ -57,6 +57,11 @@ public class LocalVariable implements Variable {
     }
 
     @Override
+    public void deleteIfIsTemp() {
+
+    }
+
+    @Override
     public JavaType getType() {
         return condition;
     }

@@ -3,11 +3,18 @@ package javatoarm.token;
 import javatoarm.java.JavaType;
 
 /**
- * Support only null, integers and booleans for now.
+ * Tokens that represent an immediate value.
  */
-public interface ValueToken extends Token {
+public interface ImmediateToken extends Token {
 
-    static ValueToken get(String s) {
+    /**
+     * Get the corresponding immediate token
+     *
+     * @param s the word to analyse
+     * @return if the word is a valid immediate value in Java, returns the corresponding token.
+     * Otherwise returns null.
+     */
+    static ImmediateToken get(String s) {
         switch (s) {
             case "null":
                 return new Null();
@@ -24,17 +31,31 @@ public interface ValueToken extends Token {
         }
     }
 
+    /**
+     * Get the Java data type of the immediate value
+     *
+     * @return the Java data type
+     */
     JavaType getType();
 
     Object getValue();
 
-    class StringToken implements ValueToken {
+    /**
+     * Represent an immediate string in Java
+     */
+    class StringToken implements ImmediateToken {
         public final String value;
 
         private StringToken(String value) {
             this.value = value;
         }
 
+        /**
+         * Try parsing the provided word as a String
+         *
+         * @param s the word
+         * @return if success, returns the StringToken. Otherwise, returns null.
+         */
         public static StringToken get(String s) {
             return new StringToken(s.substring(1, s.length() - 1));
         }
@@ -50,7 +71,10 @@ public interface ValueToken extends Token {
         }
     }
 
-    class Null implements ValueToken {
+    /**
+     * Represent a null in Java
+     */
+    class Null implements ImmediateToken {
         @Override
         public JavaType getType() {
             return JavaType.NULL;
@@ -62,7 +86,10 @@ public interface ValueToken extends Token {
         }
     }
 
-    class Boolean implements ValueToken {
+    /**
+     * Represent a boolean value in Java
+     */
+    class Boolean implements ImmediateToken {
         boolean value;
 
         private Boolean(boolean value) {
@@ -80,13 +107,22 @@ public interface ValueToken extends Token {
         }
     }
 
-    class Int implements ValueToken {
+    /**
+     * Represent an integer in Java
+     */
+    class Int implements ImmediateToken {
         public final int value;
 
         private Int(int value) {
             this.value = value;
         }
 
+        /**
+         * Try parsing the provided word as an integer
+         *
+         * @param s the word
+         * @return if success, returns the Int token. Otherwise, returns null.
+         */
         public static Int get(String s) {
             try {
                 if (s.startsWith("0x")) {
@@ -110,7 +146,10 @@ public interface ValueToken extends Token {
         }
     }
 
-    class Decimal implements ValueToken {
+    /**
+     * Represent a decimal value in Java
+     */
+    class Decimal implements ImmediateToken {
         public final double value;
 
         private Decimal(double value) {

@@ -5,7 +5,14 @@ import javatoarm.token.operator.OperatorToken;
 
 public interface Token {
 
-    static Token getObject(String word) throws JTAException {
+    /**
+     * Given a word, returns the corresponding token.
+     *
+     * @param word the word
+     * @return the corresponding token
+     * @throws JTAException.InvalidName if the meaning of the word is unknown
+     */
+    static Token getObject(String word) throws JTAException.InvalidName {
         Token token;
 
         if (word.length() == 1) {
@@ -21,7 +28,7 @@ public interface Token {
             }
         }
 
-        if ((token = ValueToken.get(word)) != null) {
+        if ((token = ImmediateToken.get(word)) != null) {
             return token;
         }
         if ((token = OperatorToken.get(word)) != null) {
