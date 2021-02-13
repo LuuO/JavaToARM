@@ -17,6 +17,9 @@ public abstract class JTAException extends Exception {
         public UnknownCharacter(char c) {
             super("Unknown character: '" + c + "'");
         }
+        public UnknownCharacter(String s) {
+            super("Unknown character: '" + s + "'");
+        }
     }
 
     public static class UnexpectedToken extends JTAException {

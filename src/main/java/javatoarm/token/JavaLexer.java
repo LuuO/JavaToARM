@@ -12,10 +12,10 @@ public class JavaLexer {
     private static final Set<Character> symbols =
         Set.of(';', '{', '}', '(', ')', '[', ']', '.', ',',
             '=', '+', '-', '*', '/', '&', '|', '%', '^', '!',
-            '\'', '"', '?', ':', '<', '>', '~');
+            '\'', '"', '?', ':', '<', '>', '~', '@');
     private static final Set<String> longOperators =
         Set.of("++", "--", "==", "!=", "::", "+=", "-=", "*=", "/=", "%=", "<=", ">=", "//", "/*",
-            "*/", "&&", "||"); // TODO: support longer operators
+            "*/", "&&", "||", "^=", "|=", "<<=", ">>=", ">>>="); // TODO: support longer operators
 
     private final List<String> words;
     private final Stack<Integer> checkPoints;
@@ -23,8 +23,9 @@ public class JavaLexer {
 
     public JavaLexer(String code) throws JTAException {
         this.nextIndex = 0;
-        this.words = scan(code);
+        this.words = new ArrayList<>();
         this.checkPoints = new Stack<>();
+        scan(code);
     }
 
     /**
@@ -36,79 +37,48 @@ public class JavaLexer {
             || (c >= '0' && c <= '9') || c == '$' || c == '_';
     }
 
-    private List<String> scan(String code) throws JTAException.UnknownCharacter {
+    private void scan(String code) throws JTAException.UnknownCharacter {
         State state = State.WHITESPACE;
-        List<String> words = new ArrayList<>();
         StringBuilder word = new StringBuilder();
+        char[] charArray = code.toCharArray();
 
-        for (char c : code.toCharArray()) {
+        for (int i = 0; i < charArray.length; i++) {
+            char c = charArray[i];
             switch (state) {
                 // TODO: add char, @, \n support
                 case WHITESPACE: /* last char is whitespace */
                     if (Character.isWhitespace(c)) {
                         continue;
-                    } else if (isNameableChar(c)) {
-                        state = State.NAME;
-                        word.append(c);
-                    } else if (symbols.contains(c)) {
-                        state = State.SYMBOL;
-                        word.append(c);
-                    } else if (c == '"') {
-                        state = State.STRING;
-                        word.append(c);
                     } else {
-                        throw new JTAException.UnknownCharacter(c);
+                        state = findNextState(word, c);
                     }
                     break;
                 case NAME: /* a word (int, String, class, className, 100, ...) */
                     if (isNameableChar(c)) {
                         word.append(c);
                     } else {
-                        collectAndClear(word, words);
-                        if (Character.isWhitespace(c)) {
-                            state = State.WHITESPACE;
-                        } else if (symbols.contains(c)) {
-                            state = State.SYMBOL;
-                            word.append(c);
-                        } else if (c == '"') {
-                            state = State.STRING;
-                            word.append(c);
-                        } else {
-                            throw new JTAException.UnknownCharacter(c);
-                        }
+                        collectAndClear(word);
+                        state = findNextState(word, c);
                     }
                     break;
                 case SYMBOL: /* last char is a symbol (+, ], }, =, ...) */
-                    String combinedSymbol = word.toString() + c;
+                    word.append(c);
+                    String combinedSymbol = wordSymbol(word, charArray, i);
+                    i += combinedSymbol.length() - 1;
                     if (combinedSymbol.equals("/*")) {
                         state = State.COMMENT_ML;
-                        word.setLength(0);
-                    } else if (combinedSymbol.equals("//")) {
-                        state = State.COMMENT_SL;
-                        word.setLength(0);
-                    } else if (Character.isWhitespace(c)) {
-                        state = State.WHITESPACE;
-                        collectAndClear(word, words);
-                    } else if (isNameableChar(c)) {
-                        state = State.NAME;
-                        collectAndClear(word, words);
-                        word.append(c);
-                    } else if (c == '"') {
-                        state = State.STRING;
-                        collectAndClear(word, words);
-                        word.append(c);
-                    } else if (symbols.contains(c)) {
-                        if (word.length() == 2) { /* word contains a long operator */
-                            collectAndClear(word, words);
-                        } else {
-                            assert word.length() == 1;
-                            if (!longOperators.contains(combinedSymbol)) {
-                                collectAndClear(word, words);
-                            }
+                        if (c == '*') {
+                            word.append(c);
                         }
-                        word.append(c);
+                    } else if (combinedSymbol.equals("//")) {
+                        if (c == '\n') {
+                            state = State.WHITESPACE;
+                        } else {
+                            state = State.COMMENT_SL;
+                        }
                     } else {
-                        throw new JTAException.UnknownCharacter(c);
+                        words.add(combinedSymbol);
+                        state = findNextState(word, charArray[i]);
                     }
                     break;
                 case COMMENT_SL: /* in a single-line comment */
@@ -117,27 +87,25 @@ public class JavaLexer {
                     }
                     break;
                 case COMMENT_ML: /* in a multi-line comment */
-                    if (c == '/') {
-                        if (word.toString().equals("*")) {
-                            word.setLength(0);
-                            state = State.WHITESPACE;
-                        }
+                    String currentWord = word.toString();
+                    word.setLength(0);
+                    if (c == '/' && currentWord.equals("*")) {
+                        state = State.WHITESPACE;
                     } else if (c == '*') {
-                        word.setLength(0);
                         word.append(c);
-                    } else {
-                        word.setLength(0);
                     }
                     break;
                 case STRING:
-                    if (c == '"') {
-                        word.append(c);
-                        collectAndClear(word, words);
+                    boolean escaped = putChar(word, c);
+                    if (!escaped && c == '"') {
+                        collectAndClear(word);
                         state = State.WHITESPACE;
                     } else {
                         word.append(c);
                     }
                     break;
+                case CHAR:
+                    throw new UnsupportedOperationException();
             }
 
         }
@@ -146,11 +114,77 @@ public class JavaLexer {
             words.add(word.toString());
         }
 
-        return words;
     }
 
-    private void collectAndClear(StringBuilder builder, List<String> list) {
-        list.add(builder.toString());
+    private String wordSymbol(StringBuilder builder, char[] charArray, int nextIndex) {
+        char nextChar = charArray[nextIndex];
+        while (symbols.contains(nextChar) && builder.length() < 4) {
+            builder.append(nextChar);
+            nextIndex++;
+            if (nextIndex < charArray.length) {
+                nextChar = charArray[nextIndex];
+            } else {
+                break;
+            }
+        }
+        for (int i = builder.length(); i > 1; i--) {
+            String subString = builder.substring(0, i);
+            if (longOperators.contains(subString)) {
+                builder.setLength(0);
+                return subString;
+            }
+        }
+        String symbol = builder.substring(0, 1);
+        builder.setLength(0);
+        return symbol;
+    }
+
+    private State findNextState(StringBuilder word, char c) throws JTAException.UnknownCharacter {
+        State state;
+        if (Character.isWhitespace(c)) {
+            state = State.WHITESPACE;
+        } else if (isNameableChar(c)) {
+            state = State.NAME;
+            word.append(c);
+        } else if (symbols.contains(c)) {
+            state = State.SYMBOL;
+            word.append(c);
+        } else if (c == '"') {
+            state = State.STRING;
+            word.append(c);
+        } else if (c == '\'') {
+            state = State.CHAR;
+            word.append(c);
+        } else {
+            throw new JTAException.UnknownCharacter(c);
+        }
+        return state;
+    }
+
+    private boolean putChar(StringBuilder word, char c) throws JTAException.UnknownCharacter {
+        int lastIndex = word.length() - 1;
+        boolean escaped;
+        if (!word.isEmpty() && word.charAt(lastIndex) == '\\') {
+            word.deleteCharAt(lastIndex);
+            switch (c) {
+                case 'b' -> c = '\b';
+                case 'f' -> c = '\f';
+                case 'n' -> c = '\n';
+                case 'r' -> c = '\r';
+                case 't' -> c = '\t';
+                case '\'', '\"', '\\' -> {/* do nothing */}
+                default -> throw new JTAException.UnknownCharacter("\\" + c);
+            }
+            escaped = true;
+        } else {
+            escaped = false;
+        }
+        word.append(c);
+        return escaped;
+    }
+
+    private void collectAndClear(StringBuilder builder) {
+        words.add(builder.toString());
         builder.setLength(0);
     }
 
@@ -234,6 +268,6 @@ public class JavaLexer {
     }
 
     enum State {
-        WHITESPACE, NAME, SYMBOL, COMMENT_SL, COMMENT_ML, STRING
+        WHITESPACE, NAME, SYMBOL, COMMENT_SL, COMMENT_ML, STRING, CHAR
     }
 }

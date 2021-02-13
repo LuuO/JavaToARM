@@ -45,6 +45,7 @@ public class JavaScope {
 
     /**
      * Create a child scope of some other scope
+     *
      * @param parent the parent scope
      * @param owner
      * @return the created scope
@@ -89,21 +90,27 @@ public class JavaScope {
 
     /**
      * Search a variable with the given name
+     *
      * @param name name of the variable
      * @return the variable found
      * @throws JTAException.InvalidName if the variable is not found.
      */
     public final LocalVariable getVariable(String name) throws JTAException.InvalidName {
+        LocalVariable variable = tryGetVariable(name);
+        if (variable == null) {
+            throw new JTAException.InvalidName("Unknown variable name " + name);
+        }
+        return variable;
+    }
+
+    private LocalVariable tryGetVariable(String name) {
         LocalVariable var = variables.get(name);
-        if (var == null) {
-            if (parent != null) {
-                return parent.getVariable(name);
-            } else {
-                throw new JTAException.InvalidName("Unknown variable name");
-            }
+        if (var == null && parent != null) {
+            return parent.tryGetVariable(name);
         }
         return var;
     }
+
 
     public final JavaType getFunctionReturnType(String name, List<JavaType> argumentTypes)
         throws JTAException {
@@ -116,7 +123,7 @@ public class JavaScope {
     }
 
     public final LocalVariable declareVariable(JavaType type, String name) throws JTAException {
-        LocalVariable existed = getVariable(name);
+        LocalVariable existed = tryGetVariable(name);
         if (existed != null && existed.holder.javaClass != null) {
             throw new JTAException.VariableAlreadyDeclared(name);
         }

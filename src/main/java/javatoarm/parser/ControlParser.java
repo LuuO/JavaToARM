@@ -48,7 +48,7 @@ public class ControlParser {
                 JavaCode body = CodeParser.parseCode(lexer);
                 lexer.next(new KeywordToken(KeywordToken.Keyword._while));
                 JavaExpression condition = parseConditionInBrackets(lexer);
-                return JavaLoop.whileLoop(body, condition);
+                return JavaLoop.doWhileLoop(body, condition);
 
             } else if (keywordToken.keyword == KeywordToken.Keyword._if) {
                 JavaExpression condition = parseConditionInBrackets(lexer);
@@ -60,15 +60,13 @@ public class ControlParser {
                 return new JavaIfElse(condition, bodyTrue, bodyFalse);
 
             } else if (keywordToken.keyword == KeywordToken.Keyword._while) {
-                lexer.next(new KeywordToken(KeywordToken.Keyword._while));
                 JavaExpression condition = parseConditionInBrackets(lexer);
                 JavaCode body = CodeParser.parseCode(lexer);
                 return JavaLoop.whileLoop(body, condition);
             }
         }
 
-        lexer.rewind();
-        return null;
+        throw new JTAException.UnexpectedToken("control token", token);
     }
 
     public static boolean isControlToken(Token token) {

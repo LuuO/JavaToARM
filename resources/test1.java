@@ -9,10 +9,15 @@ public class Fibb {
         if (n <= 1) {
             return n;
         } else {
-            return fibonacci(n - 1) + fibonacci(n - 2);
+            return fibonacci/**/(n - 1) + fibonacci(n - 2);//
+
         }
     }
 
+    /**
+     * The /t43wger.g/y5uyrtg/*
+     * @param args
+     */
     public static void main(String[] args) {
         int R1 = false;
         if (fibonacci(30) == 0xcb228 && fibonacci2(30) == 0xcb228 && 1 != 2) {
