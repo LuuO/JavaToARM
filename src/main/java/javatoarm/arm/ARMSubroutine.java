@@ -176,9 +176,9 @@ public class ARMSubroutine implements Subroutine {
 
         int value;
         if (right instanceof Immediate &&
-            (value = (Integer) ((Immediate) right).value) < 0x800) {
+            ((Immediate) right).numberOfBitsLessThan(12)) {
 
-            ARMInstruction.instruction(text, OP.CMP, leftReg, value);
+            ARMInstruction.instruction(text, OP.CMP, leftReg, ((Immediate) right).toNumberRep());
 
         } else {
             Register rightReg = use(right);

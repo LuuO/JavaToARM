@@ -2,6 +2,7 @@ package javatoarm.java.statement;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
+import javatoarm.java.JavaAnnotation;
 import javatoarm.java.JavaClass;
 import javatoarm.java.JavaNewArray;
 import javatoarm.java.JavaProperty;
@@ -12,6 +13,7 @@ import javatoarm.java.expression.JavaExpression;
 import javatoarm.staticanalysis.LocalVariable;
 import javatoarm.staticanalysis.Variable;
 
+import java.util.List;
 import java.util.Set;
 
 public class JavaVariableDeclare implements JavaClass.Member, JavaStatement {
@@ -19,13 +21,20 @@ public class JavaVariableDeclare implements JavaClass.Member, JavaStatement {
     private final String name;
     private final JavaRightValue initialValue;
     private final Set<JavaProperty> properties;
+    private final List<JavaAnnotation> annotations;
 
-    public JavaVariableDeclare(Set<JavaProperty> properties, JavaType type,
-                               String name, JavaRightValue initialValue) {
+    public JavaVariableDeclare(List<JavaAnnotation> annotations, Set<JavaProperty> properties,
+                               JavaType type, String name, JavaRightValue initialValue) {
         this.type = type;
         this.name = name;
         this.properties = properties; // TODO: validate properties
         this.initialValue = initialValue;
+        this.annotations = annotations;
+    }
+
+    public JavaVariableDeclare(Set<JavaProperty> properties,
+                               JavaType type, String name, JavaRightValue initialValue) {
+        this(null, properties, type, name, initialValue);
     }
 
     public boolean hasInitialValue() {
@@ -36,12 +45,10 @@ public class JavaVariableDeclare implements JavaClass.Member, JavaStatement {
         return properties.size() != 0;
     }
 
-    @Override
     public JavaType type() {
         return type;
     }
 
-    @Override
     public String name() {
         return name;
     }

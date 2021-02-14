@@ -42,12 +42,10 @@ public class JavaFunction implements JavaClass.Member {
         return new Interface(name, arguments, returnType);
     }
 
-    @Override
-    public JavaType type() {
+    public JavaType returnType() {
         return returnType;
     }
 
-    @Override
     public String name() {
         return name;
     }

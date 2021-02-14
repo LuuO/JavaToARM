@@ -1,6 +1,7 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
+import javatoarm.java.JavaBlock;
 import javatoarm.java.JavaClass;
 import javatoarm.java.JavaProperty;
 import javatoarm.java.type.JavaType;
@@ -80,25 +81,45 @@ public class ClassParser {
      * @throws JTAException
      */
     private static JavaClass.Member getMember(JavaLexer lexer) throws JTAException {
-        Token equal = new AssignmentOperator.Simple();
+        switch (getNextMemberType(lexer)) {
+            case FIELD: return FieldParser.parse(lexer);
+            case FUNCTION: return FunctionParser.parse(lexer);
+            case INITIALIZER:
+                return new JavaClass.Initializer(CodeParser.parseBlock(lexer), false);
+            case STATIC_INITIALIZER:
+                lexer.next(new KeywordToken(KeywordToken.Keyword._static));
+                return new JavaClass.Initializer(CodeParser.parseBlock(lexer), true);
+            default:
+                throw new AssertionError();
+        }
+    }
+
+    private static MemberType getNextMemberType(JavaLexer lexer) throws JTAException {
+        if (lexer.peek().equals(BracketToken.CURLY_L)) {
+            return MemberType.INITIALIZER;
+        }
 
         lexer.createCheckPoint();
-        boolean foundEqual = false;
+        if (lexer.nextIf(KeywordToken.Keyword._static) && lexer.nextIf(BracketToken.CURLY_L)) {
+            lexer.returnToLastCheckPoint();
+            return MemberType.STATIC_INITIALIZER;
+        }
+        lexer.returnToLastCheckPoint();
 
+        lexer.createCheckPoint();
         while (lexer.hasNext() && !lexer.peek().equals(BracketToken.CURLY_R)) {
             Token next = lexer.next();
             if (SplitterToken.isSemiColon(next)) {
                 lexer.returnToLastCheckPoint();
-                return FieldParser.parse(lexer);
-            } else if (next.equals(BracketToken.CURLY_L) && !foundEqual) {
+                return MemberType.FIELD;
+            } else if (next.equals(BracketToken.CURLY_L)) {
                 // Because we found a '{' and did not encounter a '=', it is a function
                 // if we found '=', we know it is a field. e.g. int[] a = {1, 2};
                 lexer.returnToLastCheckPoint();
-                return FunctionParser.parse(lexer);
-            }
-
-            if (next.equals(equal)) {
-                foundEqual = true;
+                return MemberType.FUNCTION;
+            } else if (next instanceof AssignmentOperator.Simple) {
+                lexer.returnToLastCheckPoint();
+                return MemberType.FIELD;
             }
         }
 
@@ -116,6 +137,10 @@ public class ClassParser {
             types.add(JavaParser.parseType(lexer, true));
         }
         return types;
+    }
+
+    private enum MemberType {
+        FIELD, FUNCTION, INITIALIZER, STATIC_INITIALIZER
     }
 
 }

@@ -27,7 +27,7 @@ public interface ImmediateToken extends Token {
                 if (s.startsWith("\"")) {
                     return new StringToken(s);
                 } else {
-                    return Int.get(s);
+                    return IntegerToken.get(s);
                 }
         }
     }
@@ -109,12 +109,13 @@ public interface ImmediateToken extends Token {
     }
 
     /**
-     * Represent an integer in Java
+     * Represent integers (int, long, short, byte) in Java.
+     * // TODO: support byte
      */
-    class Int implements ImmediateToken {
-        public final int value;
+    class IntegerToken implements ImmediateToken {
+        public final long value;
 
-        private Int(int value) {
+        private IntegerToken(long value) {
             this.value = value;
         }
 
@@ -122,15 +123,21 @@ public interface ImmediateToken extends Token {
          * Try parsing the provided word as an integer
          *
          * @param s the word
-         * @return if success, returns the Int token. Otherwise, returns null.
+         * @return if success, returns the IntegerToken token. Otherwise, returns null.
          */
-        public static Int get(String s) {
+        public static IntegerToken get(String s) {
+            int radix;
+            if (s.startsWith("0x")) {
+                radix = 16;
+                s = s.substring(2);
+            } else {
+                radix = 10;
+            }
+            if (s.endsWith("L")) {
+                s = s.substring(0, s.length() - 1);
+            }
             try {
-                if (s.startsWith("0x")) {
-                    return new Int(Integer.parseInt(s.substring(2), 16));
-                } else {
-                    return new Int(Integer.parseInt(s));
-                }
+                return new IntegerToken(Long.parseLong(s, radix));
             } catch (NumberFormatException nfe) {
                 return null;
             }
@@ -138,12 +145,24 @@ public interface ImmediateToken extends Token {
 
         @Override
         public JavaType getType() {
-            return JavaSimpleType.INT;
+            if (value > Integer.MAX_VALUE || -value > Integer.MAX_VALUE + 1L) {
+                return JavaSimpleType.LONG;
+            } else if (value > Short.MAX_VALUE || -value > Short.MAX_VALUE + 1) {
+                return JavaSimpleType.INT;
+            } else {
+                return JavaSimpleType.SHORT;
+            }
         }
 
         @Override
         public Object getValue() {
-            return value;
+            if (value > Integer.MAX_VALUE || -value > Integer.MAX_VALUE + 1L) {
+                return value;
+            } else if (value > Short.MAX_VALUE || -value > Short.MAX_VALUE + 1) {
+                return (int) value;
+            } else {
+                return (short) value;
+            }
         }
     }
 

@@ -33,19 +33,31 @@ public class Immediate implements Variable {
         if (type.equals(JavaSimpleType.BOOL) || type.equals(JavaSimpleType.NULL)) {
             return bits >= 1;
         } else if (type.equals(JavaSimpleType.INT) || type.equals(JavaSimpleType.LONG)
-            || type.equals(JavaSimpleType.SHORT) || type.equals(JavaSimpleType.BYTE)
-            || type.equals(JavaSimpleType.FLOAT) || type.equals(JavaSimpleType.DOUBLE)) {
+            || type.equals(JavaSimpleType.SHORT) || type.equals(JavaSimpleType.BYTE)) {
 
             if (bits >= 64) {
                 return true;
             }
             long maxNum = 1L << bits;
-            int value = (Integer) this.value;
+            long value = valueToLong();
             return value < maxNum && -value <= maxNum;
         } else if (type.equals(JavaSimpleType.VOID)) {
             throw new IllegalArgumentException();
         } else {
             return false;
+        }
+    }
+
+    // TODO: support other types
+    private long valueToLong() {
+        if (type.equals(JavaSimpleType.INT)) {
+            return (Integer) value;
+        } else if (type.equals(JavaSimpleType.LONG)) {
+            return (Long) value;
+        } else if (type.equals(JavaSimpleType.SHORT)) {
+            return (Short) value;
+        } else {
+            throw new UnsupportedOperationException();
         }
     }
 

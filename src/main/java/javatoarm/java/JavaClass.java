@@ -18,6 +18,7 @@ public class JavaClass {
     private final Set<JavaProperty> properties; /* package-private or public*/
     private final List<JavaVariableDeclare> fields;
     private final LinkedList<JavaFunction> functions;
+    private final List<Initializer> initializers;
 
     public final String name;
     public final Set<JavaType> superClass, superInterface;
@@ -33,17 +34,22 @@ public class JavaClass {
         this.fields = new ArrayList<>();
         this.functions = new LinkedList<>();
         this.functionInterfaces = new HashMap<>();
+        this.initializers = new ArrayList<>();
 
         for (Member m : members) {
             if (m instanceof JavaVariableDeclare) {
                 fields.add((JavaVariableDeclare) m);
-            } else {
+            } else if (m instanceof Initializer) {
+                initializers.add((Initializer) m);
+            } else if (m instanceof JavaFunction) {
                 JavaFunction function = (JavaFunction) m;
                 if (function.isPublic) {
                     functions.addFirst(function);
                 } else {
                     functions.addLast(function);
                 }
+            } else {
+                throw new UnsupportedOperationException();
             }
         }
         for (JavaFunction function : functions) {
@@ -84,8 +90,15 @@ public class JavaClass {
     }
 
     public interface Member {
-        JavaType type();
+    }
 
-        String name();
+    public static class Initializer implements Member {
+        public final boolean isStatic;
+        public final JavaBlock block;
+
+        public Initializer(JavaBlock block, boolean isStatic) {
+            this.isStatic = isStatic;
+            this.block = block;
+        }
     }
 }
