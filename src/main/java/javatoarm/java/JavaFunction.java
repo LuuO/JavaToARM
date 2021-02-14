@@ -17,18 +17,19 @@ public class JavaFunction implements JavaClass.Member {
     private final String name;
     private final List<JavaVariableDeclare> arguments;
     private final List<JavaAnnotation> annotations;
+    private final List<JavaType> exceptions;
     private final JavaBlock body;
 
     public JavaFunction(List<JavaAnnotation> annotations, Set<JavaProperty> properties,
-                        JavaType returnType, String name,
-                        List<JavaVariableDeclare> arguments, JavaBlock body)
-        throws JTAException {
+                        JavaType returnType, String name, List<JavaVariableDeclare> arguments,
+                        List<JavaType> exceptions, JavaBlock body) throws JTAException {
 
         this.returnType = returnType;
         this.name = name;
         this.arguments = arguments;
         this.body = body;
         this.annotations = annotations;
+        this.exceptions = exceptions;
 
         startLabel = "function_" + name;
         epilogueLabel = startLabel + "_end";

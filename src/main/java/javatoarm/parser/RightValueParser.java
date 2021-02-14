@@ -27,8 +27,8 @@ public class RightValueParser {
 
         } else if (next.equals(BracketToken.ROUND_L)) {
             /* initialize objects */
+            lexer.rewind();
             List<JavaExpression> arguments = FunctionParser.parseCallArguments(lexer);
-            lexer.next(BracketToken.ROUND_R);
             return new NewObjectExpression(type, arguments);
 
         } else {

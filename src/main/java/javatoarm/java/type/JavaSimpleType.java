@@ -64,7 +64,7 @@ public class JavaSimpleType extends JavaType {
     }
 
     @Override
-    String name() {
+    public String name() {
         return name;
     }
 }

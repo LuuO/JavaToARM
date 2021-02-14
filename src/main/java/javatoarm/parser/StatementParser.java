@@ -3,8 +3,11 @@ package javatoarm.parser;
 import javatoarm.JTAException;
 import javatoarm.java.JavaRightValue;
 import javatoarm.java.expression.JavaExpression;
+import javatoarm.java.expression.NewObjectExpression;
+import javatoarm.java.statement.JavaFunctionCall;
 import javatoarm.java.statement.JavaStatement;
 import javatoarm.java.statement.JavaVariableDeclare;
+import javatoarm.java.statement.ThrowStatement;
 import javatoarm.java.type.JavaSimpleType;
 import javatoarm.java.type.JavaType;
 import javatoarm.token.BracketToken;
@@ -16,6 +19,7 @@ import javatoarm.token.Token;
 import javatoarm.token.operator.AssignmentOperator;
 
 import java.util.HashSet;
+import java.util.List;
 
 public class StatementParser {
 
@@ -46,6 +50,22 @@ public class StatementParser {
                     } else {
                         return new JavaStatement.Return(ExpressionParser.parse(lexer));
                     }
+                }
+                case _throw -> {
+                    lexer.next();
+                    JavaExpression expression = ExpressionParser.parse(lexer);
+                    if (!(expression instanceof NewObjectExpression)) {
+                        throw new JTAException.InvalidExpression(expression);
+                    }
+                    return new ThrowStatement((NewObjectExpression) expression);
+                }
+                case _this -> {
+                    lexer.next();
+                    if (lexer.peek().equals(BracketToken.ROUND_L)) {
+                        List<JavaExpression> arguments = FunctionParser.parseCallArguments(lexer);
+                        return new JavaFunctionCall("this", arguments);
+                    }
+                    lexer.rewind();
                 }
             }
         }
@@ -87,6 +107,8 @@ public class StatementParser {
         for (int countString = 0; countString <= 2; ) {
             Token token = lexer.next();
             if (token instanceof NameToken) {
+                lexer.rewind();
+                JavaParser.parseNamePath(lexer);
                 countString++;
             } else if (token.equals(SplitterToken.COMMA)) {
                 /* Commas only appear in variable declarations */

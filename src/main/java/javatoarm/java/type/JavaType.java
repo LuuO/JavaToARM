@@ -2,7 +2,7 @@ package javatoarm.java.type;
 
 public abstract class JavaType {
 
-    abstract String name();
+    abstract public String name();
 
     @Override
     public boolean equals(Object obj) {
@@ -11,5 +11,10 @@ public abstract class JavaType {
             return this.name().equals(that.name());
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return name();
     }
 }

@@ -9,7 +9,7 @@ public class JavaArrayType extends JavaType {
     }
 
     @Override
-    String name() {
+    public String name() {
         return elementType.name() + "[]";
     }
 }

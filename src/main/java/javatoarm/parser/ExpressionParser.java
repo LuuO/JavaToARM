@@ -13,6 +13,7 @@ import javatoarm.java.expression.NumericExpression;
 import javatoarm.java.statement.JavaAssignment;
 import javatoarm.java.statement.JavaFunctionCall;
 import javatoarm.java.statement.JavaIncrementDecrement;
+import javatoarm.java.type.JavaType;
 import javatoarm.token.BracketToken;
 import javatoarm.token.ImmediateToken;
 import javatoarm.token.JavaLexer;
@@ -53,17 +54,33 @@ public class ExpressionParser {
                     List<JavaExpression> arguments = FunctionParser.parseCallArguments(lexer);
                     addElement(elements, new JavaFunctionCall(name, arguments));
                 } else {
-                    // sub expression
-                    JavaExpression expression = parse(lexer);
-                    lexer.next(BracketToken.ROUND_R);
-                    addElement(elements, expression);
-                }
+                    lexer.createCheckPoint();
+                    JavaType type;
+                    boolean isType;
+                    try {
+                        type = JavaParser.parseType(lexer, true);
+                        isType = true;
+                    } catch (JTAException e) {
+                        isType = false;
+                    }
 
+                    if (lexer.nextIf(BracketToken.ROUND_R) && isType) {
+                        // sub expression
+                        long a = (long) lexer.hashCode();
+                        lexer.deleteLastCheckPoint();
+                    } else {
+                        // sub expression
+                        lexer.returnToLastCheckPoint();
+                        JavaExpression expression = parse(lexer);
+                        lexer.next(BracketToken.ROUND_R);
+                        addElement(elements, expression);
+                    }
+                }
             } else if (token.equals(KeywordToken.NEW)) {
                 lexer.rewind();
                 JavaRightValue rightValue = RightValueParser.parseNewInit(lexer);
                 if (!(rightValue instanceof NewObjectExpression)) {
-                    throw new JTAException.Unsupported("Not NewObjectExpression ");
+                    throw new JTAException.Unsupported("Not NewObjectExpression");
                 }
                 addElement(elements, (NewObjectExpression) rightValue);
             } else if (token instanceof OperatorToken) {

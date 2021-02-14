@@ -11,6 +11,7 @@ import javatoarm.java.type.JavaArrayType;
 import javatoarm.java.type.JavaType;
 import javatoarm.token.BracketToken;
 import javatoarm.token.JavaLexer;
+import javatoarm.token.KeywordToken;
 import javatoarm.token.SplitterToken;
 import javatoarm.token.Token;
 
@@ -26,18 +27,34 @@ public class FunctionParser {
         Set<JavaProperty> properties =
             JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
         JavaType returnType = JavaParser.parseType(lexer, true);
+
         String methodName;
-        if (lexer.peek().equals(BracketToken.ROUND_L) && returnType.toString().equals(className)) {
+        if (lexer.peek().equals(BracketToken.ROUND_L) && returnType.name().equals(className)) {
             // constructor
             methodName = returnType.toString();
         } else {
             methodName = JavaParser.parseSimpleName(lexer);
         }
+
         List<JavaVariableDeclare> arguments = parseArgumentDeclares(lexer);
+        List<JavaType> exceptions = new ArrayList<>();
+
+        if (lexer.nextIf(KeywordToken.Keyword._throws)) {
+            for (; ; ) {
+                exceptions.add(JavaParser.parseType(lexer, false));
+                if (lexer.peek().equals(BracketToken.CURLY_L)) {
+                    break;
+                } else if (!lexer.nextIf(SplitterToken.COMMA)) {
+                    throw new JTAException.UnexpectedToken("Throwable", lexer.peek());
+                }
+            }
+
+        }
 
         JavaBlock body = CodeParser.parseBlock(lexer);
 
-        return new JavaFunction(annotations, properties, returnType, methodName, arguments, body);
+        return new JavaFunction(
+            annotations, properties, returnType, methodName, arguments, exceptions, body);
     }
 
     private static List<JavaVariableDeclare> parseArgumentDeclares(JavaLexer lexer)
@@ -85,14 +102,17 @@ public class FunctionParser {
         if (!lexer.peek().equals(BracketToken.ROUND_R)) {
             for (; ; ) {
                 arguments.add(ExpressionParser.parse(lexer));
-                Token next = lexer.next();
+                Token next = lexer.peek();
                 if (next.equals(BracketToken.ROUND_R)) {
                     break;
-                } else if (!next.equals(SplitterToken.COMMA)) {
+                } else if (next.equals(SplitterToken.COMMA)) {
+                    lexer.next();
+                } else {
                     throw new JTAException.UnexpectedToken("',' or ')'", next);
                 }
             }
         }
+        lexer.next(BracketToken.ROUND_R);
         return arguments;
     }
 }

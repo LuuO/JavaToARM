@@ -58,30 +58,21 @@ public class JavaLexer {
                     }
                     break;
                 case SYMBOL: /* last char is a symbol (+, ], }, =, ...) */
+                    // TODO: simplify
+                    if (word.length() == 0) {
+                        state = findNextState(word, c);
+                        break;
+                    }
                     String combinedSymbol = wordSymbol(word, charArray, i);
-                    i += combinedSymbol.length() - 1;
+                    i += combinedSymbol.length() - 2;
                     switch (combinedSymbol) {
-                        case "/*":
-                            state = State.COMMENT_ML;
-                            if (c == '*') {
-                                word.append(c);
-                            }
-                            break;
-                        case "//":
-                            if (c == '\n') {
-                                state = State.WHITESPACE;
-                            } else {
-                                state = State.COMMENT_SL;
-                            }
-                            break;
-                        case "\"":
-                            word.append(combinedSymbol).append(c);
+                        case "/*" -> state = State.COMMENT_ML;
+                        case "//" -> state = State.COMMENT_SL;
+                        case "\"" -> {
+                            word.append(combinedSymbol);
                             state = State.STRING;
-                            break;
-                        default:
-                            words.add(combinedSymbol);
-                            state = findNextState(word, charArray[i]);
-                            break;
+                        }
+                        default -> words.add(combinedSymbol);
                     }
                     break;
                 case COMMENT_SL: /* in a single-line comment */
@@ -99,14 +90,41 @@ public class JavaLexer {
                     }
                     break;
                 case STRING:
-                    boolean escaped = putChar(word, c);
-                    if (!escaped && c == '"') {
-                        collectAndClear(word);
-                        state = State.WHITESPACE;
+                    if (c == '\\') {
+                        state = State.STRING_ESCAPE;
+                    } else {
+                        word.append(c);
+                        if (c == '"') {
+                            collectAndClear(word);
+                            state = State.WHITESPACE;
+                        }
                     }
                     break;
+                case STRING_ESCAPE:
+                    word.append(escapeCharOf(c));
+                    state = State.STRING;
+                    break;
                 case CHAR:
-                    throw new UnsupportedOperationException();
+                    if (c == '\\') {
+                        c = escapeCharOf(charArray[++i]);
+                        word.append(c);
+                        if (word.length() >= 3) {
+                            throw new JTAException.UnknownCharacter(
+                                "Not a char: %s, last char is escaped".formatted(word));
+                        }
+                    } else {
+                        word.append(c);
+                        if (word.length() == 3) {
+                            if (word.charAt(0) == '\'' && word.charAt(2) == '\'') {
+                                collectAndClear(word);
+                                state = State.WHITESPACE;
+                            } else {
+                                throw new JTAException.UnknownCharacter(
+                                    "Not a char: %s".formatted(word));
+                            }
+                        }
+                    }
+                    break;
             }
 
         }
@@ -145,14 +163,14 @@ public class JavaLexer {
         } else if (isNameableChar(c)) {
             state = State.NAME;
             word.append(c);
-        } else if (symbols.contains(c)) {
-            state = State.SYMBOL;
-            word.append(c);
         } else if (c == '"') {
             state = State.STRING;
             word.append(c);
         } else if (c == '\'') {
             state = State.CHAR;
+            word.append(c);
+        } else if (symbols.contains(c)) {
+            state = State.SYMBOL;
             word.append(c);
         } else {
             throw new JTAException.UnknownCharacter(c);
@@ -160,11 +178,23 @@ public class JavaLexer {
         return state;
     }
 
+    private char escapeCharOf(char c) throws JTAException.UnknownCharacter {
+        return switch (c) {
+            case 'b' -> '\b';
+            case 'f' -> '\f';
+            case 'n' -> '\n';
+            case 'r' -> '\r';
+            case 't' -> '\t';
+            case '0' -> '\0';
+            case '\'', '\"', '\\' -> c;
+            default -> throw new JTAException.UnknownCharacter("\\" + c);
+        };
+    }
+
     private boolean putChar(StringBuilder word, char c) throws JTAException.UnknownCharacter {
         int lastIndex = word.length() - 1;
         boolean escaped;
         if (!word.isEmpty() && word.charAt(lastIndex) == '\\') {
-            word.deleteCharAt(lastIndex);
             switch (c) {
                 case 'b' -> c = '\b';
                 case 'f' -> c = '\f';
@@ -228,6 +258,10 @@ public class JavaLexer {
         nextIndex = checkPoints.pop();
     }
 
+    public void deleteLastCheckPoint() {
+        checkPoints.pop();
+    }
+
     public void next(Token expected) throws JTAException {
         Token next = getNextToken();
         nextIndex += 1;
@@ -267,6 +301,6 @@ public class JavaLexer {
     }
 
     enum State {
-        WHITESPACE, NAME, SYMBOL, COMMENT_SL, COMMENT_ML, STRING, CHAR
+        WHITESPACE, NAME, SYMBOL, COMMENT_SL, COMMENT_ML, STRING, STRING_ESCAPE, CHAR
     }
 }

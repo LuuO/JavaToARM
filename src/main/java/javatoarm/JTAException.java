@@ -81,7 +81,7 @@ public abstract class JTAException extends Exception {
 
     public static class InvalidExpression extends JTAException {
         public InvalidExpression(JavaExpression expression) {
-            super("Not a statement");
+            super("Invalid Expression");
         }
     }
 
