@@ -26,6 +26,9 @@ public interface ImmediateToken extends Token {
             default:
                 if (s.startsWith("\"")) {
                     return new StringToken(s);
+                }
+                if (s.length() == 3 && s.startsWith("'") && s.endsWith("'")) {
+                    return new CharToken(s.charAt(1));
                 } else {
                     return IntegerToken.get(s);
                 }
@@ -195,4 +198,21 @@ public interface ImmediateToken extends Token {
         }
     }
 
+    class CharToken implements ImmediateToken {
+        char value;
+
+        private CharToken(char c) {
+            this.value = c;
+        }
+
+        @Override
+        public JavaType getType() {
+            return JavaSimpleType.CHAR;
+        }
+
+        @Override
+        public Object getValue() {
+            return value;
+        }
+    }
 }

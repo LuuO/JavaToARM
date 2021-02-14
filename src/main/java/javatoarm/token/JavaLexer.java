@@ -15,7 +15,8 @@ public class JavaLexer {
             '\'', '"', '?', ':', '<', '>', '~', '@', '\\');
     private static final Set<String> longOperators =
         Set.of("++", "--", "==", "!=", "::", "+=", "-=", "*=", "/=", "%=", "<=", ">=", "//", "/*",
-            "*/", "&&", "||", "^=", "|=", "<<=", ">>=", ">>>="); // TODO: support longer operators
+            "*/", "&&", "||", ">>", "<<", ">>>", "^=", "|=", "<<=", ">>=", ">>>=", "->");
+        // TODO: support longer operators
 
     private final List<String> words;
     private final Stack<Integer> checkPoints;

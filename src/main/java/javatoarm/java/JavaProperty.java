@@ -5,7 +5,7 @@ import javatoarm.token.KeywordToken;
 import javatoarm.token.Token;
 
 public enum JavaProperty {
-    PUBLIC, PRIVATE, PROTECTED, PACKAGE_PRIVATE, STATIC, FINAL;
+    PUBLIC, PRIVATE, PROTECTED, PACKAGE_PRIVATE, STATIC, FINAL, NATIVE;
 
     public static JavaProperty get(Token token) {
         if (token instanceof KeywordToken) {
@@ -15,6 +15,7 @@ public enum JavaProperty {
                 case _protected -> PROTECTED;
                 case _static -> STATIC;
                 case _final -> FINAL;
+                case _native -> NATIVE;
                 default -> null;
             };
         }

@@ -55,7 +55,7 @@ public class ControlParser {
                 JavaCode bodyTrue = CodeParser.parseCode(lexer);
                 JavaCode bodyFalse = null;
                 if (lexer.nextIf(KeywordToken.Keyword._else)) {
-                    bodyFalse = CodeParser.parseBlock(lexer);
+                    bodyFalse = CodeParser.parseCode(lexer);
                 }
                 return new JavaIfElse(condition, bodyTrue, bodyFalse);
 

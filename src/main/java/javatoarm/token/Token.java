@@ -2,6 +2,7 @@ package javatoarm.token;
 
 import javatoarm.JTAException;
 import javatoarm.token.operator.OperatorToken;
+import javatoarm.token.operator.TernaryToken;
 
 public interface Token {
 
@@ -27,6 +28,9 @@ public interface Token {
                 return token;
             }
             if ((token = AnnotationToken.get(c)) != null) {
+                return token;
+            }
+            if ((token = TernaryToken.get(c)) != null) {
                 return token;
             }
         }

@@ -3,6 +3,7 @@ package javatoarm.parser;
 import javatoarm.JTAException;
 import javatoarm.java.JavaAnnotation;
 import javatoarm.java.JavaClass;
+import javatoarm.java.JavaClassMember;
 import javatoarm.java.JavaProperty;
 import javatoarm.java.type.JavaType;
 import javatoarm.token.AnnotationToken;
@@ -44,7 +45,7 @@ public class ClassParser {
         lexer.next(BracketToken.CURLY_L);
         JavaParser.eatSemiColons(lexer);
 
-        List<JavaClass.Member> members = new ArrayList<>();
+        List<JavaClassMember> members = new ArrayList<>();
 
         while (!lexer.peek().equals(BracketToken.CURLY_R)) {
             members.add(getMember(lexer, className));
@@ -81,7 +82,7 @@ public class ClassParser {
      * @return
      * @throws JTAException
      */
-    private static JavaClass.Member getMember(JavaLexer lexer, String className)
+    private static JavaClassMember getMember(JavaLexer lexer, String className)
         throws JTAException {
         List<JavaAnnotation> annotations;
         if (lexer.peek().equals(AnnotationToken.INSTANCE)) {
@@ -94,6 +95,8 @@ public class ClassParser {
                 return FieldParser.parse(lexer, annotations);
             case FUNCTION:
                 return FunctionParser.parse(lexer, className, annotations);
+            case CLASS:
+                return ClassParser.parse(lexer);
             case INITIALIZER:
                 return new JavaClass.Initializer(CodeParser.parseBlock(lexer), false);
             case STATIC_INITIALIZER:
@@ -119,7 +122,15 @@ public class ClassParser {
         lexer.createCheckPoint();
         while (lexer.hasNext() && !lexer.peek().equals(BracketToken.CURLY_R)) {
             Token next = lexer.next();
-            if (SplitterToken.isSemiColon(next)) {
+            if (next.equals(new KeywordToken(KeywordToken.Keyword._class))) {
+
+                lexer.returnToLastCheckPoint();
+                return MemberType.CLASS;
+            } else if (next.equals(new KeywordToken(KeywordToken.Keyword._native))) {
+                // TODO: Assuming all native members are functions
+                lexer.returnToLastCheckPoint();
+                return MemberType.FUNCTION;
+            } else if (SplitterToken.isSemiColon(next)) {
                 lexer.returnToLastCheckPoint();
                 return MemberType.FIELD;
             } else if (next.equals(BracketToken.CURLY_L)) {
@@ -150,7 +161,7 @@ public class ClassParser {
     }
 
     private enum MemberType {
-        FIELD, FUNCTION, INITIALIZER, STATIC_INITIALIZER
+        FIELD, FUNCTION, CLASS, INITIALIZER, STATIC_INITIALIZER
     }
 
 }

@@ -42,7 +42,8 @@ public class FunctionParser {
         if (lexer.nextIf(KeywordToken.Keyword._throws)) {
             for (; ; ) {
                 exceptions.add(JavaParser.parseType(lexer, false));
-                if (lexer.peek().equals(BracketToken.CURLY_L)) {
+                if (lexer.peek().equals(BracketToken.CURLY_L)
+                    || lexer.peek().equals(SplitterToken.SEMI_COLON)) {
                     break;
                 } else if (!lexer.nextIf(SplitterToken.COMMA)) {
                     throw new JTAException.UnexpectedToken("Throwable", lexer.peek());
@@ -51,7 +52,12 @@ public class FunctionParser {
 
         }
 
-        JavaBlock body = CodeParser.parseBlock(lexer);
+        JavaBlock body;
+        if (lexer.nextIf(SplitterToken.SEMI_COLON)) {
+            body = null;
+        } else {
+            body = CodeParser.parseBlock(lexer);
+        }
 
         return new JavaFunction(
             annotations, properties, returnType, methodName, arguments, exceptions, body);

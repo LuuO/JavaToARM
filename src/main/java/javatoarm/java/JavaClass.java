@@ -13,11 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class JavaClass {
-    private final Map<String, JavaFunction.Interface> functionInterfaces;
+public class JavaClass implements JavaClassMember {
+    private final Map<JavaFunction.Interface, JavaType> functionInterfaces;
     private final Set<JavaProperty> properties; /* package-private or public*/
     private final List<JavaVariableDeclare> fields;
     private final LinkedList<JavaFunction> functions;
+    private final List<JavaClass> subclasses;
     private final List<Initializer> initializers;
 
     public final String name;
@@ -25,7 +26,7 @@ public class JavaClass {
 
     public JavaClass(Set<JavaProperty> properties, String name,
                      Set<JavaType> superClass, Set<JavaType> superInterface,
-                     List<Member> members) throws JTAException {
+                     List<JavaClassMember> members) throws JTAException {
 
         this.properties = properties;
         this.name = name;
@@ -33,10 +34,11 @@ public class JavaClass {
         this.superInterface = superInterface;
         this.fields = new ArrayList<>();
         this.functions = new LinkedList<>();
+        this.subclasses = new ArrayList<>();
         this.functionInterfaces = new HashMap<>();
         this.initializers = new ArrayList<>();
 
-        for (Member m : members) {
+        for (JavaClassMember m : members) {
             if (m instanceof JavaVariableDeclare) {
                 fields.add((JavaVariableDeclare) m);
             } else if (m instanceof Initializer) {
@@ -48,24 +50,29 @@ public class JavaClass {
                 } else {
                     functions.addLast(function);
                 }
+            } else if (m instanceof JavaClass) {
+                subclasses.add((JavaClass) m);
             } else {
                 throw new UnsupportedOperationException();
             }
         }
         for (JavaFunction function : functions) {
             JavaFunction.Interface functionInterface = function.getInterface();
-            if (functionInterfaces.put(functionInterface.name, functionInterface) != null) {
+            JavaType returnType = function.returnType();
+            if (functionInterfaces.put(functionInterface, returnType) != null) {
                 throw new JTAException.FunctionAlreadyDeclared(functionInterface.name);
             }
         }
     }
 
-    public JavaFunction.Interface getFunctionInterface(String name) throws JTAException {
-        JavaFunction.Interface result = functionInterfaces.get(name);
-        if (result == null) {
+    public JavaType getFunctionReturnType(JavaFunction.Interface functionInterface)
+        throws JTAException {
+
+        JavaType returnType = functionInterfaces.get(functionInterface);
+        if (returnType == null) {
             throw new JTAException.UnknownFunction(name);
         }
-        return result;
+        return returnType;
     }
 
     public void compileTo(Compiler compiler, InstructionSet is) throws JTAException {
@@ -89,10 +96,7 @@ public class JavaClass {
         return properties.contains(JavaProperty.PUBLIC);
     }
 
-    public interface Member {
-    }
-
-    public static class Initializer implements Member {
+    public static class Initializer implements JavaClassMember {
         public final boolean isStatic;
         public final JavaBlock block;
 

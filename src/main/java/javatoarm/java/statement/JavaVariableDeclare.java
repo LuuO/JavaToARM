@@ -3,20 +3,20 @@ package javatoarm.java.statement;
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.java.JavaAnnotation;
-import javatoarm.java.JavaClass;
+import javatoarm.java.JavaClassMember;
 import javatoarm.java.JavaNewArray;
 import javatoarm.java.JavaProperty;
 import javatoarm.java.JavaRightValue;
 import javatoarm.java.JavaScope;
-import javatoarm.java.type.JavaType;
 import javatoarm.java.expression.JavaExpression;
+import javatoarm.java.type.JavaType;
 import javatoarm.staticanalysis.LocalVariable;
 import javatoarm.staticanalysis.Variable;
 
 import java.util.List;
 import java.util.Set;
 
-public class JavaVariableDeclare implements JavaClass.Member, JavaStatement {
+public class JavaVariableDeclare implements JavaClassMember, JavaStatement {
     private final JavaType type;
     private final String name;
     private final JavaRightValue initialValue;

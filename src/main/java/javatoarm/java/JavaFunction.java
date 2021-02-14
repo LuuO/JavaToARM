@@ -6,11 +6,11 @@ import javatoarm.assembly.Subroutine;
 import javatoarm.java.statement.JavaVariableDeclare;
 import javatoarm.java.type.JavaType;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public class JavaFunction implements JavaClass.Member {
+public class JavaFunction implements JavaClassMember {
     public final boolean isPublic;
     public final String startLabel, epilogueLabel;
     private final JavaType returnType;
@@ -43,7 +43,7 @@ public class JavaFunction implements JavaClass.Member {
     }
 
     public Interface getInterface() {
-        return new Interface(name, arguments, returnType);
+        return Interface.get(name, arguments);
     }
 
     public JavaType returnType() {
@@ -73,18 +73,21 @@ public class JavaFunction implements JavaClass.Member {
 
     public static class Interface {
         public final String name;
-        public final List<JavaVariableDeclare> arguments;
-        public final JavaType returnType;
+        public final List<JavaType> arguments;
 
-        public Interface(String name, List<JavaVariableDeclare> arguments, JavaType returnType) {
+        public Interface(String name, List<JavaType> argumentTypes) {
             this.name = name;
-            this.arguments = Collections.unmodifiableList(arguments);
-            this.returnType = returnType;
+            this.arguments = argumentTypes;
+        }
+
+        public static Interface get(String name, List<JavaVariableDeclare> arguments) {
+            return new Interface(name, arguments.stream()
+                .map(JavaVariableDeclare::type).collect(Collectors.toList()));
         }
 
         @Override
         public int hashCode() {
-            return name.hashCode() * arguments.hashCode() * returnType.hashCode();
+            return name.hashCode() * arguments.hashCode();
         }
 
         @Override
@@ -92,8 +95,7 @@ public class JavaFunction implements JavaClass.Member {
             if (obj instanceof Interface) {
                 Interface that = (Interface) obj;
                 return that.name.equals(this.name)
-                    && that.arguments.equals(this.arguments)
-                    && that.returnType.equals(this.returnType);
+                    && that.arguments.equals(this.arguments);
             }
             return false;
         }

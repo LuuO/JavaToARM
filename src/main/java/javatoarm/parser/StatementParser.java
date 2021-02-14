@@ -1,6 +1,7 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
+import javatoarm.java.JavaProperty;
 import javatoarm.java.JavaRightValue;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.expression.NewObjectExpression;
@@ -8,8 +9,10 @@ import javatoarm.java.statement.JavaFunctionCall;
 import javatoarm.java.statement.JavaStatement;
 import javatoarm.java.statement.JavaVariableDeclare;
 import javatoarm.java.statement.ThrowStatement;
+import javatoarm.java.type.JavaArrayType;
 import javatoarm.java.type.JavaSimpleType;
 import javatoarm.java.type.JavaType;
+import javatoarm.token.AngleToken;
 import javatoarm.token.BracketToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.KeywordToken;
@@ -18,8 +21,9 @@ import javatoarm.token.SplitterToken;
 import javatoarm.token.Token;
 import javatoarm.token.operator.AssignmentOperator;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class StatementParser {
 
@@ -72,9 +76,21 @@ public class StatementParser {
 
         /* object creation or expression */
         if (isObjectCreation(lexer)) {
-            JavaType condition = JavaParser.parseType(lexer, true);
+            Set<JavaProperty> properties;
+            if (lexer.nextIf(KeywordToken.Keyword._final)) {
+                properties = Set.of(JavaProperty.FINAL);
+            } else {
+                properties = Collections.emptySet();
+            }
+
+            JavaType type = JavaParser.parseType(lexer, true);
             String name = JavaParser.parseSimpleName(lexer);
             JavaRightValue initialValue = null;
+            if (lexer.nextIf(BracketToken.SQUARE_L)) {
+                lexer.next(BracketToken.SQUARE_R);
+                type = new JavaArrayType(type);
+            }
+
             if (lexer.peek() instanceof AssignmentOperator.Simple) {
                 lexer.next();
                 if (lexer.peek().equals(new KeywordToken(KeywordToken.Keyword._new))) {
@@ -83,7 +99,7 @@ public class StatementParser {
                     initialValue = ExpressionParser.parse(lexer);
                 }
             }
-            return new JavaVariableDeclare(new HashSet<>(), condition, name, initialValue);
+            return new JavaVariableDeclare(properties, type, name, initialValue);
 
         } else {
             JavaExpression expression = ExpressionParser.parse(lexer);
@@ -100,6 +116,9 @@ public class StatementParser {
 
         if (lexer.peek() instanceof KeywordToken) {
             KeywordToken keywordToken = (KeywordToken) lexer.peek();
+            if (keywordToken.keyword == KeywordToken.Keyword._final) {
+                return true;
+            }
             return JavaSimpleType.get(keywordToken) != null;
         }
 
@@ -110,6 +129,9 @@ public class StatementParser {
                 lexer.rewind();
                 JavaParser.parseNamePath(lexer);
                 countString++;
+            } else if (token.equals(AngleToken.LEFT)) {
+                lexer.returnToLastCheckPoint();
+                return true;
             } else if (token.equals(SplitterToken.COMMA)) {
                 /* Commas only appear in variable declarations */
                 lexer.returnToLastCheckPoint();

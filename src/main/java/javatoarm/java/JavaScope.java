@@ -116,7 +116,8 @@ public class JavaScope {
     public final JavaType getFunctionReturnType(String name, List<JavaType> argumentTypes)
         throws JTAException {
         // TODO: check arguments
-        return javaClass.getFunctionInterface(name).returnType;
+        JavaFunction.Interface functionInterface = new JavaFunction.Interface(name, argumentTypes);
+        return javaClass.getFunctionReturnType(functionInterface);
     }
 
     public final String getEpilogueLabel() {

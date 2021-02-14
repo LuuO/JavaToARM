@@ -10,6 +10,7 @@ import javatoarm.java.expression.JavaName;
 import javatoarm.java.expression.JavaUnaryExpression;
 import javatoarm.java.expression.NewObjectExpression;
 import javatoarm.java.expression.NumericExpression;
+import javatoarm.java.expression.TernaryExpression;
 import javatoarm.java.statement.JavaAssignment;
 import javatoarm.java.statement.JavaFunctionCall;
 import javatoarm.java.statement.JavaIncrementDecrement;
@@ -24,6 +25,7 @@ import javatoarm.token.operator.AssignmentOperator;
 import javatoarm.token.operator.IncrementDecrement;
 import javatoarm.token.operator.OperatorToken;
 import javatoarm.token.operator.PlusMinus;
+import javatoarm.token.operator.TernaryToken;
 
 import java.util.List;
 import java.util.Stack;
@@ -47,7 +49,7 @@ public class ExpressionParser {
                 addElement(elements, new JavaArrayElement(array, index));
 
             } else if (token.equals(BracketToken.ROUND_L)) {
-                if (elements.peek().expression instanceof JavaName) {
+                if (!elements.isEmpty() && elements.peek().expression instanceof JavaName) {
                     // Function call
                     lexer.rewind();
                     String name = elements.pop().expression.toString();
@@ -66,7 +68,6 @@ public class ExpressionParser {
 
                     if (lexer.nextIf(BracketToken.ROUND_R) && isType) {
                         // sub expression
-                        long a = (long) lexer.hashCode();
                         lexer.deleteLastCheckPoint();
                     } else {
                         // sub expression
@@ -106,6 +107,7 @@ public class ExpressionParser {
         parseIncrementDecrement(elements);
         parseUnaryExpression(elements);
         parseBinaryExpression(elements);
+        parseTernaryToken(elements);
         parseAssignment(elements);
 
         if (elements.size() > 1) {
@@ -134,7 +136,13 @@ public class ExpressionParser {
 
     private static void setElement(List<ExpressionElement> list, int index,
                                    JavaExpression expression) {
-        list.set(index, new ExpressionElement(expression));
+        if (index > list.size()) {
+            throw new AssertionError();
+        } else if (index == list.size()) {
+            list.add(new ExpressionElement(expression));
+        } else {
+            list.set(index, new ExpressionElement(expression));
+        }
     }
 
     private static void parseIncrementDecrement(List<ExpressionElement> elements)
@@ -192,12 +200,12 @@ public class ExpressionParser {
      * @param elements
      */
     private static void parseBinaryExpression(List<ExpressionElement> elements) {
-        // TODO: implement shift
+        // TODO: implement shift?
         for (int level = 12; level >= 3; level--) {
             for (int i = 0; i < elements.size(); i++) {
                 ExpressionElement current = elements.get(i);
 
-                if (current.operator != null) {
+                if (current.operator instanceof OperatorToken.Binary) {
                     OperatorToken.Binary operator = (OperatorToken.Binary) current.operator;
 
                     if (operator.getPrecedenceLevel() == level) {
@@ -215,6 +223,25 @@ public class ExpressionParser {
                         throw new AssertionError();
                     }
                 }
+            }
+        }
+    }
+
+    private static void parseTernaryToken(Stack<ExpressionElement> elements) throws JTAException {
+        for (int i = elements.size() - 1; i >= 0; i--) {
+            OperatorToken operator = elements.get(i).operator;
+            if (operator instanceof TernaryToken) {
+                i -= 3;
+                if (i < 0) {
+                    throw new JTAException.InvalidOperation("missing left value");
+                }
+                JavaExpression condition = elements.remove(i).expression; //TODO: check expression
+                elements.remove(i); // ? sign
+                JavaExpression trueExpression = elements.remove(i).expression;
+                elements.remove(i); // : sign //TODO: check index
+                JavaExpression falseExpression = elements.remove(i).expression;
+                setElement(elements, i,
+                    new TernaryExpression(condition, trueExpression, falseExpression));
             }
         }
     }

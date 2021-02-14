@@ -118,8 +118,12 @@ public class JavaParser {
 
             /* check type parameter */
             if (lexer.nextIf(AngleToken.LEFT)) {
-                type = new JavaParametrizedType(typeName, parseType(lexer, false));
-                lexer.next(AngleToken.RIGHT);
+                if (lexer.nextIf(AngleToken.RIGHT)) {
+                    type = new JavaParametrizedType(typeName, null);
+                } else {
+                    type = new JavaParametrizedType(typeName, parseType(lexer, false));
+                    lexer.next(AngleToken.RIGHT);
+                }
             } else {
                 type = JavaSimpleType.get(typeName);
             }
