@@ -17,8 +17,7 @@ import java.util.Set;
 
 public class FieldParser {
 
-    public static JavaVariableDeclare parse(JavaLexer lexer) throws JTAException {
-        List<JavaAnnotation> annotations = JavaParser.parseAnnotations(lexer);
+    public static JavaVariableDeclare parse(JavaLexer lexer, List<JavaAnnotation> annotations) throws JTAException {
         Set<JavaProperty> properties =
             JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
         JavaType type = JavaParser.parseType(lexer, true);

@@ -58,23 +58,30 @@ public class JavaLexer {
                     }
                     break;
                 case SYMBOL: /* last char is a symbol (+, ], }, =, ...) */
-                    word.append(c);
                     String combinedSymbol = wordSymbol(word, charArray, i);
                     i += combinedSymbol.length() - 1;
-                    if (combinedSymbol.equals("/*")) {
-                        state = State.COMMENT_ML;
-                        if (c == '*') {
-                            word.append(c);
-                        }
-                    } else if (combinedSymbol.equals("//")) {
-                        if (c == '\n') {
-                            state = State.WHITESPACE;
-                        } else {
-                            state = State.COMMENT_SL;
-                        }
-                    } else {
-                        words.add(combinedSymbol);
-                        state = findNextState(word, charArray[i]);
+                    switch (combinedSymbol) {
+                        case "/*":
+                            state = State.COMMENT_ML;
+                            if (c == '*') {
+                                word.append(c);
+                            }
+                            break;
+                        case "//":
+                            if (c == '\n') {
+                                state = State.WHITESPACE;
+                            } else {
+                                state = State.COMMENT_SL;
+                            }
+                            break;
+                        case "\"":
+                            word.append(combinedSymbol).append(c);
+                            state = State.STRING;
+                            break;
+                        default:
+                            words.add(combinedSymbol);
+                            state = findNextState(word, charArray[i]);
+                            break;
                     }
                     break;
                 case COMMENT_SL: /* in a single-line comment */
@@ -96,8 +103,6 @@ public class JavaLexer {
                     if (!escaped && c == '"') {
                         collectAndClear(word);
                         state = State.WHITESPACE;
-                    } else {
-                        word.append(c);
                     }
                     break;
                 case CHAR:
@@ -123,16 +128,14 @@ public class JavaLexer {
                 break;
             }
         }
-        for (int i = builder.length(); i > 1; i--) {
+        for (int i = builder.length(); i > 0; i--) {
             String subString = builder.substring(0, i);
-            if (longOperators.contains(subString)) {
+            if (i == 1 || longOperators.contains(subString)) {
                 builder.setLength(0);
                 return subString;
             }
         }
-        String symbol = builder.substring(0, 1);
-        builder.setLength(0);
-        return symbol;
+        throw new AssertionError();
     }
 
     private State findNextState(StringBuilder word, char c) throws JTAException.UnknownCharacter {

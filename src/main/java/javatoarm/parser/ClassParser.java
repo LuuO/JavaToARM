@@ -1,9 +1,11 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
+import javatoarm.java.JavaAnnotation;
 import javatoarm.java.JavaClass;
 import javatoarm.java.JavaProperty;
 import javatoarm.java.type.JavaType;
+import javatoarm.token.AnnotationToken;
 import javatoarm.token.BracketToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.KeywordToken;
@@ -81,11 +83,17 @@ public class ClassParser {
      */
     private static JavaClass.Member getMember(JavaLexer lexer, String className)
         throws JTAException {
+        List<JavaAnnotation> annotations;
+        if (lexer.peek().equals(AnnotationToken.INSTANCE)) {
+            annotations = JavaParser.parseAnnotations(lexer);
+        } else {
+            annotations = Collections.emptyList();
+        }
         switch (getNextMemberType(lexer)) {
             case FIELD:
-                return FieldParser.parse(lexer);
+                return FieldParser.parse(lexer, annotations);
             case FUNCTION:
-                return FunctionParser.parse(lexer, className);
+                return FunctionParser.parse(lexer, className, annotations);
             case INITIALIZER:
                 return new JavaClass.Initializer(CodeParser.parseBlock(lexer), false);
             case STATIC_INITIALIZER:

@@ -21,13 +21,14 @@ import java.util.Set;
 
 public class FunctionParser {
 
-    public static JavaFunction parse(JavaLexer lexer, String className) throws JTAException {
-        List<JavaAnnotation> annotations = JavaParser.parseAnnotations(lexer);
+    public static JavaFunction parse(JavaLexer lexer, String className,
+                                     List<JavaAnnotation> annotations) throws JTAException {
         Set<JavaProperty> properties =
             JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
         JavaType returnType = JavaParser.parseType(lexer, true);
         String methodName;
-        if (lexer.peek().equals(BracketToken.ROUND_L)) {
+        if (lexer.peek().equals(BracketToken.ROUND_L) && returnType.toString().equals(className)) {
+            // constructor
             methodName = returnType.toString();
         } else {
             methodName = JavaParser.parseSimpleName(lexer);
