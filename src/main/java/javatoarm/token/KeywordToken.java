@@ -1,6 +1,8 @@
 package javatoarm.token;
 
 public class KeywordToken implements Token {
+    public static KeywordToken NEW = new KeywordToken(Keyword._new);
+    public static KeywordToken THIS = new KeywordToken(Keyword._this);
 
     public final Keyword keyword;
 

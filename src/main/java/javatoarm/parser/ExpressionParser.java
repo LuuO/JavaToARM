@@ -2,11 +2,13 @@ package javatoarm.parser;
 
 import javatoarm.JTAException;
 import javatoarm.java.JavaLeftValue;
+import javatoarm.java.JavaRightValue;
 import javatoarm.java.expression.JavaArrayElement;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.expression.JavaImmediate;
 import javatoarm.java.expression.JavaName;
 import javatoarm.java.expression.JavaUnaryExpression;
+import javatoarm.java.expression.NewObjectExpression;
 import javatoarm.java.expression.NumericExpression;
 import javatoarm.java.statement.JavaAssignment;
 import javatoarm.java.statement.JavaFunctionCall;
@@ -14,6 +16,7 @@ import javatoarm.java.statement.JavaIncrementDecrement;
 import javatoarm.token.BracketToken;
 import javatoarm.token.ImmediateToken;
 import javatoarm.token.JavaLexer;
+import javatoarm.token.KeywordToken;
 import javatoarm.token.NameToken;
 import javatoarm.token.Token;
 import javatoarm.token.operator.AssignmentOperator;
@@ -32,7 +35,7 @@ public class ExpressionParser {
         while (true) {
             Token token = lexer.next();
 
-            // TODO: support condition casting, new Object creation, ternary
+            // TODO: support condition casting, ternary
             if (token.equals(BracketToken.SQUARE_L)) {
                 JavaExpression index = parse(lexer);
                 lexer.next(BracketToken.SQUARE_R);
@@ -56,12 +59,19 @@ public class ExpressionParser {
                     addElement(elements, expression);
                 }
 
+            } else if (token.equals(KeywordToken.NEW)) {
+                lexer.rewind();
+                JavaRightValue rightValue = RightValueParser.parseNewInit(lexer);
+                if (!(rightValue instanceof NewObjectExpression)) {
+                    throw new JTAException.Unsupported("Not NewObjectExpression ");
+                }
+                addElement(elements, (NewObjectExpression) rightValue);
             } else if (token instanceof OperatorToken) {
                 addElement(elements, (OperatorToken) token);
             } else if (token instanceof ImmediateToken) {
                 JavaImmediate constant = new JavaImmediate(((ImmediateToken) token));
                 addElement(elements, constant);
-            } else if (token instanceof NameToken) {
+            } else if (token instanceof NameToken || token.equals(KeywordToken.THIS)) {
                 lexer.rewind();
                 JavaName name = JavaParser.parseNamePath(lexer);
                 addElement(elements, name);

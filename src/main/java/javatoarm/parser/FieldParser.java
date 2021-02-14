@@ -4,9 +4,10 @@ import javatoarm.JTAException;
 import javatoarm.java.JavaAnnotation;
 import javatoarm.java.JavaProperty;
 import javatoarm.java.JavaRightValue;
-import javatoarm.java.type.JavaType;
 import javatoarm.java.statement.JavaVariableDeclare;
+import javatoarm.java.type.JavaType;
 import javatoarm.token.JavaLexer;
+import javatoarm.token.KeywordToken;
 import javatoarm.token.SplitterToken;
 import javatoarm.token.Token;
 import javatoarm.token.operator.AssignmentOperator;
@@ -27,7 +28,11 @@ public class FieldParser {
         JavaRightValue initialValue = null;
         Token token = lexer.next();
         if (token instanceof AssignmentOperator.Simple) {
-            initialValue = ExpressionParser.parse(lexer);
+            if (lexer.peek().equals(new KeywordToken(KeywordToken.Keyword._new))) {
+                initialValue = RightValueParser.parseNewInit(lexer);
+            } else {
+                initialValue = ExpressionParser.parse(lexer);
+            }
             token = lexer.next();
         }
         if (!SplitterToken.isSemiColon(token)) {

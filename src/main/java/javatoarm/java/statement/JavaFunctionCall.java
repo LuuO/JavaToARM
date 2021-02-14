@@ -3,8 +3,8 @@ package javatoarm.java.statement;
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.java.JavaScope;
-import javatoarm.java.type.JavaType;
 import javatoarm.java.expression.JavaExpression;
+import javatoarm.java.type.JavaType;
 import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 
@@ -13,17 +13,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class JavaFunctionCall implements JavaExpression, JavaStatement {
-    JavaType dataType;
     String name;
     List<JavaExpression> arguments;
 
     public JavaFunctionCall(String name, List<JavaExpression> arguments) {
         this.name = name;
-        this.arguments = arguments;
-    }
-
-    public JavaFunctionCall(JavaType dataType, List<JavaExpression> arguments) {
-        this.dataType = dataType;
         this.arguments = arguments;
     }
 

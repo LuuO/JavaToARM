@@ -1,7 +1,6 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.JavaBlock;
 import javatoarm.java.JavaClass;
 import javatoarm.java.JavaProperty;
 import javatoarm.java.type.JavaType;
@@ -46,7 +45,7 @@ public class ClassParser {
         List<JavaClass.Member> members = new ArrayList<>();
 
         while (!lexer.peek().equals(BracketToken.CURLY_R)) {
-            members.add(getMember(lexer));
+            members.add(getMember(lexer, className));
             JavaParser.eatSemiColons(lexer);
             if (!lexer.hasNext()) {
                 throw new JTAException.UnexpectedToken("'}'", "EOF");
@@ -80,10 +79,13 @@ public class ClassParser {
      * @return
      * @throws JTAException
      */
-    private static JavaClass.Member getMember(JavaLexer lexer) throws JTAException {
+    private static JavaClass.Member getMember(JavaLexer lexer, String className)
+        throws JTAException {
         switch (getNextMemberType(lexer)) {
-            case FIELD: return FieldParser.parse(lexer);
-            case FUNCTION: return FunctionParser.parse(lexer);
+            case FIELD:
+                return FieldParser.parse(lexer);
+            case FUNCTION:
+                return FunctionParser.parse(lexer, className);
             case INITIALIZER:
                 return new JavaClass.Initializer(CodeParser.parseBlock(lexer), false);
             case STATIC_INITIALIZER:

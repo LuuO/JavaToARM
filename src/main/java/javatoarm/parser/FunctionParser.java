@@ -1,12 +1,14 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
+import javatoarm.java.JavaAnnotation;
 import javatoarm.java.JavaBlock;
 import javatoarm.java.JavaFunction;
 import javatoarm.java.JavaProperty;
-import javatoarm.java.type.JavaType;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.statement.JavaVariableDeclare;
+import javatoarm.java.type.JavaArrayType;
+import javatoarm.java.type.JavaType;
 import javatoarm.token.BracketToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.SplitterToken;
@@ -19,35 +21,47 @@ import java.util.Set;
 
 public class FunctionParser {
 
-    public static JavaFunction parse(JavaLexer lexer) throws JTAException {
+    public static JavaFunction parse(JavaLexer lexer, String className) throws JTAException {
+        List<JavaAnnotation> annotations = JavaParser.parseAnnotations(lexer);
         Set<JavaProperty> properties =
             JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
         JavaType returnType = JavaParser.parseType(lexer, true);
-        String methodName = JavaParser.parseSimpleName(lexer);
+        String methodName;
+        if (lexer.peek().equals(BracketToken.ROUND_L)) {
+            methodName = returnType.toString();
+        } else {
+            methodName = JavaParser.parseSimpleName(lexer);
+        }
         List<JavaVariableDeclare> arguments = parseArgumentDeclares(lexer);
 
         JavaBlock body = CodeParser.parseBlock(lexer);
 
-        return new JavaFunction(properties, returnType, methodName, arguments, body);
+        return new JavaFunction(annotations, properties, returnType, methodName, arguments, body);
     }
 
     private static List<JavaVariableDeclare> parseArgumentDeclares(JavaLexer lexer)
         throws JTAException {
-        SplitterToken comma = new SplitterToken(',');
         List<JavaVariableDeclare> arguments = new ArrayList<>();
 
         lexer.next(BracketToken.ROUND_L);
-        if (!lexer.peek().equals(BracketToken.ROUND_R)) {
+        if (!lexer.nextIf(BracketToken.ROUND_R)) {
             for (; ; ) {
-                JavaType condition = JavaParser.parseType(lexer, true);
+                JavaType type = JavaParser.parseType(lexer, true);
                 String name = JavaParser.parseSimpleName(lexer);
-                arguments.add(new JavaVariableDeclare(
-                    Collections.emptySet(), condition, name, null));
-
                 Token next = lexer.next();
+
+                // check char value[]
+                if (next.equals(BracketToken.SQUARE_L)) {
+                    lexer.next(BracketToken.SQUARE_R);
+                    next = lexer.next();
+                    type = new JavaArrayType(type);
+                }
+
+                arguments.add(new JavaVariableDeclare(
+                    Collections.emptySet(), type, name, null));
                 if (next.equals(BracketToken.ROUND_R)) {
                     break;
-                } else if (!next.equals(comma)) {
+                } else if (!next.equals(SplitterToken.COMMA)) {
                     throw new JTAException.UnexpectedToken("',' or ')'", next);
                 }
             }

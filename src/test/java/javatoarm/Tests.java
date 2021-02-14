@@ -25,7 +25,7 @@ public class Tests {
         System.out.println(JavaToARM.compileToARMv7(code, "Fibb", null));
     }
 
-    @Ignore
+
     @Test
     public void test_string() throws IOException, JTAException {
         assertTrue(true);

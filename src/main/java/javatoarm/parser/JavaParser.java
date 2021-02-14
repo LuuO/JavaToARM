@@ -1,17 +1,16 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.assembly.Condition;
 import javatoarm.java.JavaAnnotation;
 import javatoarm.java.JavaFile;
 import javatoarm.java.JavaProperty;
 import javatoarm.java.expression.JavaExpression;
+import javatoarm.java.expression.JavaImmediate;
+import javatoarm.java.expression.JavaName;
 import javatoarm.java.type.JavaArrayType;
 import javatoarm.java.type.JavaParametrizedType;
 import javatoarm.java.type.JavaSimpleType;
 import javatoarm.java.type.JavaType;
-import javatoarm.java.expression.JavaImmediate;
-import javatoarm.java.expression.JavaName;
 import javatoarm.token.AngleToken;
 import javatoarm.token.AnnotationToken;
 import javatoarm.token.BracketToken;
@@ -22,13 +21,10 @@ import javatoarm.token.MemberAccessToken;
 import javatoarm.token.NameToken;
 import javatoarm.token.SplitterToken;
 import javatoarm.token.Token;
-import javatoarm.token.operator.AssignmentOperator;
-import javatoarm.token.operator.Comparison;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class JavaParser {
@@ -147,10 +143,11 @@ public class JavaParser {
 
         while (lexer.hasNext()) {
             Token token = lexer.next();
-            if (token instanceof NameToken) {
+            if (token instanceof NameToken || token.equals(KeywordToken.THIS)) {
                 path.add(token.toString());
-            } else if (token instanceof MemberAccessToken) {
-                path.add(parseSimpleName(lexer));
+                if (!lexer.nextIf(MemberAccessToken.INSTANCE)) {
+                    return new JavaName(path);
+                }
             } else {
                 lexer.rewind();
                 if (path.size() == 0 || path.get(path.size() - 1).equals(".")) {
@@ -165,24 +162,10 @@ public class JavaParser {
     }
 
     public static List<JavaAnnotation> parseAnnotations(JavaLexer lexer) throws JTAException {
-        Token equal = new AssignmentOperator.Simple();
-
         ArrayList<JavaAnnotation> annotations = new ArrayList<>();
         while (lexer.nextIf(AnnotationToken.INSTANCE)) {
             JavaName name = parseNamePath(lexer);
             if (lexer.nextIf(BracketToken.ROUND_L) && !lexer.nextIf(BracketToken.ROUND_R)) {
-//                String parameterName = parseNamePath(lexer).toSimpleName();
-//                JavaImmediate parameterValue;
-//                if (lexer.nextIf(equal)) {
-//                    Token next = lexer.next();
-//                    if (next instanceof ImmediateToken.StringToken) {
-//                        parameterValue = new JavaImmediate(JavaSimpleType.STRING, next.toString());
-//                    } else {
-//                        throw new JTAException.Unsupported("annotation not supported");
-//                    }
-//                } else {
-//                    parameterValue = null;
-//                }
                 JavaExpression parameter = ExpressionParser.parse(lexer);
                 lexer.next(BracketToken.ROUND_R);
 
