@@ -3,7 +3,8 @@ package javatoarm.parser;
 import javatoarm.JTAException;
 import javatoarm.java.JavaNewArray;
 import javatoarm.java.JavaRightValue;
-import javatoarm.java.JavaType;
+import javatoarm.java.type.JavaSimpleType;
+import javatoarm.java.type.JavaType;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.statement.JavaFunctionCall;
 import javatoarm.java.statement.JavaStatement;
@@ -82,7 +83,7 @@ public class StatementParser {
 
         if (lexer.peek() instanceof KeywordToken) {
             KeywordToken keywordToken = (KeywordToken) lexer.peek();
-            return JavaType.get(keywordToken) != null;
+            return JavaSimpleType.get(keywordToken) != null;
         }
 
         lexer.createCheckPoint();

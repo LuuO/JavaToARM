@@ -1,6 +1,7 @@
 package javatoarm.token;
 
-import javatoarm.java.JavaType;
+import javatoarm.java.type.JavaSimpleType;
+import javatoarm.java.type.JavaType;
 
 /**
  * Tokens that represent an immediate value.
@@ -62,7 +63,7 @@ public interface ImmediateToken extends Token {
 
         @Override
         public JavaType getType() {
-            return JavaType.STRING;
+            return JavaSimpleType.STRING;
         }
 
         @Override
@@ -77,7 +78,7 @@ public interface ImmediateToken extends Token {
     class Null implements ImmediateToken {
         @Override
         public JavaType getType() {
-            return JavaType.NULL;
+            return JavaSimpleType.NULL;
         }
 
         @Override
@@ -98,7 +99,7 @@ public interface ImmediateToken extends Token {
 
         @Override
         public JavaType getType() {
-            return JavaType.BOOL;
+            return JavaSimpleType.BOOL;
         }
 
         @Override
@@ -137,7 +138,7 @@ public interface ImmediateToken extends Token {
 
         @Override
         public JavaType getType() {
-            return JavaType.INT;
+            return JavaSimpleType.INT;
         }
 
         @Override
@@ -166,7 +167,7 @@ public interface ImmediateToken extends Token {
 
         @Override
         public JavaType getType() {
-            return JavaType.DOUBLE;
+            return JavaSimpleType.DOUBLE;
         }
 
         @Override

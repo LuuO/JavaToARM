@@ -12,13 +12,7 @@ public interface OperatorToken extends Token {
         return token;
     }
 
-    Type getOperatorType();
-
     int getPrecedenceLevel();
-
-    enum Type {
-        UNARY, BINARY, PLUS_MINUS
-    }
 
     interface Binary extends OperatorToken {
 
@@ -41,17 +35,6 @@ public interface OperatorToken extends Token {
             }
             return null;
         }
-
-        @Override
-        default OperatorToken.Type getOperatorType() {
-            return OperatorToken.Type.BINARY;
-        }
-
-        Type getBinaryOperatorType();
-
-        enum Type {
-            ASSIGNMENT, ARITHMETIC, COMPARISON, LOGICAL, BITWISE
-        }
     }
 
     interface Unary extends OperatorToken {
@@ -66,11 +49,6 @@ public interface OperatorToken extends Token {
                 case "~" -> new BitwiseNot();
                 default -> null;
             };
-        }
-
-        @Override
-        default OperatorToken.Type getOperatorType() {
-            return OperatorToken.Type.UNARY;
         }
 
         @Override

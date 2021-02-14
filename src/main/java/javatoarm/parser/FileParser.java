@@ -19,7 +19,7 @@ public class FileParser {
         JavaName packageName = JavaParser.parseNamePath(lexer);
         JavaParser.eatSemiColons(lexer);
 
-        Set<JavaName> imports = getImports(lexer);
+        Set<JavaFile.Import> imports = getImports(lexer);
         JavaParser.eatSemiColons(lexer);
 
         List<JavaClass> classes = new ArrayList<>();
@@ -31,12 +31,16 @@ public class FileParser {
         return new JavaFile(packageName, imports, classes);
     }
 
-    public static Set<JavaName> getImports(JavaLexer lexer) throws JTAException {
-        Set<JavaName> imports = new HashSet<>();
+    public static Set<JavaFile.Import> getImports(JavaLexer lexer) throws JTAException {
+        Set<JavaFile.Import> imports = new HashSet<>();
 
         while (lexer.hasNext()) {
             if (lexer.nextIf(KeywordToken.Keyword._import)) {
-                imports.add(JavaParser.parseNamePath(lexer));
+                boolean isStatic = false;
+                if (lexer.nextIf(KeywordToken.Keyword._static)) {
+                    isStatic = true;
+                }
+                imports.add(new JavaFile.Import(JavaParser.parseNamePath(lexer), isStatic));
                 JavaParser.eatSemiColons(lexer);
             } else {
                 break;
@@ -45,4 +49,5 @@ public class FileParser {
 
         return imports;
     }
+
 }

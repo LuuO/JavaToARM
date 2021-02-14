@@ -3,7 +3,7 @@ package javatoarm.java.expression;
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.java.JavaScope;
-import javatoarm.java.JavaType;
+import javatoarm.java.type.JavaType;
 import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.Comparison;

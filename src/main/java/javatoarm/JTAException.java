@@ -1,7 +1,7 @@
 package javatoarm;
 
 import javatoarm.java.JavaProperty;
-import javatoarm.java.JavaType;
+import javatoarm.java.type.JavaType;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.token.Token;
 
@@ -17,6 +17,7 @@ public abstract class JTAException extends Exception {
         public UnknownCharacter(char c) {
             super("Unknown character: '" + c + "'");
         }
+
         public UnknownCharacter(String s) {
             super("Unknown character: '" + s + "'");
         }

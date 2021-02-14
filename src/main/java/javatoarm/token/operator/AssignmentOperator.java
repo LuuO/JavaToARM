@@ -20,11 +20,6 @@ public interface AssignmentOperator extends OperatorToken.Binary {
     }
 
     @Override
-    default OperatorToken.Binary.Type getBinaryOperatorType() {
-        return OperatorToken.Binary.Type.ASSIGNMENT;
-    }
-
-    @Override
     default int getPrecedenceLevel() {
         return 1;
     }

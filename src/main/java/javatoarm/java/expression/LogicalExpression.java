@@ -4,7 +4,8 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Condition;
 import javatoarm.assembly.Subroutine;
 import javatoarm.java.JavaScope;
-import javatoarm.java.JavaType;
+import javatoarm.java.type.JavaSimpleType;
+import javatoarm.java.type.JavaType;
 import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.Logical;
@@ -42,7 +43,7 @@ public class LogicalExpression implements BooleanExpression {
 
         Variable left = operandLeft.compileExpression(subroutine, parent);
         Variable right = operandRight.compileExpression(subroutine, parent);
-        TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, JavaType.BOOL);
+        TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, JavaSimpleType.BOOL);
         subroutine.addLogic(saveResult, operator.isAnd, left, right, result);
         return result;
     }

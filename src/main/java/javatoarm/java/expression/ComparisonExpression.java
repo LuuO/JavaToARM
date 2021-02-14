@@ -4,25 +4,26 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Condition;
 import javatoarm.assembly.Subroutine;
 import javatoarm.java.JavaScope;
-import javatoarm.java.JavaType;
+import javatoarm.java.type.JavaSimpleType;
+import javatoarm.java.type.JavaType;
 import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.Comparison;
 
 public class ComparisonExpression implements BooleanExpression {
-    Comparison operator;
+    Condition condition;
     JavaExpression operandLeft, operandRight;
 
     public ComparisonExpression(Comparison operator, JavaExpression operandLeft,
                                 JavaExpression operandRight) {
-        this.operator = operator;
+        this.condition = operator.getCondition();
         this.operandLeft = operandLeft;
         this.operandRight = operandRight;
     }
 
     @Override
     public Condition getCondition() {
-        return operator.condition;
+        return condition;
     }
 
     @Override
@@ -35,8 +36,8 @@ public class ComparisonExpression implements BooleanExpression {
     @Override
     public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
         compileToConditionCode(subroutine, parent);
-        TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, JavaType.BOOL);
-        subroutine.saveBooleanResult(operator.condition, result);
+        TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, JavaSimpleType.BOOL);
+        subroutine.saveBooleanResult(condition, result);
         return result;
     }
 }

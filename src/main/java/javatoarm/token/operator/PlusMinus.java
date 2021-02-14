@@ -8,11 +8,6 @@ public class PlusMinus implements ArithmeticOperator, OperatorToken.Unary {
     }
 
     @Override
-    public OperatorToken.Type getOperatorType() {
-        return OperatorToken.Type.PLUS_MINUS;
-    }
-
-    @Override
     public Unary.Type getUnaryOperatorType() {
         return isPlus ? Unary.Type.POSITIVE : Unary.Type.NEGATIVE;
     }

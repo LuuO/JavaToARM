@@ -16,11 +16,6 @@ public class Bitwise implements OperatorToken.Binary {
     }
 
     @Override
-    public OperatorToken.Binary.Type getBinaryOperatorType() {
-        return OperatorToken.Binary.Type.BITWISE;
-    }
-
-    @Override
     public int getPrecedenceLevel() {
         return switch (type) {
             case AND -> 7;

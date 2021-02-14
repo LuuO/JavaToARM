@@ -2,6 +2,8 @@ package javatoarm.parser;
 
 import javatoarm.JTAException;
 import javatoarm.java.JavaClass;
+import javatoarm.java.JavaProperty;
+import javatoarm.java.type.JavaType;
 import javatoarm.token.BracketToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.KeywordToken;
@@ -10,7 +12,10 @@ import javatoarm.token.Token;
 import javatoarm.token.operator.AssignmentOperator;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Methods for parsing a Java Class
@@ -18,8 +23,21 @@ import java.util.List;
 public class ClassParser {
 
     public static JavaClass parse(JavaLexer lexer) throws JTAException {
-        boolean isPublic = parseAccess(lexer);
+        Set<JavaProperty> properties = parseHeader(lexer);
         String className = JavaParser.parseSimpleName(lexer);
+
+        Set<JavaType> superClass, superInterface;
+        if (lexer.nextIf(KeywordToken.Keyword._extends)) {
+            superClass = parseTypes(lexer);
+        } else {
+            superClass = Collections.emptySet();
+        }
+        if (lexer.nextIf(KeywordToken.Keyword._implements)) {
+            superInterface = parseTypes(lexer);
+        } else {
+            superInterface = Collections.emptySet();
+        }
+
 
         lexer.next(BracketToken.CURLY_L);
         JavaParser.eatSemiColons(lexer);
@@ -35,29 +53,23 @@ public class ClassParser {
         }
         lexer.next(BracketToken.CURLY_R);
 
-        return new JavaClass(isPublic, className, members);
+        return new JavaClass(properties, className, superClass, superInterface,members);
     }
 
     /**
      * Parse the header of the class,
      *
      * @param lexer the JavaLexer
-     * @return true if the class is public, false if the class is package-private.
+     * @return properties of the class
      */
-    private static boolean parseAccess(JavaLexer lexer) throws JTAException {
+    private static Set<JavaProperty> parseHeader(JavaLexer lexer) throws JTAException {
         Token classToken = new KeywordToken(KeywordToken.Keyword._class);
-        Token publicToken = new KeywordToken(KeywordToken.Keyword._public);
 
-        Token nextToken = lexer.next();
-        if (nextToken.equals(classToken)) {
-            return false;
-        } else if (nextToken.equals(publicToken)) {
-            lexer.next(classToken);
-            return true;
-        } else {
-            throw new JTAException.UnexpectedToken(
-                "class, public, or package-private", nextToken.toString());
-        }
+        Set<JavaProperty> properties =
+            JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS);
+
+        lexer.next(classToken);
+        return properties;
     }
 
     /**
@@ -95,6 +107,15 @@ public class ClassParser {
         } else {
             throw new JTAException.UnexpectedToken("class member", "EOF");
         }
+    }
+
+    private static Set<JavaType> parseTypes(JavaLexer lexer) throws JTAException {
+        Set<JavaType> types = new HashSet<>();
+        types.add(JavaParser.parseType(lexer, true));
+        while (lexer.nextIf(SplitterToken.COMMA)) {
+            types.add(JavaParser.parseType(lexer, true));
+        }
+        return types;
     }
 
 }

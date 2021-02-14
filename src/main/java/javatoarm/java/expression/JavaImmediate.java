@@ -4,7 +4,7 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.java.JavaRightValue;
 import javatoarm.java.JavaScope;
-import javatoarm.java.JavaType;
+import javatoarm.java.type.JavaType;
 import javatoarm.staticanalysis.Immediate;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.ImmediateToken;

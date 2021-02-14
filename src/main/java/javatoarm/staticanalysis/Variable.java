@@ -1,6 +1,6 @@
 package javatoarm.staticanalysis;
 
-import javatoarm.java.JavaType;
+import javatoarm.java.type.JavaType;
 
 /**
  * Represents everything that can be used or store to in Java. It could be a variable, an immediate

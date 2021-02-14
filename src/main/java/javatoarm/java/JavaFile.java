@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class JavaFile {
     public final JavaName packageName;
-    public final Set<JavaName> imports;
+    public final Set<Import> imports;
     private final List<JavaClass> classes;
 
     /*
@@ -17,7 +17,7 @@ public class JavaFile {
             classes contains only one public class
      */
 
-    public JavaFile(JavaName packageName, Set<JavaName> imports, List<JavaClass> classes) {
+    public JavaFile(JavaName packageName, Set<Import> imports, List<JavaClass> classes) {
         assertOnePublic(classes);
 
         this.packageName = packageName;
@@ -28,7 +28,7 @@ public class JavaFile {
     public void assertOnePublic(List<JavaClass> classes) {
         boolean hasPublic = false;
         for (JavaClass c : classes) {
-            if (c.isPublic) {
+            if (c.isPublic()) {
                 if (hasPublic) {
                     throw new IllegalArgumentException("There can be at most one public class.");
                 } else {
@@ -41,7 +41,7 @@ public class JavaFile {
     public void compileTo(Compiler compiler) throws JTAException {
         JavaClass firstClass = classes.get(0);
         for (int i = 0; i < classes.size(); i++) {
-            if (classes.get(i).isPublic) {
+            if (classes.get(i).isPublic()) {
                 firstClass = classes.remove(i);
                 break;
             }
@@ -54,4 +54,13 @@ public class JavaFile {
         }
     }
 
+    public static class Import {
+        public final JavaName path;
+        public final boolean isStatic;
+
+        public Import(JavaName path, boolean isStatic) {
+            this.path = path;
+            this.isStatic = isStatic;
+        }
+    }
 }

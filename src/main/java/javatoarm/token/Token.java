@@ -26,6 +26,9 @@ public interface Token {
             if ((token = MemberAccessToken.get(c)) != null) {
                 return token;
             }
+            if ((token = AnnotationToken.get(c)) != null) {
+                return token;
+            }
         }
 
         if ((token = ImmediateToken.get(word)) != null) {
@@ -39,10 +42,6 @@ public interface Token {
         }
 
         return new NameToken(word);
-    }
-
-    enum Type {
-        SPLITTER, BRACKET, VALUE, OPERATOR, KEYWORD, STRING, MEMBER_ACCESS
     }
 
 }

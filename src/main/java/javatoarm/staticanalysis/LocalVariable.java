@@ -4,7 +4,7 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Register;
 import javatoarm.assembly.RegisterAssigner;
 import javatoarm.java.JavaScope;
-import javatoarm.java.JavaType;
+import javatoarm.java.type.JavaType;
 
 public class LocalVariable implements Variable {
     public final JavaType condition;

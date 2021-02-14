@@ -20,8 +20,4 @@ public class Logical implements OperatorToken.Binary {
         return isAnd ? 4 : 3;
     }
 
-    @Override
-    public OperatorToken.Binary.Type getBinaryOperatorType() {
-        return OperatorToken.Binary.Type.LOGICAL;
-    }
 }

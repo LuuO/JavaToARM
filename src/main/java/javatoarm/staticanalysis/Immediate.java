@@ -2,7 +2,8 @@ package javatoarm.staticanalysis;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.RegisterAssigner;
-import javatoarm.java.JavaType;
+import javatoarm.java.type.JavaSimpleType;
+import javatoarm.java.type.JavaType;
 
 public class Immediate implements Variable {
     public final JavaType type;
@@ -29,11 +30,11 @@ public class Immediate implements Variable {
      * @return true if representing the value requires less than the input number of bits.
      */
     public boolean numberOfBitsLessThan(int bits) {
-        if (type.equals(JavaType.BOOL) || type.equals(JavaType.NULL)) {
+        if (type.equals(JavaSimpleType.BOOL) || type.equals(JavaSimpleType.NULL)) {
             return bits >= 1;
-        } else if (type.equals(JavaType.INT) || type.equals(JavaType.LONG)
-            || type.equals(JavaType.SHORT) || type.equals(JavaType.BYTE)
-            || type.equals(JavaType.FLOAT) || type.equals(JavaType.DOUBLE)) {
+        } else if (type.equals(JavaSimpleType.INT) || type.equals(JavaSimpleType.LONG)
+            || type.equals(JavaSimpleType.SHORT) || type.equals(JavaSimpleType.BYTE)
+            || type.equals(JavaSimpleType.FLOAT) || type.equals(JavaSimpleType.DOUBLE)) {
 
             if (bits >= 64) {
                 return true;
@@ -41,7 +42,7 @@ public class Immediate implements Variable {
             long maxNum = 1L << bits;
             int value = (Integer) this.value;
             return value < maxNum && -value <= maxNum;
-        } else if (type.equals(JavaType.VOID)) {
+        } else if (type.equals(JavaSimpleType.VOID)) {
             throw new IllegalArgumentException();
         } else {
             return false;
@@ -56,23 +57,23 @@ public class Immediate implements Variable {
      * @return number representation of the value in binary
      */
     public int toNumberRep() {
-        if (type.equals(JavaType.NULL)) {
+        if (type.equals(JavaSimpleType.NULL)) {
             return 0;
-        } else if (type.equals(JavaType.BOOL)) {
+        } else if (type.equals(JavaSimpleType.BOOL)) {
             return (Boolean) value ? 1 : 0;
-        } else if (type.equals(JavaType.INT)) {
+        } else if (type.equals(JavaSimpleType.INT)) {
             return (Integer) value;
-        } else if (type.equals(JavaType.LONG)) {
+        } else if (type.equals(JavaSimpleType.LONG)) {
             long longValue = (Long) value;
             if (longValue > Integer.MAX_VALUE || longValue < Integer.MIN_VALUE) {
                 throw new IllegalArgumentException();
             }
             return (int) longValue;
-        } else if (type.equals(JavaType.SHORT)) {
+        } else if (type.equals(JavaSimpleType.SHORT)) {
             return (Short) value;
-        } else if (type.equals(JavaType.BYTE)) {
+        } else if (type.equals(JavaSimpleType.BYTE)) {
             return (Byte) value;
-        } else if (type.equals(JavaType.VOID)) {
+        } else if (type.equals(JavaSimpleType.VOID)) {
             throw new IllegalArgumentException();
         } else {
             throw new UnsupportedOperationException();

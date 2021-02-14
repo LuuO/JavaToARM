@@ -4,25 +4,32 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
 import javatoarm.assembly.InstructionSet;
 import javatoarm.java.statement.JavaVariableDeclare;
+import javatoarm.java.type.JavaType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class JavaClass {
     private final Map<String, JavaFunction.Interface> functionInterfaces;
-    boolean isPublic; /* package-private or public*/
-    String name;
-    List<JavaVariableDeclare> fields;
-    LinkedList<JavaFunction> functions;
+    private final Set<JavaProperty> properties; /* package-private or public*/
+    private final List<JavaVariableDeclare> fields;
+    private final LinkedList<JavaFunction> functions;
 
-    public JavaClass(boolean isPublic, String name, List<Member> members)
-        throws JTAException {
+    public final String name;
+    public final Set<JavaType> superClass, superInterface;
 
-        this.isPublic = isPublic;
+    public JavaClass(Set<JavaProperty> properties, String name,
+                     Set<JavaType> superClass, Set<JavaType> superInterface,
+                     List<Member> members) throws JTAException {
+
+        this.properties = properties;
         this.name = name;
+        this.superClass = superClass;
+        this.superInterface = superInterface;
         this.fields = new ArrayList<>();
         this.functions = new LinkedList<>();
         this.functionInterfaces = new HashMap<>();
@@ -70,6 +77,10 @@ public class JavaClass {
         for (JavaFunction f : functions) {
             f.compileTo(compiler, scope);
         }
+    }
+
+    public boolean isPublic() {
+        return properties.contains(JavaProperty.PUBLIC);
     }
 
     public interface Member {

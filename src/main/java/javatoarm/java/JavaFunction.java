@@ -4,6 +4,7 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
 import javatoarm.assembly.Subroutine;
 import javatoarm.java.statement.JavaVariableDeclare;
+import javatoarm.java.type.JavaType;
 
 import java.util.Collections;
 import java.util.List;

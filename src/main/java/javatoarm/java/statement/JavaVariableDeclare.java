@@ -7,7 +7,7 @@ import javatoarm.java.JavaNewArray;
 import javatoarm.java.JavaProperty;
 import javatoarm.java.JavaRightValue;
 import javatoarm.java.JavaScope;
-import javatoarm.java.JavaType;
+import javatoarm.java.type.JavaType;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.staticanalysis.LocalVariable;
 import javatoarm.staticanalysis.Variable;
@@ -21,7 +21,7 @@ public class JavaVariableDeclare implements JavaClass.Member, JavaStatement {
     private final Set<JavaProperty> properties;
 
     public JavaVariableDeclare(Set<JavaProperty> properties, JavaType type,
-                               String name, JavaRightValue initialValue) throws JTAException {
+                               String name, JavaRightValue initialValue) {
         this.type = type;
         this.name = name;
         this.properties = properties; // TODO: validate properties

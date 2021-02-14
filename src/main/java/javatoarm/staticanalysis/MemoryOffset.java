@@ -2,7 +2,7 @@ package javatoarm.staticanalysis;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.RegisterAssigner;
-import javatoarm.java.JavaType;
+import javatoarm.java.type.JavaType;
 
 public class MemoryOffset implements Variable {
     public final JavaType type;

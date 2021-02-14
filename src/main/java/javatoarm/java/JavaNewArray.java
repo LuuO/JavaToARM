@@ -3,6 +3,8 @@ package javatoarm.java;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.expression.JavaImmediate;
 import javatoarm.java.expression.NumericExpression;
+import javatoarm.java.type.JavaSimpleType;
+import javatoarm.java.type.JavaType;
 import javatoarm.token.operator.ArithmeticOperator;
 
 public class JavaNewArray implements JavaRightValue {
@@ -15,7 +17,10 @@ public class JavaNewArray implements JavaRightValue {
     }
 
     public JavaExpression memorySize() {
-        JavaImmediate size = new JavaImmediate(JavaType.INT, type.size());
+        if (!(type instanceof JavaSimpleType)) {
+            throw new UnsupportedOperationException();
+        }
+        JavaImmediate size = new JavaImmediate(JavaSimpleType.INT, ((JavaSimpleType) type).size());
         return new NumericExpression(new ArithmeticOperator.Multiply(), numberOfElements, size);
     }
 }

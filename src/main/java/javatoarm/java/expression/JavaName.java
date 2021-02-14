@@ -10,7 +10,7 @@ import javatoarm.staticanalysis.LocalVariable;
 import java.util.List;
 
 //TODO bool
-public class JavaName implements JavaRightValue, JavaLeftValue, JavaExpression {
+public final class JavaName implements JavaRightValue, JavaLeftValue, JavaExpression {
     public final List<String> path;
 
     public JavaName(String name) {
@@ -30,10 +30,14 @@ public class JavaName implements JavaRightValue, JavaLeftValue, JavaExpression {
     }
 
     public String toSimpleName() throws JTAException {
-        if (path.size() != 1) {
+        if (!isSimple()) {
             throw new JTAException.InvalidName(toString() + " is not a valid simple name");
         }
         return path.get(0);
+    }
+
+    public boolean isSimple() {
+        return path.size() == 1;
     }
 
     @Override

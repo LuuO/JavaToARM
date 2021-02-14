@@ -4,7 +4,7 @@ import javatoarm.JTAException;
 import javatoarm.java.JavaBlock;
 import javatoarm.java.JavaFunction;
 import javatoarm.java.JavaProperty;
-import javatoarm.java.JavaType;
+import javatoarm.java.type.JavaType;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.statement.JavaVariableDeclare;
 import javatoarm.token.BracketToken;

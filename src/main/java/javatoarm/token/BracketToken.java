@@ -10,7 +10,7 @@ public class BracketToken implements Token {
 
     char bracket;
 
-    public BracketToken(char c) throws IllegalArgumentException {
+    protected BracketToken(char c) throws IllegalArgumentException {
         bracket = c;
     }
 
@@ -33,5 +33,10 @@ public class BracketToken implements Token {
             return this.bracket == that.bracket;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(bracket);
     }
 }

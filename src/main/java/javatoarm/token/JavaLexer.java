@@ -12,7 +12,7 @@ public class JavaLexer {
     private static final Set<Character> symbols =
         Set.of(';', '{', '}', '(', ')', '[', ']', '.', ',',
             '=', '+', '-', '*', '/', '&', '|', '%', '^', '!',
-            '\'', '"', '?', ':', '<', '>', '~', '@');
+            '\'', '"', '?', ':', '<', '>', '~', '@', '\\');
     private static final Set<String> longOperators =
         Set.of("++", "--", "==", "!=", "::", "+=", "-=", "*=", "/=", "%=", "<=", ">=", "//", "/*",
             "*/", "&&", "||", "^=", "|=", "<<=", ">>=", ">>>="); // TODO: support longer operators
@@ -28,10 +28,6 @@ public class JavaLexer {
         scan(code);
     }
 
-    /**
-     * @param c
-     * @return
-     */
     public static boolean isNameableChar(char c) {
         return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
             || (c >= '0' && c <= '9') || c == '$' || c == '_';

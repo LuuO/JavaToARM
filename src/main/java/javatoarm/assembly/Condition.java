@@ -15,6 +15,18 @@ public enum Condition {
         };
     }
 
+    public String toSymbol() {
+        return switch (this) {
+            case EQUAL -> "==";
+            case UNEQUAL -> "!=";
+            case GREATER -> ">";
+            case LESS -> "<";
+            case GREATER_EQUAL -> ">=";
+            case LESS_EQUAL -> "<=";
+            default -> throw new IllegalArgumentException();
+        };
+    }
+
     public Condition opposite() {
         return switch (this) {
             case EQUAL -> UNEQUAL;
