@@ -14,6 +14,7 @@ public class JavaSimpleType extends JavaType {
     public static JavaSimpleType BYTE = new JavaSimpleType("byte");
     public static JavaSimpleType LONG = new JavaSimpleType("byte");
     public static JavaSimpleType SHORT = new JavaSimpleType("short");
+    public static JavaSimpleType CHAR = new JavaSimpleType("char");
     public static JavaSimpleType VOID = new JavaSimpleType("void");
 
     public final String name;
@@ -38,6 +39,7 @@ public class JavaSimpleType extends JavaType {
             case _int -> INT;
             case _long -> LONG;
             case _short -> SHORT;
+            case _char -> CHAR;
             case _void -> VOID;
             default -> null;
         };
