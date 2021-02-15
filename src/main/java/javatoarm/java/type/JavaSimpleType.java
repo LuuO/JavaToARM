@@ -46,16 +46,24 @@ public class JavaSimpleType extends JavaType {
     }
 
     @Override
-    public int hashCode() {
-        return name.hashCode();
+    public boolean compatibleTo(Object obj) {
+        if (super.compatibleTo(obj)) {
+            return true;
+        }
+        if ((obj instanceof JavaSimpleType)
+            && (this == BYTE || this == INT || this == LONG || this == SHORT)) {
+
+            return (obj == BYTE || obj == INT || obj == LONG || obj == SHORT);
+        }
+        return false;
     }
 
     /**
      * Get the size of the type.
+     * TODO: support other types
      *
      * @return number of bytes that one element of the type will occupy.
      */
-    //TODO: improve
     public int size() {
         if (equals(INT) || equals(FLOAT)) {
             return 4;

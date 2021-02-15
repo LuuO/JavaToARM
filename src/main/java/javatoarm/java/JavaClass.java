@@ -68,11 +68,25 @@ public class JavaClass implements JavaClassMember {
     public JavaType getFunctionReturnType(JavaFunction.Interface functionInterface)
         throws JTAException {
 
-        JavaType returnType = functionInterfaces.get(functionInterface);
-        if (returnType == null) {
-            throw new JTAException.UnknownFunction(name);
+        for (Map.Entry<JavaFunction.Interface, JavaType> entry : functionInterfaces.entrySet()) {
+            JavaFunction.Interface key = entry.getKey();
+
+            if (key.name.equals(functionInterface.name) &&
+                key.arguments.size() == functionInterface.arguments.size()) {
+                boolean match = true;
+                for (int i = 0; i < key.arguments.size(); i++) {
+                    if (!(key.arguments.get(i).compatibleTo(functionInterface.arguments.get(i)))) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) {
+                    return entry.getValue();
+                }
+            }
         }
-        return returnType;
+
+        throw new JTAException.UnknownFunction(functionInterface.name);
     }
 
     public void compileTo(Compiler compiler, InstructionSet is) throws JTAException {
