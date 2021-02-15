@@ -9,8 +9,8 @@ import javatoarm.staticanalysis.LocalVariable;
 
 import java.util.List;
 
-//TODO bool
-public final class JavaName implements JavaRightValue, JavaLeftValue, JavaExpression {
+// TODO: rename to JavaMemberName
+public class JavaName implements JavaRightValue, JavaLeftValue, JavaExpression {
     public final List<String> path;
 
     public JavaName(String name) {

@@ -1,6 +1,8 @@
 package javatoarm.token;
 
-public class MemberAccessToken implements Token {
+import javatoarm.token.operator.OperatorToken;
+
+public class MemberAccessToken implements OperatorToken {
     public static MemberAccessToken INSTANCE = new MemberAccessToken();
 
     private MemberAccessToken() {
@@ -12,5 +14,10 @@ public class MemberAccessToken implements Token {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public int getPrecedenceLevel() {
+        return 16;
     }
 }

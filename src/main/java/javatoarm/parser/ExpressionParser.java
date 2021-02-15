@@ -3,11 +3,13 @@ package javatoarm.parser;
 import javatoarm.JTAException;
 import javatoarm.java.JavaLeftValue;
 import javatoarm.java.JavaRightValue;
+import javatoarm.java.expression.InstanceOfExpression;
 import javatoarm.java.expression.JavaArrayElement;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.expression.JavaImmediate;
 import javatoarm.java.expression.JavaName;
 import javatoarm.java.expression.JavaUnaryExpression;
+import javatoarm.java.expression.MemberAccessExpression;
 import javatoarm.java.expression.NewObjectExpression;
 import javatoarm.java.expression.NumericExpression;
 import javatoarm.java.expression.TernaryExpression;
@@ -19,6 +21,7 @@ import javatoarm.token.BracketToken;
 import javatoarm.token.ImmediateToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.KeywordToken;
+import javatoarm.token.MemberAccessToken;
 import javatoarm.token.NameToken;
 import javatoarm.token.Token;
 import javatoarm.token.operator.AssignmentOperator;
@@ -42,17 +45,25 @@ public class ExpressionParser {
             if (token.equals(BracketToken.SQUARE_L)) {
                 JavaExpression index = parse(lexer);
                 lexer.next(BracketToken.SQUARE_R);
-                if (elements.isEmpty() || elements.peek().expression == null) {
+                if (elements.isEmpty() || elements.peek().expression() == null) {
                     throw new JTAException.InvalidOperation("Invalid array access");
                 }
-                JavaExpression array = elements.pop().expression;
+                JavaExpression array = ((Expression) elements.pop()).expression;
                 addElement(elements, new JavaArrayElement(array, index));
 
+            } else if (token instanceof MemberAccessToken) {
+                if (elements.isEmpty() || elements.peek().expression() == null) {
+                    throw new JTAException.InvalidOperation("Invalid member access");
+                }
+                JavaExpression left = elements.pop().expression();
+                JavaName right = JavaParser.parseNamePath(lexer);
+                addElement(elements, new MemberAccessExpression(left, right));
+
             } else if (token.equals(BracketToken.ROUND_L)) {
-                if (!elements.isEmpty() && elements.peek().expression instanceof JavaName) {
+                if (!elements.isEmpty() && elements.peek().expression() instanceof JavaName) {
                     // Function call
                     lexer.rewind();
-                    String name = elements.pop().expression.toString();
+                    String name = elements.pop().expression().toString();
                     List<JavaExpression> arguments = FunctionParser.parseCallArguments(lexer);
                     addElement(elements, new JavaFunctionCall(name, arguments));
                 } else {
@@ -93,6 +104,9 @@ public class ExpressionParser {
                 lexer.rewind();
                 JavaName name = JavaParser.parseNamePath(lexer);
                 addElement(elements, name);
+            } else if (token.equals(new KeywordToken(KeywordToken.Keyword._instanceof))) {
+                elements.add(new InstanceOf());
+                elements.add(new Type(JavaParser.parseType(lexer, true)));
             } else {
                 lexer.rewind();
                 break;
@@ -112,26 +126,26 @@ public class ExpressionParser {
 
         if (elements.size() > 1) {
             ExpressionElement element = elements.get(1);
-            if (element.expression != null) {
-                throw new JTAException.InvalidExpression(element.expression);
+            if (element.expression() != null) {
+                throw new JTAException.InvalidExpression(element.expression());
             } else {
-                throw new JTAException.InvalidOperation(element.operator.toString());
+                throw new JTAException.InvalidOperation(element.operator().toString());
             }
         }
 
         ExpressionElement result = elements.get(0);
-        if (result.expression == null) {
-            throw new JTAException.InvalidOperation(result.operator.toString());
+        if (result.expression() == null) {
+            throw new JTAException.InvalidOperation(result.operator().toString());
         }
-        return result.expression;
+        return result.expression();
     }
 
     private static void addElement(List<ExpressionElement> list, JavaExpression expression) {
-        list.add(new ExpressionElement(expression));
+        list.add(new Expression(expression));
     }
 
     private static void addElement(List<ExpressionElement> list, OperatorToken operator) {
-        list.add(new ExpressionElement(operator));
+        list.add(new Operator(operator));
     }
 
     private static void setElement(List<ExpressionElement> list, int index,
@@ -139,9 +153,9 @@ public class ExpressionParser {
         if (index > list.size()) {
             throw new AssertionError();
         } else if (index == list.size()) {
-            list.add(new ExpressionElement(expression));
+            list.add(new Expression(expression));
         } else {
-            list.set(index, new ExpressionElement(expression));
+            list.set(index, new Expression(expression));
         }
     }
 
@@ -149,22 +163,22 @@ public class ExpressionParser {
         throws JTAException {
 
         for (int i = 0; i < elements.size(); i++) {
-            OperatorToken operator = elements.get(i).operator;
+            OperatorToken operator = elements.get(i).operator();
             if (operator instanceof IncrementDecrement) {
                 IncrementDecrement idOperator = (IncrementDecrement) operator;
                 elements.remove(i);
 
                 // TODO: check index, is variable
-                if (i > 0 && elements.get(i - 1).expression instanceof JavaName) {
+                if (i > 0 && elements.get(i - 1).expression() instanceof JavaName) {
                     i--;
-                    JavaName variable = (JavaName) elements.get(i).expression;
+                    JavaName variable = (JavaName) elements.get(i).expression();
                     JavaExpression expression = new JavaIncrementDecrement(
                         variable, true, idOperator.isIncrement);
                     setElement(elements, i, expression);
 
                 } else if (i < elements.size() &&
-                    elements.get(i).expression instanceof JavaName) {
-                    JavaName variable = (JavaName) elements.get(i).expression;
+                    elements.get(i).expression() instanceof JavaName) {
+                    JavaName variable = (JavaName) elements.get(i).expression();
                     JavaExpression expression = new JavaIncrementDecrement(
                         variable, false, idOperator.isIncrement);
                     setElement(elements, i, expression);
@@ -178,17 +192,17 @@ public class ExpressionParser {
 
     private static void parseUnaryExpression(List<ExpressionElement> elements) {
         for (int i = 0; i < elements.size(); i++) {
-            OperatorToken operator = elements.get(i).operator;
+            OperatorToken operator = elements.get(i).operator();
             if (operator instanceof OperatorToken.Unary) {
                 OperatorToken.Unary unaryOperator = (OperatorToken.Unary) operator;
 
                 if (unaryOperator instanceof PlusMinus && i != 0
-                    && elements.get(i - 1).expression != null) {
+                    && elements.get(i - 1).expression() != null) {
                     continue;
                 }
 
                 // TODO: check index, condition
-                JavaExpression operand = elements.remove(i + 1).expression;
+                JavaExpression operand = elements.remove(i + 1).expression();
                 setElement(elements, i, new JavaUnaryExpression(unaryOperator, operand));
             }
         }
@@ -205,16 +219,16 @@ public class ExpressionParser {
             for (int i = 0; i < elements.size(); i++) {
                 ExpressionElement current = elements.get(i);
 
-                if (current.operator instanceof OperatorToken.Binary) {
-                    OperatorToken.Binary operator = (OperatorToken.Binary) current.operator;
+                if (current.operator() instanceof OperatorToken.Binary) {
+                    OperatorToken.Binary operator = (OperatorToken.Binary) current.operator();
 
                     if (operator.getPrecedenceLevel() == level) {
                         // TODO: check index
                         i--;
                         // TODO: check condition
-                        JavaExpression operandLeft = elements.remove(i).expression;
+                        JavaExpression operandLeft = elements.remove(i).expression();
                         elements.remove(i);
-                        JavaExpression operandRight = elements.get(i).expression;
+                        JavaExpression operandRight = elements.get(i).expression();
                         JavaExpression combined =
                             JavaExpression.newBinary(operator, operandLeft, operandRight);
                         setElement(elements, i, combined);
@@ -222,6 +236,12 @@ public class ExpressionParser {
                     } else if (operator.getPrecedenceLevel() > level) {
                         throw new AssertionError();
                     }
+                } else if (current instanceof InstanceOf && level == 9) {
+                    i--;
+                    JavaName valuePath = (JavaName) elements.remove(i).expression();
+                    elements.remove(i);
+                    JavaType targetType = elements.remove(i).type();
+                    addElement(elements, (new InstanceOfExpression(valuePath, targetType)));
                 }
             }
         }
@@ -229,17 +249,17 @@ public class ExpressionParser {
 
     private static void parseTernaryToken(Stack<ExpressionElement> elements) throws JTAException {
         for (int i = elements.size() - 1; i >= 0; i--) {
-            OperatorToken operator = elements.get(i).operator;
+            OperatorToken operator = elements.get(i).operator();
             if (operator instanceof TernaryToken) {
                 i -= 3;
                 if (i < 0) {
                     throw new JTAException.InvalidOperation("missing left value");
                 }
-                JavaExpression condition = elements.remove(i).expression; //TODO: check expression
+                JavaExpression condition = elements.remove(i).expression(); //TODO: check expression
                 elements.remove(i); // ? sign
-                JavaExpression trueExpression = elements.remove(i).expression;
+                JavaExpression trueExpression = elements.remove(i).expression();
                 elements.remove(i); // : sign //TODO: check index
-                JavaExpression falseExpression = elements.remove(i).expression;
+                JavaExpression falseExpression = elements.remove(i).expression();
                 setElement(elements, i,
                     new TernaryExpression(condition, trueExpression, falseExpression));
             }
@@ -248,21 +268,21 @@ public class ExpressionParser {
 
     private static void parseAssignment(List<ExpressionElement> elements) throws JTAException {
         for (int i = elements.size() - 1; i >= 0; i--) {
-            OperatorToken operator = elements.get(i).operator;
+            OperatorToken operator = elements.get(i).operator();
             if (operator instanceof AssignmentOperator) {
                 AssignmentOperator assignment = (AssignmentOperator) operator;
                 i--;
                 if (i < 0) {
                     throw new JTAException.InvalidOperation("missing left value");
                 }
-                JavaExpression leftExpression = elements.remove(i).expression;
+                JavaExpression leftExpression = elements.remove(i).expression();
                 if (!(leftExpression instanceof JavaLeftValue)) {
                     throw new JTAException.InvalidOperation("not a left value");
                 }
                 JavaLeftValue leftValue = (JavaLeftValue) leftExpression;
                 elements.remove(i);
                 //TODO: check index
-                JavaExpression value = elements.get(i).expression;
+                JavaExpression value = elements.get(i).expression();
 
                 if (assignment instanceof AssignmentOperator.Compound) {
                     OperatorToken.Binary implicit =
@@ -275,18 +295,62 @@ public class ExpressionParser {
         }
     }
 
-    private static class ExpressionElement {
-        public final OperatorToken operator;
-        public final JavaExpression expression;
-
-        public ExpressionElement(OperatorToken operator) {
-            this.operator = operator;
-            this.expression = null;
+    private interface ExpressionElement {
+        default JavaExpression expression() {
+            return null;
         }
 
-        public ExpressionElement(JavaExpression expression) {
-            this.operator = null;
-            this.expression = expression;
+        default OperatorToken operator() {
+            return null;
+        }
+
+        default JavaType type() {
+            return null;
         }
     }
+
+    private static class Expression implements ExpressionElement {
+        public final JavaExpression expression;
+
+        public Expression(JavaExpression expression) {
+            this.expression = expression;
+        }
+
+        @Override
+        public JavaExpression expression() {
+            return expression;
+        }
+    }
+
+    private static class Operator implements ExpressionElement {
+        public final OperatorToken operator;
+
+        public Operator(OperatorToken operator) {
+            this.operator = operator;
+        }
+
+        @Override
+        public OperatorToken operator() {
+            return operator;
+        }
+    }
+
+    private static class InstanceOf implements ExpressionElement {
+        public InstanceOf() {
+        }
+    }
+
+    private static class Type implements ExpressionElement {
+        public final JavaType type;
+
+        public Type(JavaType type) {
+            this.type = type;
+        }
+
+        @Override
+        public JavaType type() {
+            return type;
+        }
+    }
+
 }

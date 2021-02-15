@@ -63,6 +63,12 @@ public class ControlParser {
                 JavaExpression condition = parseConditionInBrackets(lexer);
                 JavaCode body = CodeParser.parseCode(lexer);
                 return JavaLoop.whileLoop(body, condition);
+            } else if (keywordToken.keyword == KeywordToken.Keyword._synchronized) {
+                JavaExpression lock;
+//                if (lexer.nextIf(BracketToken.ROUND_L)) {
+//                    if (lexer)
+//                    lexer.next(BracketToken.ROUND_R);
+//                }
             }
         }
 
@@ -73,7 +79,7 @@ public class ControlParser {
         if (token instanceof KeywordToken) {
             KeywordToken.Keyword keyword = ((KeywordToken) token).keyword;
             return switch (keyword) {
-                case _for, _switch, _do, _if, _while -> true;
+                case _for, _switch, _do, _if, _while, _synchronized -> true;
                 default -> false;
             };
         }
