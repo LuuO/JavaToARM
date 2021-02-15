@@ -2,7 +2,6 @@ package javatoarm.parser;
 
 import javatoarm.JTAException;
 import javatoarm.java.JavaLeftValue;
-import javatoarm.java.JavaRightValue;
 import javatoarm.java.expression.InstanceOfExpression;
 import javatoarm.java.expression.JavaArrayElement;
 import javatoarm.java.expression.JavaExpression;
@@ -10,7 +9,6 @@ import javatoarm.java.expression.JavaImmediate;
 import javatoarm.java.expression.JavaName;
 import javatoarm.java.expression.JavaUnaryExpression;
 import javatoarm.java.expression.MemberAccessExpression;
-import javatoarm.java.expression.NewObjectExpression;
 import javatoarm.java.expression.NumericExpression;
 import javatoarm.java.expression.TernaryExpression;
 import javatoarm.java.statement.JavaAssignment;
@@ -90,11 +88,8 @@ public class ExpressionParser {
                 }
             } else if (token.equals(KeywordToken.NEW)) {
                 lexer.rewind();
-                JavaRightValue rightValue = RightValueParser.parseNewInit(lexer);
-                if (!(rightValue instanceof NewObjectExpression)) {
-                    throw new JTAException.Unsupported("Not NewObjectExpression");
-                }
-                addElement(elements, (NewObjectExpression) rightValue);
+                JavaExpression rightValue = RightValueParser.parseNewInit(lexer);
+                addElement(elements, rightValue);
             } else if (token instanceof OperatorToken) {
                 addElement(elements, (OperatorToken) token);
             } else if (token instanceof ImmediateToken) {

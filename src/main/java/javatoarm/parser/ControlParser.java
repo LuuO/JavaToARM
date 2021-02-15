@@ -6,14 +6,18 @@ import javatoarm.java.JavaCode;
 import javatoarm.java.JavaIfElse;
 import javatoarm.java.JavaLoop;
 import javatoarm.java.JavaSynchronized;
+import javatoarm.java.JavaTryBlock;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.expression.JavaName;
 import javatoarm.java.statement.JavaStatement;
+import javatoarm.java.statement.JavaVariableDeclare;
 import javatoarm.token.BracketToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.KeywordToken;
 import javatoarm.token.SplitterToken;
 import javatoarm.token.Token;
+
+import java.util.List;
 
 /**
  * Represents control codes such as if-else and loops.
@@ -78,7 +82,10 @@ public class ControlParser {
                 return new JavaSynchronized(lock, body);
             } else if (keywordToken.keyword == KeywordToken.Keyword._try) {
                 JavaBlock tryBlock = CodeParser.parseBlock(lexer);
-
+                lexer.next(new KeywordToken(KeywordToken.Keyword._catch));
+                List<JavaVariableDeclare> exceptions = FunctionParser.parseArgumentDeclares(lexer);
+                JavaBlock catchBlock = CodeParser.parseBlock(lexer);
+                return new JavaTryBlock(tryBlock, exceptions, catchBlock);
             }
         }
 

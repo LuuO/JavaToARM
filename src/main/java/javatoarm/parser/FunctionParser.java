@@ -63,7 +63,7 @@ public class FunctionParser {
             annotations, properties, returnType, methodName, arguments, exceptions, body);
     }
 
-    private static List<JavaVariableDeclare> parseArgumentDeclares(JavaLexer lexer)
+    public static List<JavaVariableDeclare> parseArgumentDeclares(JavaLexer lexer)
         throws JTAException {
         List<JavaVariableDeclare> arguments = new ArrayList<>();
 
