@@ -1,10 +1,13 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
+import javatoarm.java.JavaBlock;
 import javatoarm.java.JavaCode;
 import javatoarm.java.JavaIfElse;
 import javatoarm.java.JavaLoop;
+import javatoarm.java.JavaSynchronized;
 import javatoarm.java.expression.JavaExpression;
+import javatoarm.java.expression.JavaName;
 import javatoarm.java.statement.JavaStatement;
 import javatoarm.token.BracketToken;
 import javatoarm.token.JavaLexer;
@@ -65,10 +68,17 @@ public class ControlParser {
                 return JavaLoop.whileLoop(body, condition);
             } else if (keywordToken.keyword == KeywordToken.Keyword._synchronized) {
                 JavaExpression lock;
-//                if (lexer.nextIf(BracketToken.ROUND_L)) {
-//                    if (lexer)
-//                    lexer.next(BracketToken.ROUND_R);
-//                }
+                if (lexer.nextIf(BracketToken.ROUND_L)) {
+                    lock = ExpressionParser.parse(lexer);
+                    lexer.next(BracketToken.ROUND_R);
+                } else {
+                    lock = new JavaName("this");
+                }
+                JavaBlock body = CodeParser.parseBlock(lexer);
+                return new JavaSynchronized(lock, body);
+            } else if (keywordToken.keyword == KeywordToken.Keyword._try) {
+                JavaBlock tryBlock = CodeParser.parseBlock(lexer);
+
             }
         }
 
@@ -79,7 +89,7 @@ public class ControlParser {
         if (token instanceof KeywordToken) {
             KeywordToken.Keyword keyword = ((KeywordToken) token).keyword;
             return switch (keyword) {
-                case _for, _switch, _do, _if, _while, _synchronized -> true;
+                case _for, _switch, _do, _if, _while, _synchronized, _try -> true;
                 default -> false;
             };
         }

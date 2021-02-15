@@ -17,12 +17,11 @@ public class MemberAccessExpression extends JavaName {
 
     /**
      * TODO: implement
-     *
      * @return a String representation of the expression
      */
     @Override
     public String toString() {
-        throw new UnsupportedOperationException();
+        return left.toString() + right.toString();
     }
 
     @Override
@@ -31,8 +30,7 @@ public class MemberAccessExpression extends JavaName {
     }
 
     @Override
-    public LocalVariable compileExpression(Subroutine subroutine, JavaScope parent)
-        throws JTAException {
+    public LocalVariable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
         throw new UnsupportedOperationException();
     }
 }
