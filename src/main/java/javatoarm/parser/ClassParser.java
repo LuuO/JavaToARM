@@ -70,8 +70,8 @@ public class ClassParser {
      * Parse a member of the class
      *
      * @param lexer the JavaLexer
-     * @return
-     * @throws JTAException
+     * @return a parsed class member
+     * @throws JTAException if errors occur
      */
     private static JavaClassMember getMember(JavaLexer lexer, String className)
             throws JTAException {
@@ -121,7 +121,7 @@ public class ClassParser {
                 // TODO: Assuming all native members are functions
                 lexer.returnToLastCheckPoint();
                 return MemberType.FUNCTION;
-            } else if (SplitterToken.isSemiColon(next)) {
+            } else if (next.equals(SplitterToken.SEMI_COLON)) {
                 lexer.returnToLastCheckPoint();
                 return MemberType.FIELD;
             } else if (next.equals(BracketToken.CURLY_L)) {

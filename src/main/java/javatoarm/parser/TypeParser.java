@@ -4,7 +4,7 @@ import javatoarm.JTAException;
 import javatoarm.javaast.expression.JavaName;
 import javatoarm.javaast.type.*;
 import javatoarm.token.*;
-import javatoarm.token.operator.TernaryToken;
+import javatoarm.token.operator.QuestColon;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,7 +58,7 @@ public class TypeParser {
         List<JavaType> typeParameters = new ArrayList<>();
 
         do {
-            if (lexer.nextIf(TernaryToken.QUESTION)) {
+            if (lexer.nextIf(QuestColon.QUESTION)) {
                 JavaTypeWildcard.Bound bound;
                 JavaType wildcardType;
                 if (lexer.nextIf(KeywordToken.Keyword._extends)) {

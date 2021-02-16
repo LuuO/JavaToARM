@@ -11,7 +11,7 @@ import javatoarm.javaast.statement.JavaStatement;
 import javatoarm.javaast.statement.JavaVariableDeclare;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.token.*;
-import javatoarm.token.operator.TernaryToken;
+import javatoarm.token.operator.QuestColon;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -65,7 +65,7 @@ public class ControlParser {
 
             } else if (keywordToken.keyword == KeywordToken.Keyword._try) {
                 JavaBlock tryBlock = CodeParser.parseBlock(lexer);
-                lexer.next(new KeywordToken(KeywordToken.Keyword._catch));
+                lexer.next(KeywordToken.Keyword._catch);
                 List<JavaVariableDeclare> exceptions = FunctionParser.parseArgumentDeclares(lexer);
                 JavaBlock catchBlock = CodeParser.parseBlock(lexer);
                 return new JavaTryBlock(tryBlock, exceptions, catchBlock);
@@ -101,7 +101,7 @@ public class ControlParser {
             if (next.equals(SplitterToken.SEMI_COLON)) {
                 lexer.returnToLastCheckPoint();
                 return false;
-            } else if (next.equals(TernaryToken.COLON)) {
+            } else if (next.equals(QuestColon.COLON)) {
                 lexer.returnToLastCheckPoint();
                 return true;
             }
@@ -114,7 +114,7 @@ public class ControlParser {
             lexer.next(BracketToken.ROUND_L);
             JavaType elementType = TypeParser.parseType(lexer, false);
             String elementName = JavaParser.parseSimpleName(lexer);
-            lexer.next(TernaryToken.COLON);
+            lexer.next(QuestColon.COLON);
             JavaExpression collection = ExpressionParser.parse(lexer);
             lexer.next(BracketToken.ROUND_R);
             JavaCode body = CodeParser.parseCode(lexer);
@@ -165,7 +165,7 @@ public class ControlParser {
             } else {
                 throw new JTAException.UnexpectedToken("case, default or '}'", lexer.next());
             }
-            lexer.next(TernaryToken.COLON);
+            lexer.next(QuestColon.COLON);
 
             List<JavaCode> body = new ArrayList<>();
             while (!lexer.peek().equals(KeywordToken.Keyword._case)

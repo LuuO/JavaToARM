@@ -1,8 +1,18 @@
 package javatoarm.token.operator;
 
+/**
+ * Represent a plus or minus sign. The exact meaning of the sign is context-dependent. It could be a binary
+ * arithmetic operator or an unary operator.
+ */
 public class PlusMinus implements ArithmeticOperator, OperatorToken.Unary {
     public final boolean isPlus;
 
+    /**
+     * Create a new PlusMinus operator
+     *
+     * @param isPlus true if the operator represents a plus sign,
+     *               false if the operator represents a negative sign
+     */
     public PlusMinus(boolean isPlus) {
         this.isPlus = isPlus;
     }

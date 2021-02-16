@@ -25,14 +25,11 @@ public class JavaParser {
     }
 
     public static void eatSemiColons(JavaLexer lexer) throws JTAException {
-        Token semicolon = new SplitterToken(';');
-        while (lexer.hasNext() && lexer.peek().equals(semicolon)) {
-            lexer.next();
-        }
+        //noinspection StatementWithEmptyBody
+        while (lexer.hasNext() && lexer.nextIf(SplitterToken.SEMI_COLON)) ;
     }
 
     public static ImmediateExpression parseConstant(JavaType type, JavaLexer lexer) throws JTAException {
-        SplitterToken comma = new SplitterToken(',');
 
         if (type instanceof JavaSimpleType) {
             Token next = lexer.next(ImmediateToken.class);
@@ -50,10 +47,9 @@ public class JavaParser {
 
                     arrayValue.add(parseValue(elementType, (ImmediateToken) next));
 
-                    next = lexer.next();
-                    if (next.equals(BracketToken.CURLY_R)) {
+                    if (lexer.nextIf(BracketToken.CURLY_R)) {
                         break;
-                    } else if (!next.equals(comma)) {
+                    } else if (!lexer.nextIf(SplitterToken.SEMI_COLON)) {
                         throw new JTAException.UnexpectedToken("',' or '}'", next);
                     }
                 }

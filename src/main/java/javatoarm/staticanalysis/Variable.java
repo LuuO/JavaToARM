@@ -6,6 +6,8 @@ import javatoarm.javaast.type.JavaType;
  * Represents everything that can be used or store to in Java. It could be a variable, an immediate
  * value, a temporary variable within an expression, a function argument, a value in memory,
  * or other relevant things.
+ * Always invoke {@link Variable#deleteIfIsTemp()} after used. This ensures temporary variables are deleted in time and
+ * their associated registers are freed.
  */
 public interface Variable {
 

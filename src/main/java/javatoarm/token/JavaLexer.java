@@ -277,6 +277,15 @@ public class JavaLexer {
         }
     }
 
+    public Token next(KeywordToken.Keyword keyword) throws JTAException {
+        Token next = getNextToken();
+        nextIndex += 1;
+        if (!(next instanceof KeywordToken) || ((KeywordToken) next).keyword != keyword) {
+            throw new JTAException.UnexpectedToken("Keyword Token :" + keyword, next);
+        }
+        return next;
+    }
+
     public boolean nextIf(Token target) throws JTAException {
         Token next = getNextToken();
         if (next.equals(target)) {
@@ -290,6 +299,16 @@ public class JavaLexer {
     public boolean nextIf(KeywordToken.Keyword keyword) throws JTAException {
         Token next = getNextToken();
         if (next instanceof KeywordToken && ((KeywordToken) next).keyword == keyword) {
+            nextIndex += 1;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean nextIf(Class<?> expected) throws JTAException {
+        Token next = getNextToken();
+        if (expected.isAssignableFrom(next.getClass())) {
             nextIndex += 1;
             return true;
         } else {

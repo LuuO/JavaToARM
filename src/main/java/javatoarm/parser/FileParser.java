@@ -15,7 +15,7 @@ import java.util.Set;
 public class FileParser {
 
     public static JavaFile parseFile(JavaLexer lexer) throws JTAException {
-        lexer.next(new KeywordToken(KeywordToken.Keyword._package));
+        lexer.next(KeywordToken.Keyword._package);
         JavaName packageName = JavaParser.parseNamePath(lexer);
         JavaParser.eatSemiColons(lexer);
 

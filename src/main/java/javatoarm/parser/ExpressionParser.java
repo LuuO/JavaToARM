@@ -200,12 +200,11 @@ public class ExpressionParser {
     }
 
     /**
-     * level 12 - 3
-     *
-     * @param elements
+     * Analyzes binary operations in the expression and reduce them to binary expressions.
+     * Precedence level: 12 - 3
+     * @param elements elements of in the expression
      */
     private static void parseBinaryExpression(List<ExpressionElement> elements) {
-        // TODO: implement shift?
         for (int level = 12; level >= 3; level--) {
             for (int i = 0; i < elements.size(); i++) {
                 ExpressionElement current = elements.get(i);
@@ -241,7 +240,7 @@ public class ExpressionParser {
     private static void parseTernaryToken(Stack<ExpressionElement> elements) throws JTAException {
         for (int i = elements.size() - 1; i >= 0; i--) {
             OperatorToken operator = elements.get(i).operator();
-            if (operator instanceof TernaryToken) {
+            if (operator instanceof QuestColon) {
                 i -= 3;
                 if (i < 0) {
                     throw new JTAException.InvalidOperation("missing left value");

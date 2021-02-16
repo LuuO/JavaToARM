@@ -6,7 +6,7 @@ public class SplitterToken implements Token {
 
     public final char splitter;
 
-    public SplitterToken(char c) {
+    private SplitterToken(char c) {
         switch (c) {
             case ';', ',' -> splitter = c;
             default -> throw new IllegalArgumentException();
@@ -19,13 +19,6 @@ public class SplitterToken implements Token {
         } catch (IllegalArgumentException e) {
             return null;
         }
-    }
-
-    public static boolean isSemiColon(Object obj) {
-        if (obj instanceof SplitterToken) {
-            return ((SplitterToken) obj).splitter == ';';
-        }
-        return false;
     }
 
     @Override

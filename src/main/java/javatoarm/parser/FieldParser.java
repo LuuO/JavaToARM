@@ -27,14 +27,14 @@ public class FieldParser {
         JavaRightValue initialValue = null;
         Token token = lexer.next();
         if (token instanceof AssignmentOperator.Simple) {
-            if (lexer.peek().equals(new KeywordToken(KeywordToken.Keyword._new))) {
+            if (lexer.peek().equals(KeywordToken.Keyword._new)) {
                 initialValue = RightValueParser.parseNewInit(lexer);
             } else {
                 initialValue = ExpressionParser.parse(lexer);
             }
             token = lexer.next();
         }
-        if (!SplitterToken.isSemiColon(token)) {
+        if (!token.equals(SplitterToken.SEMI_COLON)) {
             throw new JTAException.UnexpectedToken("';' or '='", token);
         }
 

@@ -85,9 +85,8 @@ public class StatementParser {
                 type = new JavaArrayType(type);
             }
 
-            if (lexer.peek() instanceof AssignmentOperator.Simple) {
-                lexer.next();
-                if (lexer.peek().equals(new KeywordToken(KeywordToken.Keyword._new))) {
+            if (lexer.nextIf(AssignmentOperator.Simple.class)) {
+                if (lexer.peek().equals(KeywordToken.Keyword._new)) {
                     initialValue = RightValueParser.parseNewInit(lexer);
                 } else {
                     initialValue = ExpressionParser.parse(lexer);

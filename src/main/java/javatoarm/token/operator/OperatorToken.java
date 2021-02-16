@@ -12,6 +12,11 @@ public interface OperatorToken extends Token {
         return token;
     }
 
+    /**
+     * Get the precedence of the operator
+     *
+     * @return precedence of the operator
+     */
     int getPrecedenceLevel();
 
     interface Binary extends OperatorToken {

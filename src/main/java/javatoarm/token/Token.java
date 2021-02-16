@@ -2,8 +2,11 @@ package javatoarm.token;
 
 import javatoarm.JTAException;
 import javatoarm.token.operator.OperatorToken;
-import javatoarm.token.operator.TernaryToken;
+import javatoarm.token.operator.QuestColon;
 
+/**
+ * Represents a token
+ */
 public interface Token {
 
     /**
@@ -30,7 +33,7 @@ public interface Token {
             if ((token = AnnotationToken.get(c)) != null) {
                 return token;
             }
-            if ((token = TernaryToken.get(c)) != null) {
+            if ((token = QuestColon.get(c)) != null) {
                 return token;
             }
         }
