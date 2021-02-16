@@ -4,8 +4,8 @@ import javatoarm.JTAException;
 import javatoarm.javaast.JavaAnnotation;
 import javatoarm.javaast.JavaFile;
 import javatoarm.javaast.JavaProperty;
+import javatoarm.javaast.expression.ImmediateExpression;
 import javatoarm.javaast.expression.JavaExpression;
-import javatoarm.javaast.expression.JavaImmediate;
 import javatoarm.javaast.expression.JavaName;
 import javatoarm.javaast.type.*;
 import javatoarm.token.*;
@@ -30,12 +30,12 @@ public class JavaParser {
         }
     }
 
-    public static JavaImmediate parseConstant(JavaType type, JavaLexer lexer) throws JTAException {
+    public static ImmediateExpression parseConstant(JavaType type, JavaLexer lexer) throws JTAException {
         SplitterToken comma = new SplitterToken(',');
 
         if (type instanceof JavaSimpleType) {
             Token next = lexer.next(ImmediateToken.class);
-            return new JavaImmediate(type, parseValue(type, (ImmediateToken) next));
+            return new ImmediateExpression(type, parseValue(type, (ImmediateToken) next));
         } else if (type instanceof JavaArrayType) {
             lexer.next(BracketToken.CURLY_L);
 
@@ -57,7 +57,7 @@ public class JavaParser {
                     }
                 }
             }
-            return new JavaImmediate(arrayType, arrayValue);
+            return new ImmediateExpression(arrayType, arrayValue);
         } else {
             throw new UnsupportedOperationException();
         }

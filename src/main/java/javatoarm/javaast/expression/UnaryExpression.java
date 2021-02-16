@@ -2,17 +2,17 @@ package javatoarm.javaast.expression;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
-import javatoarm.javaast.JavaScope;
+import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.OperatorToken;
 
 //TODO bool
-public class JavaUnaryExpression implements JavaExpression {
+public class UnaryExpression implements JavaExpression {
     OperatorToken operator;
     JavaExpression operand;
 
-    public JavaUnaryExpression(OperatorToken token, JavaExpression operand) {
+    public UnaryExpression(OperatorToken token, JavaExpression operand) {
         this.operator = token;
         this.operand = operand;
     }

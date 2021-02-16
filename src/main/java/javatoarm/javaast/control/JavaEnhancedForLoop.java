@@ -1,9 +1,11 @@
-package javatoarm.javaast;
+package javatoarm.javaast.control;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
+import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.staticanalysis.JavaScope;
 
 public class JavaEnhancedForLoop implements JavaCode {
     public final JavaType elementType;

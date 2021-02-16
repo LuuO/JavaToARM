@@ -2,9 +2,9 @@ package javatoarm.javaast.expression;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
-import javatoarm.javaast.JavaScope;
 import javatoarm.javaast.type.JavaSimpleType;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.ArithmeticOperator;
 
@@ -25,14 +25,14 @@ public class JavaNewArray implements JavaExpression {
     public JavaNewArray(JavaType type, List<JavaExpression> elements) {
         this.type = type;
         this.initialElements = new ArrayList<>(elements);
-        this.numberOfElements = new JavaImmediate(JavaSimpleType.INT, elements.size());
+        this.numberOfElements = new ImmediateExpression(JavaSimpleType.INT, elements.size());
     }
 
     public JavaExpression memorySize() {
         if (!(type instanceof JavaSimpleType)) {
             throw new UnsupportedOperationException();
         }
-        JavaImmediate size = new JavaImmediate(JavaSimpleType.INT, ((JavaSimpleType) type).size());
+        ImmediateExpression size = new ImmediateExpression(JavaSimpleType.INT, ((JavaSimpleType) type).size());
         return new NumericExpression(new ArithmeticOperator.Multiply(), numberOfElements, size);
     }
 

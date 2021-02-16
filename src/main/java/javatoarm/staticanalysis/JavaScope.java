@@ -1,12 +1,13 @@
-package javatoarm.javaast;
+package javatoarm.staticanalysis;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.InstructionSet;
 import javatoarm.assembly.RegisterAssigner;
+import javatoarm.javaast.JavaClass;
+import javatoarm.javaast.JavaCode;
+import javatoarm.javaast.JavaFunction;
 import javatoarm.javaast.statement.JavaVariableDeclare;
 import javatoarm.javaast.type.JavaType;
-import javatoarm.staticanalysis.Argument;
-import javatoarm.staticanalysis.LocalVariable;
 
 import java.util.HashMap;
 import java.util.List;

@@ -2,7 +2,6 @@ package javatoarm.parser;
 
 import javatoarm.JTAException;
 import javatoarm.javaast.JavaBlock;
-import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.JavaLambda;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.token.*;

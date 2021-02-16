@@ -3,8 +3,8 @@ package javatoarm.javaast.statement;
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaLeftValue;
-import javatoarm.javaast.JavaScope;
 import javatoarm.javaast.expression.JavaExpression;
+import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.Variable;
 
 public class JavaAssignment implements JavaExpression, JavaStatement {

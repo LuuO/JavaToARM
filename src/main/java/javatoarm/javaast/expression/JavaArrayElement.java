@@ -3,7 +3,7 @@ package javatoarm.javaast.expression;
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaLeftValue;
-import javatoarm.javaast.JavaScope;
+import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.MemoryOffset;
 import javatoarm.staticanalysis.Variable;
 

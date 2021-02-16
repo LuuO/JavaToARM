@@ -4,7 +4,7 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaLeftValue;
 import javatoarm.javaast.JavaRightValue;
-import javatoarm.javaast.JavaScope;
+import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.LocalVariable;
 
 import java.util.List;

@@ -2,9 +2,9 @@ package javatoarm.javaast.statement;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
-import javatoarm.javaast.JavaScope;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.expression.JavaName;
+import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 

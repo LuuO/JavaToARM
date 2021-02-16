@@ -3,7 +3,6 @@ package javatoarm.staticanalysis;
 import javatoarm.JTAException;
 import javatoarm.assembly.Register;
 import javatoarm.assembly.RegisterAssigner;
-import javatoarm.javaast.JavaScope;
 import javatoarm.javaast.type.JavaType;
 
 public class LocalVariable implements Variable {

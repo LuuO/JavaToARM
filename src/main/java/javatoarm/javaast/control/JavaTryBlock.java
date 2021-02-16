@@ -1,8 +1,11 @@
-package javatoarm.javaast;
+package javatoarm.javaast.control;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
+import javatoarm.javaast.JavaBlock;
+import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.statement.JavaVariableDeclare;
+import javatoarm.staticanalysis.JavaScope;
 
 import java.util.List;
 

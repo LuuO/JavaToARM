@@ -1,8 +1,6 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.javaast.JavaCode;
-import javatoarm.javaast.JavaLambda;
 import javatoarm.javaast.JavaLeftValue;
 import javatoarm.javaast.JavaRightValue;
 import javatoarm.javaast.expression.*;
@@ -13,7 +11,6 @@ import javatoarm.javaast.type.JavaType;
 import javatoarm.token.*;
 import javatoarm.token.operator.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -79,7 +76,7 @@ public class ExpressionParser {
             } else if (token instanceof OperatorToken) {
                 addElement(elements, (OperatorToken) token);
             } else if (token instanceof ImmediateToken) {
-                JavaImmediate constant = new JavaImmediate(((ImmediateToken) token));
+                ImmediateExpression constant = new ImmediateExpression(((ImmediateToken) token));
                 addElement(elements, constant);
             } else if (token instanceof NameToken || token.equals(KeywordToken.THIS)) {
                 lexer.rewind();
@@ -184,7 +181,7 @@ public class ExpressionParser {
 
                 // TODO: check index, condition
                 JavaExpression operand = elements.remove(i + 1).expression();
-                setElement(elements, i, new JavaUnaryExpression(unaryOperator, operand));
+                setElement(elements, i, new UnaryExpression(unaryOperator, operand));
             }
         }
     }

@@ -5,6 +5,7 @@ import javatoarm.assembly.Compiler;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.statement.JavaVariableDeclare;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.staticanalysis.JavaScope;
 
 import java.util.List;
 import java.util.Set;

@@ -1,7 +1,9 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.javaast.*;
+import javatoarm.javaast.JavaBlock;
+import javatoarm.javaast.JavaCode;
+import javatoarm.javaast.control.*;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.expression.JavaName;
 import javatoarm.javaast.statement.JavaStatement;

@@ -1,10 +1,12 @@
-package javatoarm.javaast;
+package javatoarm.javaast.control;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Condition;
 import javatoarm.assembly.Subroutine;
+import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.expression.BooleanExpression;
 import javatoarm.javaast.expression.JavaExpression;
+import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.Variable;
 
 public class JavaIfElse implements JavaCode {

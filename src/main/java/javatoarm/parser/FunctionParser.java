@@ -2,7 +2,6 @@ package javatoarm.parser;
 
 import javatoarm.JTAException;
 import javatoarm.javaast.*;
-import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.statement.JavaVariableDeclare;
 import javatoarm.javaast.type.JavaArrayType;
 import javatoarm.javaast.type.JavaType;

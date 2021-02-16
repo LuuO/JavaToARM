@@ -2,7 +2,7 @@ package javatoarm.javaast.expression;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
-import javatoarm.javaast.JavaScope;
+import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.LocalVariable;
 
 public class MemberAccessExpression extends JavaName {

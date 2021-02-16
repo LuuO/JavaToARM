@@ -2,10 +2,14 @@ package javatoarm.javaast.statement;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
-import javatoarm.javaast.*;
+import javatoarm.javaast.JavaAnnotation;
+import javatoarm.javaast.JavaClassMember;
+import javatoarm.javaast.JavaProperty;
+import javatoarm.javaast.JavaRightValue;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.expression.JavaNewArray;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.LocalVariable;
 import javatoarm.staticanalysis.Variable;
 

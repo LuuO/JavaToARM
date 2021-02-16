@@ -4,9 +4,9 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Condition;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaCode;
-import javatoarm.javaast.JavaLoop;
-import javatoarm.javaast.JavaScope;
+import javatoarm.javaast.control.JavaLoop;
 import javatoarm.javaast.expression.JavaExpression;
+import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.Variable;
 
 public interface JavaStatement extends JavaCode {

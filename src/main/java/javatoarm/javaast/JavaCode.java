@@ -2,6 +2,7 @@ package javatoarm.javaast;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
+import javatoarm.staticanalysis.JavaScope;
 
 /**
  * Super type of all Java execution code.

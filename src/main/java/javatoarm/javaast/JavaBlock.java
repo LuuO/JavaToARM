@@ -2,6 +2,7 @@ package javatoarm.javaast;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
+import javatoarm.staticanalysis.JavaScope;
 
 import java.util.Collections;
 import java.util.List;
