@@ -1,11 +1,11 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.JavaAnnotation;
-import javatoarm.java.JavaProperty;
-import javatoarm.java.JavaRightValue;
-import javatoarm.java.statement.JavaVariableDeclare;
-import javatoarm.java.type.JavaType;
+import javatoarm.javaast.JavaAnnotation;
+import javatoarm.javaast.JavaProperty;
+import javatoarm.javaast.JavaRightValue;
+import javatoarm.javaast.statement.JavaVariableDeclare;
+import javatoarm.javaast.type.JavaType;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.KeywordToken;
 import javatoarm.token.SplitterToken;
@@ -19,7 +19,7 @@ public class FieldParser {
 
     public static JavaVariableDeclare parse(JavaLexer lexer, List<JavaAnnotation> annotations) throws JTAException {
         Set<JavaProperty> properties =
-            JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
+                JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
         JavaType type = JavaParser.parseType(lexer, true);
         String name = JavaParser.parseSimpleName(lexer);
 

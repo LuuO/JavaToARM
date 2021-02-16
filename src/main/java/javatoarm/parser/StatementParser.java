@@ -1,24 +1,18 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.JavaProperty;
-import javatoarm.java.JavaRightValue;
-import javatoarm.java.expression.JavaExpression;
-import javatoarm.java.expression.NewObjectExpression;
-import javatoarm.java.statement.JavaFunctionCall;
-import javatoarm.java.statement.JavaStatement;
-import javatoarm.java.statement.JavaVariableDeclare;
-import javatoarm.java.statement.ThrowStatement;
-import javatoarm.java.type.JavaArrayType;
-import javatoarm.java.type.JavaSimpleType;
-import javatoarm.java.type.JavaType;
-import javatoarm.token.AngleToken;
-import javatoarm.token.BracketToken;
-import javatoarm.token.JavaLexer;
-import javatoarm.token.KeywordToken;
-import javatoarm.token.NameToken;
-import javatoarm.token.SplitterToken;
-import javatoarm.token.Token;
+import javatoarm.javaast.JavaProperty;
+import javatoarm.javaast.JavaRightValue;
+import javatoarm.javaast.expression.JavaExpression;
+import javatoarm.javaast.expression.NewObjectExpression;
+import javatoarm.javaast.statement.JavaFunctionCall;
+import javatoarm.javaast.statement.JavaStatement;
+import javatoarm.javaast.statement.JavaVariableDeclare;
+import javatoarm.javaast.statement.ThrowStatement;
+import javatoarm.javaast.type.JavaArrayType;
+import javatoarm.javaast.type.JavaSimpleType;
+import javatoarm.javaast.type.JavaType;
+import javatoarm.token.*;
 import javatoarm.token.operator.AssignmentOperator;
 
 import java.util.Collections;
@@ -32,7 +26,7 @@ public class StatementParser {
         TODO: Support int a, b, c; int a[], b, c;
      */
     public static JavaStatement parse(JavaLexer lexer)
-        throws JTAException {
+            throws JTAException {
 
         /* control statement */
         Token next = lexer.peek();

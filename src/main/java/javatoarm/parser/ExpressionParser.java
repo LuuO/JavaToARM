@@ -1,32 +1,14 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.JavaLeftValue;
-import javatoarm.java.expression.InstanceOfExpression;
-import javatoarm.java.expression.JavaArrayElement;
-import javatoarm.java.expression.JavaExpression;
-import javatoarm.java.expression.JavaImmediate;
-import javatoarm.java.expression.JavaName;
-import javatoarm.java.expression.JavaUnaryExpression;
-import javatoarm.java.expression.MemberAccessExpression;
-import javatoarm.java.expression.NumericExpression;
-import javatoarm.java.expression.TernaryExpression;
-import javatoarm.java.statement.JavaAssignment;
-import javatoarm.java.statement.JavaFunctionCall;
-import javatoarm.java.statement.JavaIncrementDecrement;
-import javatoarm.java.type.JavaType;
-import javatoarm.token.BracketToken;
-import javatoarm.token.ImmediateToken;
-import javatoarm.token.JavaLexer;
-import javatoarm.token.KeywordToken;
-import javatoarm.token.MemberAccessToken;
-import javatoarm.token.NameToken;
-import javatoarm.token.Token;
-import javatoarm.token.operator.AssignmentOperator;
-import javatoarm.token.operator.IncrementDecrement;
-import javatoarm.token.operator.OperatorToken;
-import javatoarm.token.operator.PlusMinus;
-import javatoarm.token.operator.TernaryToken;
+import javatoarm.javaast.JavaLeftValue;
+import javatoarm.javaast.expression.*;
+import javatoarm.javaast.statement.JavaAssignment;
+import javatoarm.javaast.statement.JavaFunctionCall;
+import javatoarm.javaast.statement.JavaIncrementDecrement;
+import javatoarm.javaast.type.JavaType;
+import javatoarm.token.*;
+import javatoarm.token.operator.*;
 
 import java.util.List;
 import java.util.Stack;
@@ -155,7 +137,7 @@ public class ExpressionParser {
     }
 
     private static void parseIncrementDecrement(List<ExpressionElement> elements)
-        throws JTAException {
+            throws JTAException {
 
         for (int i = 0; i < elements.size(); i++) {
             OperatorToken operator = elements.get(i).operator();
@@ -168,14 +150,14 @@ public class ExpressionParser {
                     i--;
                     JavaName variable = (JavaName) elements.get(i).expression();
                     JavaExpression expression = new JavaIncrementDecrement(
-                        variable, true, idOperator.isIncrement);
+                            variable, true, idOperator.isIncrement);
                     setElement(elements, i, expression);
 
                 } else if (i < elements.size() &&
-                    elements.get(i).expression() instanceof JavaName) {
+                        elements.get(i).expression() instanceof JavaName) {
                     JavaName variable = (JavaName) elements.get(i).expression();
                     JavaExpression expression = new JavaIncrementDecrement(
-                        variable, false, idOperator.isIncrement);
+                            variable, false, idOperator.isIncrement);
                     setElement(elements, i, expression);
 
                 } else {
@@ -192,7 +174,7 @@ public class ExpressionParser {
                 OperatorToken.Unary unaryOperator = (OperatorToken.Unary) operator;
 
                 if (unaryOperator instanceof PlusMinus && i != 0
-                    && elements.get(i - 1).expression() != null) {
+                        && elements.get(i - 1).expression() != null) {
                     continue;
                 }
 
@@ -225,7 +207,7 @@ public class ExpressionParser {
                         elements.remove(i);
                         JavaExpression operandRight = elements.get(i).expression();
                         JavaExpression combined =
-                            JavaExpression.newBinary(operator, operandLeft, operandRight);
+                                JavaExpression.newBinary(operator, operandLeft, operandRight);
                         setElement(elements, i, combined);
 
                     } else if (operator.getPrecedenceLevel() > level) {
@@ -256,7 +238,7 @@ public class ExpressionParser {
                 elements.remove(i); // : sign //TODO: check index
                 JavaExpression falseExpression = elements.remove(i).expression();
                 setElement(elements, i,
-                    new TernaryExpression(condition, trueExpression, falseExpression));
+                        new TernaryExpression(condition, trueExpression, falseExpression));
             }
         }
     }
@@ -281,7 +263,7 @@ public class ExpressionParser {
 
                 if (assignment instanceof AssignmentOperator.Compound) {
                     OperatorToken.Binary implicit =
-                        ((AssignmentOperator.Compound) assignment).implicitOperator;
+                            ((AssignmentOperator.Compound) assignment).implicitOperator;
                     value = new NumericExpression(implicit, leftExpression, value);
                 }
 

@@ -2,10 +2,7 @@ package javatoarm.arm;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
-import javatoarm.assembly.Condition;
-import javatoarm.assembly.InstructionSet;
-import javatoarm.assembly.Register;
-import javatoarm.assembly.Subroutine;
+import javatoarm.assembly.*;
 
 import java.util.List;
 import java.util.Scanner;
@@ -66,26 +63,26 @@ public class ARMCompiler implements Compiler {
 
     @Override
     public String toCompleteProgram(String entryClass, int stackPosition)
-        throws JTAException {
+            throws JTAException {
         String classLabel = "class_" + entryClass;
         String javaFile = toString();
         int mainOffset = findOffsetTo(javaFile, classLabel, "function_main");
 
         return ARMLibrary.start(classLabel, mainOffset, stackPosition,
-            List.of(ARMLibrary.mallocInit())) +
-            ARMLibrary.malloc() +
-            javaFile +
-            ARMLibrary.heapStartLabel();
+                List.of(ARMLibrary.mallocInit())) +
+                ARMLibrary.malloc() +
+                javaFile +
+                ARMLibrary.heapStartLabel();
     }
 
     private int findOffsetTo(String javaFile, String className, String classFunction)
-        throws JTAException.UnknownFunction {
+            throws JTAException.UnknownFunction {
         Scanner scanner = new Scanner(javaFile);
         String line = scanner.nextLine();
         while (!line.startsWith(className)) {
             if (!scanner.hasNext()) {
                 throw new JTAException.UnknownFunction(
-                    "Cannot find %s in %s".formatted(classFunction, className));
+                        "Cannot find %s in %s".formatted(classFunction, className));
             }
             line = scanner.nextLine();
         }
@@ -97,7 +94,7 @@ public class ARMCompiler implements Compiler {
             offset++;
             if (!line.trim().startsWith("B")) {
                 throw new JTAException.UnknownFunction(
-                    "Cannot find %s in %s".formatted(classFunction, className));
+                        "Cannot find %s in %s".formatted(classFunction, className));
             }
         }
         return offset * 4;

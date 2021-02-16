@@ -2,8 +2,8 @@ package javatoarm.staticanalysis;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.RegisterAssigner;
-import javatoarm.java.type.JavaSimpleType;
-import javatoarm.java.type.JavaType;
+import javatoarm.javaast.type.JavaSimpleType;
+import javatoarm.javaast.type.JavaType;
 
 public class Immediate implements Variable {
     public final JavaType type;
@@ -33,7 +33,7 @@ public class Immediate implements Variable {
         if (type.equals(JavaSimpleType.BOOL) || type.equals(JavaSimpleType.NULL)) {
             return bits >= 1;
         } else if (type.equals(JavaSimpleType.INT) || type.equals(JavaSimpleType.LONG)
-            || type.equals(JavaSimpleType.SHORT) || type.equals(JavaSimpleType.BYTE)) {
+                || type.equals(JavaSimpleType.SHORT) || type.equals(JavaSimpleType.BYTE)) {
 
             if (bits >= 64) {
                 return true;

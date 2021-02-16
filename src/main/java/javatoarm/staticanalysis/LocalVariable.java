@@ -3,8 +3,8 @@ package javatoarm.staticanalysis;
 import javatoarm.JTAException;
 import javatoarm.assembly.Register;
 import javatoarm.assembly.RegisterAssigner;
-import javatoarm.java.JavaScope;
-import javatoarm.java.type.JavaType;
+import javatoarm.javaast.JavaScope;
+import javatoarm.javaast.type.JavaType;
 
 public class LocalVariable implements Variable {
     public final JavaType condition;
@@ -29,7 +29,7 @@ public class LocalVariable implements Variable {
 
     protected LocalVariable(JavaScope holder, RegisterAssigner registerAssigner, JavaType condition,
                             String name, boolean isArgument)
-        throws JTAException {
+            throws JTAException {
         this.registerAssigner = registerAssigner;
         this.holder = holder;
         this.condition = condition;

@@ -17,7 +17,7 @@ public interface Subroutine {
 
     // TODO: use enum to replace OperatorToken
     void addALU(OperatorToken.Binary operator, Variable left, Variable right, Variable result)
-        throws JTAException;
+            throws JTAException;
 
     void addALU(OperatorToken operator, Variable operand, Variable result);
 
@@ -50,7 +50,7 @@ public interface Subroutine {
     void addIncrementDecrement(Variable variable, boolean increase) throws JTAException;
 
     void addFunctionCall(String targetLabel, Register result, List<Variable> arguments)
-        throws JTAException;
+            throws JTAException;
 
     void saveBooleanResult(Condition condition, Variable result) throws JTAException;
 

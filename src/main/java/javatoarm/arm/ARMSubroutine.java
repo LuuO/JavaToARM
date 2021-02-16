@@ -4,11 +4,7 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Condition;
 import javatoarm.assembly.Register;
 import javatoarm.assembly.Subroutine;
-import javatoarm.staticanalysis.Immediate;
-import javatoarm.staticanalysis.LocalVariable;
-import javatoarm.staticanalysis.MemoryOffset;
-import javatoarm.staticanalysis.TemporaryVariable;
-import javatoarm.staticanalysis.Variable;
+import javatoarm.staticanalysis.*;
 import javatoarm.token.operator.ArithmeticOperator;
 import javatoarm.token.operator.OperatorToken;
 import javatoarm.token.operator.PlusMinus;
@@ -22,9 +18,9 @@ import java.util.stream.Collectors;
 public class ARMSubroutine implements Subroutine {
     private final static Register[] R = ARMLibrary.Registers;
     private final static List<Register> callerSave = List.of(0, 1, 2, 3, 14).stream()
-        .map(i -> R[i]).collect(Collectors.toList());
+            .map(i -> R[i]).collect(Collectors.toList());
     private final static List<Register> arguments = List.of(0, 1, 2, 3).stream()
-        .map(i -> R[i]).collect(Collectors.toList());
+            .map(i -> R[i]).collect(Collectors.toList());
 
     private final Map<String, Integer> constants;
     private StringBuilder text;
@@ -128,7 +124,7 @@ public class ARMSubroutine implements Subroutine {
     @Override
     public void addALU(OperatorToken.Binary operator, Variable left, Variable right,
                        Variable result)
-        throws JTAException {
+            throws JTAException {
         Register leftReg = use(left);
         Register resultRegister = prepareStore(result);
         if (operator instanceof PlusMinus) {
@@ -138,7 +134,7 @@ public class ARMSubroutine implements Subroutine {
             //TODO magic number
             if (right instanceof Immediate && ((Immediate) right).numberOfBitsLessThan(12)) {
                 ARMInstruction.instruction(text, op,
-                    resultRegister, leftReg, ((Immediate) right).toNumberRep());
+                        resultRegister, leftReg, ((Immediate) right).toNumberRep());
 
             } else {
                 Register rightReg = use(right);
@@ -176,7 +172,7 @@ public class ARMSubroutine implements Subroutine {
 
         int value;
         if (right instanceof Immediate &&
-            ((Immediate) right).numberOfBitsLessThan(12)) {
+                ((Immediate) right).numberOfBitsLessThan(12)) {
 
             ARMInstruction.instruction(text, OP.CMP, leftReg, ((Immediate) right).toNumberRep());
 
@@ -193,7 +189,7 @@ public class ARMSubroutine implements Subroutine {
     public void addLogic(boolean saveResult, boolean isAnd, Variable left, Variable right,
                          Variable result) throws JTAException {
         ARMInstruction.instruction(text, isAnd ? OP.AND : OP.ORR, !saveResult,
-            prepareStore(result), use(left), use(right));
+                prepareStore(result), use(left), use(right));
         if (!saveResult) {
             result.deleteIfIsTemp();
         }
@@ -211,7 +207,7 @@ public class ARMSubroutine implements Subroutine {
 
     @Override
     public void addFunctionCall(String targetLabel, Register result, List<Variable> varArguments)
-        throws JTAException {
+            throws JTAException {
 
         if (varArguments.size() > 4) {
             throw new UnsupportedOperationException();
@@ -283,7 +279,7 @@ public class ARMSubroutine implements Subroutine {
             if (!constants.isEmpty()) {
                 text.append(".data\n");
                 constants
-                    .forEach((label, value) -> ARMInstruction.labelValuePair(text, label, value));
+                        .forEach((label, value) -> ARMInstruction.labelValuePair(text, label, value));
                 text.append(".text\n");
             }
             finalized = text.toString();

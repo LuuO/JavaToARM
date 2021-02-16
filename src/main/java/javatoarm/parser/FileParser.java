@@ -1,9 +1,9 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.JavaClass;
-import javatoarm.java.JavaFile;
-import javatoarm.java.expression.JavaName;
+import javatoarm.javaast.JavaClass;
+import javatoarm.javaast.JavaFile;
+import javatoarm.javaast.expression.JavaName;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.KeywordToken;
 

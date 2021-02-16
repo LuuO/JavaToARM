@@ -2,21 +2,17 @@ package javatoarm.token;
 
 import javatoarm.JTAException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 public class JavaLexer {
     private static final Set<Character> symbols =
-        Set.of(';', '{', '}', '(', ')', '[', ']', '.', ',',
-            '=', '+', '-', '*', '/', '&', '|', '%', '^', '!',
-            '\'', '"', '?', ':', '<', '>', '~', '@', '\\');
+            Set.of(';', '{', '}', '(', ')', '[', ']', '.', ',',
+                    '=', '+', '-', '*', '/', '&', '|', '%', '^', '!',
+                    '\'', '"', '?', ':', '<', '>', '~', '@', '\\');
     private static final Set<String> longOperators =
-        Set.of("++", "--", "==", "!=", "::", "+=", "-=", "*=", "/=", "%=", "<=", ">=", "//", "/*",
-            "*/", "&&", "||", ">>", "<<", ">>>", "^=", "|=", "<<=", ">>=", ">>>=", "->");
-        // TODO: support longer operators
+            Set.of("++", "--", "==", "!=", "::", "+=", "-=", "*=", "/=", "%=", "<=", ">=", "//", "/*",
+                    "*/", "&&", "||", ">>", "<<", ">>>", "^=", "|=", "<<=", ">>=", ">>>=", "->");
+    // TODO: support longer operators
 
     private final List<String> words;
     private final Stack<Integer> checkPoints;
@@ -31,7 +27,7 @@ public class JavaLexer {
 
     public static boolean isNameableChar(char c) {
         return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
-            || (c >= '0' && c <= '9') || c == '$' || c == '_';
+                || (c >= '0' && c <= '9') || c == '$' || c == '_';
     }
 
     private void scan(String code) throws JTAException.UnknownCharacter {
@@ -111,7 +107,7 @@ public class JavaLexer {
                         word.append(c);
                         if (word.length() >= 3) {
                             throw new JTAException.UnknownCharacter(
-                                "Not a char: %s, last char is escaped".formatted(word));
+                                    "Not a char: %s, last char is escaped".formatted(word));
                         }
                     } else {
                         word.append(c);
@@ -121,7 +117,7 @@ public class JavaLexer {
                                 state = State.WHITESPACE;
                             } else {
                                 throw new JTAException.UnknownCharacter(
-                                    "Not a char: %s".formatted(word));
+                                        "Not a char: %s".formatted(word));
                             }
                         }
                     }

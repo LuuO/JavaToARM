@@ -1,8 +1,8 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.JavaBlock;
-import javatoarm.java.JavaCode;
+import javatoarm.javaast.JavaBlock;
+import javatoarm.javaast.JavaCode;
 import javatoarm.token.BracketToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.Token;

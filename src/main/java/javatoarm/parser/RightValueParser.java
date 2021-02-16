@@ -1,15 +1,11 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.expression.JavaExpression;
-import javatoarm.java.expression.JavaNewArray;
-import javatoarm.java.expression.NewObjectExpression;
-import javatoarm.java.type.JavaType;
-import javatoarm.token.BracketToken;
-import javatoarm.token.JavaLexer;
-import javatoarm.token.KeywordToken;
-import javatoarm.token.SplitterToken;
-import javatoarm.token.Token;
+import javatoarm.javaast.expression.JavaExpression;
+import javatoarm.javaast.expression.JavaNewArray;
+import javatoarm.javaast.expression.NewObjectExpression;
+import javatoarm.javaast.type.JavaType;
+import javatoarm.token.*;
 
 import java.util.ArrayList;
 import java.util.List;

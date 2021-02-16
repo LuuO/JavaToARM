@@ -1,4 +1,4 @@
-package javatoarm.java;
+package javatoarm.javaast;
 
 import java.util.HashSet;
 

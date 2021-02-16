@@ -1,24 +1,15 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.JavaAnnotation;
-import javatoarm.java.JavaClass;
-import javatoarm.java.JavaClassMember;
-import javatoarm.java.JavaProperty;
-import javatoarm.java.type.JavaType;
-import javatoarm.token.AnnotationToken;
-import javatoarm.token.BracketToken;
-import javatoarm.token.JavaLexer;
-import javatoarm.token.KeywordToken;
-import javatoarm.token.SplitterToken;
-import javatoarm.token.Token;
+import javatoarm.javaast.JavaAnnotation;
+import javatoarm.javaast.JavaClass;
+import javatoarm.javaast.JavaClassMember;
+import javatoarm.javaast.JavaProperty;
+import javatoarm.javaast.type.JavaType;
+import javatoarm.token.*;
 import javatoarm.token.operator.AssignmentOperator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Methods for parsing a Java Class
@@ -56,7 +47,7 @@ public class ClassParser {
         }
         lexer.next(BracketToken.CURLY_R);
 
-        return new JavaClass(properties, className, superClass, superInterface,members);
+        return new JavaClass(properties, className, superClass, superInterface, members);
     }
 
     /**
@@ -69,7 +60,7 @@ public class ClassParser {
         Token classToken = new KeywordToken(KeywordToken.Keyword._class);
 
         Set<JavaProperty> properties =
-            JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS);
+                JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS);
 
         lexer.next(classToken);
         return properties;
@@ -83,7 +74,7 @@ public class ClassParser {
      * @throws JTAException
      */
     private static JavaClassMember getMember(JavaLexer lexer, String className)
-        throws JTAException {
+            throws JTAException {
         List<JavaAnnotation> annotations;
         if (lexer.peek().equals(AnnotationToken.INSTANCE)) {
             annotations = JavaParser.parseAnnotations(lexer);

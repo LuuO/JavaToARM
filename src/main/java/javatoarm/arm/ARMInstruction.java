@@ -43,7 +43,7 @@ public class ARMInstruction {
     public static void store(StringBuilder text, Condition condition,
                              Register src, Register base, Register index, int leftShift) {
         text.append("\t\tSTR%s\t\t%s, [%s, %s, LSL#%d]\n"
-            .formatted(toCode(condition), src, base, index, leftShift));
+                .formatted(toCode(condition), src, base, index, leftShift));
     }
 
     public static void returnInstruction(StringBuilder text) {

@@ -5,7 +5,8 @@ public class AnnotationToken implements Token {
 
     public static AnnotationToken INSTANCE = new AnnotationToken();
 
-    private AnnotationToken() {}
+    private AnnotationToken() {
+    }
 
     public static AnnotationToken get(char c) {
         if (c == '@') {

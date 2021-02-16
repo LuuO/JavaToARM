@@ -2,7 +2,7 @@ package javatoarm;
 
 import javatoarm.assembly.Compiler;
 import javatoarm.assembly.InstructionSet;
-import javatoarm.java.JavaFile;
+import javatoarm.javaast.JavaFile;
 import javatoarm.parser.JavaParser;
 import javatoarm.token.JavaLexer;
 
@@ -38,7 +38,7 @@ public class JavaToARM {
     }
 
     public static String compileToARMv7(String sourceCode, String mainClass, Integer stackPosition)
-        throws JTAException {
+            throws JTAException {
         if (stackPosition == null) {
             stackPosition = MB;
         }

@@ -1,19 +1,15 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.JavaAnnotation;
-import javatoarm.java.JavaBlock;
-import javatoarm.java.JavaFunction;
-import javatoarm.java.JavaProperty;
-import javatoarm.java.expression.JavaExpression;
-import javatoarm.java.statement.JavaVariableDeclare;
-import javatoarm.java.type.JavaArrayType;
-import javatoarm.java.type.JavaType;
-import javatoarm.token.BracketToken;
-import javatoarm.token.JavaLexer;
-import javatoarm.token.KeywordToken;
-import javatoarm.token.SplitterToken;
-import javatoarm.token.Token;
+import javatoarm.javaast.JavaAnnotation;
+import javatoarm.javaast.JavaBlock;
+import javatoarm.javaast.JavaFunction;
+import javatoarm.javaast.JavaProperty;
+import javatoarm.javaast.expression.JavaExpression;
+import javatoarm.javaast.statement.JavaVariableDeclare;
+import javatoarm.javaast.type.JavaArrayType;
+import javatoarm.javaast.type.JavaType;
+import javatoarm.token.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +21,7 @@ public class FunctionParser {
     public static JavaFunction parse(JavaLexer lexer, String className,
                                      List<JavaAnnotation> annotations) throws JTAException {
         Set<JavaProperty> properties =
-            JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
+                JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
         JavaType returnType = JavaParser.parseType(lexer, true);
 
         String methodName;
@@ -43,7 +39,7 @@ public class FunctionParser {
             for (; ; ) {
                 exceptions.add(JavaParser.parseType(lexer, false));
                 if (lexer.peek().equals(BracketToken.CURLY_L)
-                    || lexer.peek().equals(SplitterToken.SEMI_COLON)) {
+                        || lexer.peek().equals(SplitterToken.SEMI_COLON)) {
                     break;
                 } else if (!lexer.nextIf(SplitterToken.COMMA)) {
                     throw new JTAException.UnexpectedToken("Throwable", lexer.peek());
@@ -60,11 +56,11 @@ public class FunctionParser {
         }
 
         return new JavaFunction(
-            annotations, properties, returnType, methodName, arguments, exceptions, body);
+                annotations, properties, returnType, methodName, arguments, exceptions, body);
     }
 
     public static List<JavaVariableDeclare> parseArgumentDeclares(JavaLexer lexer)
-        throws JTAException {
+            throws JTAException {
         List<JavaVariableDeclare> arguments = new ArrayList<>();
 
         lexer.next(BracketToken.ROUND_L);
@@ -82,7 +78,7 @@ public class FunctionParser {
                 }
 
                 arguments.add(new JavaVariableDeclare(
-                    Collections.emptySet(), type, name, null));
+                        Collections.emptySet(), type, name, null));
                 if (next.equals(BracketToken.ROUND_R)) {
                     break;
                 } else if (!next.equals(SplitterToken.COMMA)) {
@@ -102,7 +98,7 @@ public class FunctionParser {
      * @throws JTAException
      */
     public static List<JavaExpression> parseCallArguments(JavaLexer lexer)
-        throws JTAException {
+            throws JTAException {
         List<JavaExpression> arguments = new ArrayList<>();
         lexer.next(BracketToken.ROUND_L);
         if (!lexer.peek().equals(BracketToken.ROUND_R)) {

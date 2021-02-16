@@ -1,12 +1,12 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.*;
-import javatoarm.java.expression.JavaExpression;
-import javatoarm.java.expression.JavaName;
-import javatoarm.java.statement.JavaStatement;
-import javatoarm.java.statement.JavaVariableDeclare;
-import javatoarm.java.type.JavaType;
+import javatoarm.javaast.*;
+import javatoarm.javaast.expression.JavaExpression;
+import javatoarm.javaast.expression.JavaName;
+import javatoarm.javaast.statement.JavaStatement;
+import javatoarm.javaast.statement.JavaVariableDeclare;
+import javatoarm.javaast.type.JavaType;
 import javatoarm.token.*;
 import javatoarm.token.operator.TernaryToken;
 

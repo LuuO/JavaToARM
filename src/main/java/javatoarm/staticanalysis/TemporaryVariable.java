@@ -3,7 +3,7 @@ package javatoarm.staticanalysis;
 import javatoarm.JTAException;
 import javatoarm.assembly.Register;
 import javatoarm.assembly.RegisterAssigner;
-import javatoarm.java.type.JavaType;
+import javatoarm.javaast.type.JavaType;
 
 public class TemporaryVariable implements Variable {
     public final JavaType type;

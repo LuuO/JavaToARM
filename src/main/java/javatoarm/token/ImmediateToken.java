@@ -1,7 +1,7 @@
 package javatoarm.token;
 
-import javatoarm.java.type.JavaSimpleType;
-import javatoarm.java.type.JavaType;
+import javatoarm.javaast.type.JavaSimpleType;
+import javatoarm.javaast.type.JavaType;
 
 /**
  * Tokens that represent an immediate value.

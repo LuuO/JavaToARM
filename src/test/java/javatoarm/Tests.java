@@ -1,18 +1,13 @@
 package javatoarm;
 
-import javatoarm.arm.ARMCompiler;
-import javatoarm.assembly.Compiler;
-import javatoarm.assembly.InstructionSet;
-import javatoarm.java.JavaFile;
+import javatoarm.javaast.JavaFile;
 import javatoarm.parser.JavaParser;
 import javatoarm.token.JavaLexer;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 
 import static org.junit.Assert.*;
 

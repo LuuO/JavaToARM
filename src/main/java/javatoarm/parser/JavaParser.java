@@ -1,13 +1,13 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.JavaAnnotation;
-import javatoarm.java.JavaFile;
-import javatoarm.java.JavaProperty;
-import javatoarm.java.expression.JavaExpression;
-import javatoarm.java.expression.JavaImmediate;
-import javatoarm.java.expression.JavaName;
-import javatoarm.java.type.*;
+import javatoarm.javaast.JavaAnnotation;
+import javatoarm.javaast.JavaFile;
+import javatoarm.javaast.JavaProperty;
+import javatoarm.javaast.expression.JavaExpression;
+import javatoarm.javaast.expression.JavaImmediate;
+import javatoarm.javaast.expression.JavaName;
+import javatoarm.javaast.type.*;
 import javatoarm.token.*;
 import javatoarm.token.operator.TernaryToken;
 
@@ -21,10 +21,6 @@ public class JavaParser {
 
     public JavaParser(JavaLexer lexer) {
         this.lexer = lexer;
-    }
-
-    public JavaFile toJavaTree() throws JTAException {
-        return FileParser.parseFile(lexer);
     }
 
     public static void eatSemiColons(JavaLexer lexer) throws JTAException {
@@ -191,6 +187,10 @@ public class JavaParser {
             }
         }
         return annotations;
+    }
+
+    public JavaFile toJavaTree() throws JTAException {
+        return FileParser.parseFile(lexer);
     }
 
 }
