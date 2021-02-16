@@ -7,20 +7,9 @@ import javatoarm.java.JavaProperty;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.expression.JavaImmediate;
 import javatoarm.java.expression.JavaName;
-import javatoarm.java.type.JavaArrayType;
-import javatoarm.java.type.JavaParametrizedType;
-import javatoarm.java.type.JavaSimpleType;
-import javatoarm.java.type.JavaType;
-import javatoarm.token.AngleToken;
-import javatoarm.token.AnnotationToken;
-import javatoarm.token.BracketToken;
-import javatoarm.token.ImmediateToken;
-import javatoarm.token.JavaLexer;
-import javatoarm.token.KeywordToken;
-import javatoarm.token.MemberAccessToken;
-import javatoarm.token.NameToken;
-import javatoarm.token.SplitterToken;
-import javatoarm.token.Token;
+import javatoarm.java.type.*;
+import javatoarm.token.*;
+import javatoarm.token.operator.TernaryToken;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -51,7 +40,7 @@ public class JavaParser {
         if (type instanceof JavaSimpleType) {
             Token next = lexer.next(ImmediateToken.class);
             return new JavaImmediate(type, parseValue(type, (ImmediateToken) next));
-        } else if (type instanceof JavaArrayType){
+        } else if (type instanceof JavaArrayType) {
             lexer.next(BracketToken.CURLY_L);
 
             JavaArrayType arrayType = (JavaArrayType) type;
@@ -79,7 +68,7 @@ public class JavaParser {
     }
 
     public static Object parseValue(JavaType type, ImmediateToken immediateToken)
-        throws JTAException {
+            throws JTAException {
         if (!type.equals(immediateToken.getType())) {
             throw new JTAException.TypeMismatch(type, immediateToken.getType());
         }
@@ -88,7 +77,7 @@ public class JavaParser {
 
     public static Set<JavaProperty> parseProperties(JavaLexer lexer,
                                                     JavaProperty.Validator validator)
-        throws JTAException {
+            throws JTAException {
 
         Set<JavaProperty> properties = new HashSet<>();
 
@@ -118,22 +107,48 @@ public class JavaParser {
 
             /* check type parameter */
             if (lexer.nextIf(AngleToken.LEFT)) {
-                if (lexer.nextIf(AngleToken.RIGHT)) {
-                    type = new JavaParametrizedType(typeName, null);
-                } else {
-                    type = new JavaParametrizedType(typeName, parseType(lexer, false));
+                List<JavaType> typeParameters = new ArrayList<>();
+
+                if (!lexer.nextIf(AngleToken.RIGHT)) {
+                    do {
+                        if (lexer.nextIf(TernaryToken.QUESTION)) {
+                            JavaTypeWildcard.Bound bound;
+                            JavaType wildcardType;
+                            if (lexer.nextIf(KeywordToken.Keyword._extends)) {
+                                bound = JavaTypeWildcard.Bound.EXTEND;
+                                wildcardType = parseType(lexer, false);
+                            } else if (lexer.nextIf(KeywordToken.Keyword._super)) {
+                                bound = JavaTypeWildcard.Bound.SUPER;
+                                wildcardType = parseType(lexer, false);
+                            } else {
+                                bound = JavaTypeWildcard.Bound.UNBOUNDED;
+                                wildcardType = null;
+                            }
+                            typeParameters.add(new JavaTypeWildcard(bound, wildcardType));
+                        } else {
+                            typeParameters.add(parseType(lexer, false));
+                        }
+                    } while (lexer.nextIf(SplitterToken.COMMA));
                     lexer.next(AngleToken.RIGHT);
                 }
+
+                type = new JavaParametrizedType(typeName, typeParameters);
             } else {
                 type = JavaSimpleType.get(typeName);
             }
         } else {
             throw new JTAException.UnexpectedToken("data type", token);
         }
-
-        while (checkIsArray && lexer.nextIf(BracketToken.SQUARE_L)) {
-            lexer.next(BracketToken.SQUARE_R);
+        /* check varargs */
+        if (lexer.nextIf(MemberAccessToken.INSTANCE)) {
+            lexer.next(MemberAccessToken.INSTANCE);
+            lexer.next(MemberAccessToken.INSTANCE);
             type = new JavaArrayType(type);
+        } else {
+            while (checkIsArray && lexer.nextIf(BracketToken.SQUARE_L)) {
+                lexer.next(BracketToken.SQUARE_R);
+                type = new JavaArrayType(type);
+            }
         }
         return type;
     }
@@ -143,26 +158,23 @@ public class JavaParser {
     }
 
     public static JavaName parseNamePath(JavaLexer lexer) throws JTAException {
-        List<String> path = new ArrayList<>();
-
-        while (lexer.hasNext()) {
-            Token token = lexer.next();
-            if (token instanceof NameToken || token.equals(KeywordToken.THIS)) {
-                path.add(token.toString());
-                if (!lexer.nextIf(MemberAccessToken.INSTANCE)) {
-                    return new JavaName(path);
-                }
-            } else {
-                lexer.rewind();
-                if (path.size() == 0 || path.get(path.size() - 1).equals(".")) {
-                    throw new JTAException.UnexpectedToken("name", token.toString());
+        Token token = lexer.next();
+        if (token instanceof NameToken || token.equals(KeywordToken.THIS)) {
+            List<String> path = new ArrayList<>();
+            path.add(token.toString());
+            while (lexer.nextIf(MemberAccessToken.INSTANCE)) {
+                Token next = lexer.next();
+                if (next instanceof NameToken) {
+                    path.add(next.toString());
                 } else {
-                    return new JavaName(path);
+                    lexer.rewind(2);
+                    break;
                 }
             }
+            return new JavaName(path);
+        } else {
+            throw new JTAException.UnexpectedToken("name", token);
         }
-
-        throw new JTAException.UnexpectedToken("name or ';'", "EOF");
     }
 
     public static List<JavaAnnotation> parseAnnotations(JavaLexer lexer) throws JTAException {

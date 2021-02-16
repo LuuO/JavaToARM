@@ -1,21 +1,14 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.java.JavaBlock;
-import javatoarm.java.JavaCode;
-import javatoarm.java.JavaIfElse;
-import javatoarm.java.JavaLoop;
-import javatoarm.java.JavaSynchronized;
-import javatoarm.java.JavaTryBlock;
+import javatoarm.java.*;
 import javatoarm.java.expression.JavaExpression;
 import javatoarm.java.expression.JavaName;
 import javatoarm.java.statement.JavaStatement;
 import javatoarm.java.statement.JavaVariableDeclare;
-import javatoarm.token.BracketToken;
-import javatoarm.token.JavaLexer;
-import javatoarm.token.KeywordToken;
-import javatoarm.token.SplitterToken;
-import javatoarm.token.Token;
+import javatoarm.java.type.JavaType;
+import javatoarm.token.*;
+import javatoarm.token.operator.TernaryToken;
 
 import java.util.List;
 
@@ -29,23 +22,35 @@ public class ControlParser {
             KeywordToken keywordToken = (KeywordToken) token;
 
             if (keywordToken.keyword == KeywordToken.Keyword._for) {
-                lexer.next(BracketToken.ROUND_L);
-                JavaStatement initial = null, increment = null;
-                JavaExpression condition = null;
-                if (!lexer.peek().equals(SplitterToken.SEMI_COLON)) {
-                    initial = StatementParser.parse(lexer);
+                if (isEnhancedFor(lexer)) {
+                    lexer.next(BracketToken.ROUND_L);
+                    JavaType elementType = JavaParser.parseType(lexer, false);
+                    String elementName = JavaParser.parseSimpleName(lexer);
+                    lexer.next(TernaryToken.COLON);
+                    JavaExpression collection = ExpressionParser.parse(lexer);
+                    lexer.next(BracketToken.ROUND_R);
+                    JavaCode body = CodeParser.parseCode(lexer);
+                    return new JavaEnhancedForLoop(elementType, elementName, collection, body);
+
+                } else {
+                    lexer.next(BracketToken.ROUND_L);
+                    JavaStatement initial = null, increment = null;
+                    JavaExpression condition = null;
+                    if (!lexer.peek().equals(SplitterToken.SEMI_COLON)) {
+                        initial = StatementParser.parse(lexer);
+                    }
+                    lexer.next(SplitterToken.SEMI_COLON);
+                    if (!lexer.peek().equals(SplitterToken.SEMI_COLON)) {
+                        condition = ExpressionParser.parse(lexer);
+                    }
+                    lexer.next(SplitterToken.SEMI_COLON);
+                    if (!lexer.peek().equals(SplitterToken.SEMI_COLON)) {
+                        increment = StatementParser.parse(lexer);
+                    }
+                    lexer.next(BracketToken.ROUND_R);
+                    JavaCode body = CodeParser.parseCode(lexer);
+                    return JavaLoop.forLoop(body, initial, condition, increment);
                 }
-                lexer.next(SplitterToken.SEMI_COLON);
-                if (!lexer.peek().equals(SplitterToken.SEMI_COLON)) {
-                    condition = ExpressionParser.parse(lexer);
-                }
-                lexer.next(SplitterToken.SEMI_COLON);
-                if (!lexer.peek().equals(SplitterToken.SEMI_COLON)) {
-                    increment = StatementParser.parse(lexer);
-                }
-                lexer.next(BracketToken.ROUND_R);
-                JavaCode body = CodeParser.parseCode(lexer);
-                return JavaLoop.forLoop(body, initial, condition, increment);
 
             } else if (keywordToken.keyword == KeywordToken.Keyword._switch) {
                 // TODO: support switch statement
@@ -108,5 +113,21 @@ public class ControlParser {
         JavaExpression condition = ExpressionParser.parse(lexer);
         lexer.next(BracketToken.ROUND_R);
         return condition;
+    }
+
+    private static boolean isEnhancedFor(JavaLexer lexer) throws JTAException {
+        lexer.createCheckPoint();
+        lexer.next(BracketToken.ROUND_L);
+        while (lexer.hasNext()) {
+            Token next = lexer.next();
+            if (next.equals(SplitterToken.SEMI_COLON)) {
+                lexer.returnToLastCheckPoint();
+                return false;
+            } else if (next.equals(TernaryToken.COLON)) {
+                lexer.returnToLastCheckPoint();
+                return true;
+            }
+        }
+        throw new JTAException.UnexpectedToken("for loop", "EOF");
     }
 }

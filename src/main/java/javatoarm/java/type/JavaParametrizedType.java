@@ -2,17 +2,21 @@ package javatoarm.java.type;
 
 import javatoarm.java.expression.JavaName;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class JavaParametrizedType extends JavaType{
     public final JavaName name;
-    public final JavaType parameter;
+    public final List<JavaType> parameters;
 
-    public JavaParametrizedType(JavaName name, JavaType parameter) {
+    public JavaParametrizedType(JavaName name, List<JavaType> parameters) {
         this.name = name;
-        this.parameter = parameter;
+        this.parameters = parameters;
     }
 
     @Override
     public String name() {
-        return "%s<%s>".formatted(name, parameter);
+        return "%s<%s>".formatted(name,
+                parameters.stream().map(JavaType::name).collect(Collectors.joining(", ")));
     }
 }
