@@ -115,6 +115,12 @@ public class JTAException extends Exception {
         }
     }
 
+    public static class NotImplemented extends JTAException {
+        public NotImplemented(String message) {
+            super(message);
+        }
+    }
+
 }
 
 

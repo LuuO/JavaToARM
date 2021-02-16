@@ -11,8 +11,6 @@ public class ARMCompiler implements Compiler {
     private final static Register[] R = ARMLibrary.Registers;
 
     private final StringBuilder text;
-    List<String> globalLabels;
-    List<String> jumpTable;
 
     public ARMCompiler() {
         text = new StringBuilder();
@@ -75,8 +73,7 @@ public class ARMCompiler implements Compiler {
                 ARMLibrary.heapStartLabel();
     }
 
-    private int findOffsetTo(String javaFile, String className, String classFunction)
-            throws JTAException.UnknownFunction {
+    private int findOffsetTo(String javaFile, String className, String classFunction) throws JTAException {
         Scanner scanner = new Scanner(javaFile);
         String line = scanner.nextLine();
         while (!line.startsWith(className)) {

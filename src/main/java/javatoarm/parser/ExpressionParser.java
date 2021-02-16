@@ -49,18 +49,16 @@ public class ExpressionParser {
                     addElement(elements, new JavaFunctionCall(name, arguments));
                 } else {
                     lexer.createCheckPoint();
-                    JavaType type;
-                    boolean isType;
+                    JavaType type = null;
                     try {
                         type = TypeParser.parseType(lexer, true);
-                        isType = true;
-                    } catch (JTAException e) {
-                        isType = false;
+                    } catch (JTAException ignored) {
                     }
 
-                    if (lexer.nextIf(BracketToken.ROUND_R) && isType) {
-                        // sub expression
+                    if (lexer.nextIf(BracketToken.ROUND_R) && type != null) {
+                        // type casting
                         lexer.deleteLastCheckPoint();
+                        elements.add(new TypeCasting(type));
                     } else {
                         // sub expression
                         lexer.returnToLastCheckPoint();
@@ -97,7 +95,8 @@ public class ExpressionParser {
 
         // TODO: improve performance
         parseIncrementDecrement(elements);
-        parseUnaryExpression(elements);
+        parseUnaryOperations(elements);
+        parseTypeCasting(elements);
         parseBinaryExpression(elements);
         parseTernaryToken(elements);
         parseAssignment(elements);
@@ -168,7 +167,7 @@ public class ExpressionParser {
         }
     }
 
-    private static void parseUnaryExpression(List<ExpressionElement> elements) {
+    private static void parseUnaryOperations(List<ExpressionElement> elements) {
         for (int i = 0; i < elements.size(); i++) {
             OperatorToken operator = elements.get(i).operator();
             if (operator instanceof OperatorToken.Unary) {
@@ -182,6 +181,20 @@ public class ExpressionParser {
                 // TODO: check index, condition
                 JavaExpression operand = elements.remove(i + 1).expression();
                 setElement(elements, i, new UnaryExpression(unaryOperator, operand));
+            }
+        }
+    }
+
+    private static void parseTypeCasting(List<ExpressionElement> elements) {
+        for (int i = elements.size() - 1; i >= 0; i--) {
+            ExpressionElement element = elements.get(i);
+            if (element instanceof TypeCasting) {
+                JavaType toType = ((TypeCasting) element).toType;
+                elements.remove(i);
+
+                // TODO: check index, condition
+                JavaExpression operand = elements.get(i).expression();
+                setElement(elements, i, new TypeCastingExpression(toType, operand));
             }
         }
     }
@@ -328,6 +341,14 @@ public class ExpressionParser {
         @Override
         public JavaType type() {
             return type;
+        }
+    }
+
+    private static class TypeCasting implements ExpressionElement {
+        public final JavaType toType;
+
+        public TypeCasting(JavaType toType) {
+            this.toType = toType;
         }
     }
 
