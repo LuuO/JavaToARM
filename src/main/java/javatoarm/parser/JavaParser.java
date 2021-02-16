@@ -7,9 +7,10 @@ import javatoarm.javaast.JavaProperty;
 import javatoarm.javaast.expression.ImmediateExpression;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.expression.JavaName;
-import javatoarm.javaast.type.*;
+import javatoarm.javaast.type.JavaArrayType;
+import javatoarm.javaast.type.JavaSimpleType;
+import javatoarm.javaast.type.JavaType;
 import javatoarm.token.*;
-import javatoarm.token.operator.TernaryToken;
 
 import java.util.ArrayList;
 import java.util.HashSet;
