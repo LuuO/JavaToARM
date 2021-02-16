@@ -2,6 +2,7 @@ package javatoarm.javaast.statement;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
+import javatoarm.javaast.JavaRightValue;
 import javatoarm.javaast.JavaScope;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.type.JavaType;
@@ -14,9 +15,9 @@ import java.util.stream.Collectors;
 
 public class JavaFunctionCall implements JavaExpression, JavaStatement {
     String name;
-    List<JavaExpression> arguments;
+    List<JavaRightValue> arguments;
 
-    public JavaFunctionCall(String name, List<JavaExpression> arguments) {
+    public JavaFunctionCall(String name, List<JavaRightValue> arguments) {
         this.name = name;
         this.arguments = arguments;
     }
@@ -24,8 +25,12 @@ public class JavaFunctionCall implements JavaExpression, JavaStatement {
     @Override
     public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
         List<Variable> arguments = new ArrayList<>();
-        for (JavaExpression argument : this.arguments) {
-            arguments.add(argument.compileExpression(subroutine, parent));
+        for (JavaRightValue argument : this.arguments) {
+            if (argument instanceof JavaExpression) {
+                arguments.add(((JavaExpression) argument).compileExpression(subroutine, parent));
+            } else {
+                throw new UnsupportedOperationException();
+            }
         }
 
         JavaType returnType = parent.getFunctionReturnType(name,

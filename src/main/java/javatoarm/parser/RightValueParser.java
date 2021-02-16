@@ -1,6 +1,7 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
+import javatoarm.javaast.JavaRightValue;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.expression.JavaNewArray;
 import javatoarm.javaast.expression.NewObjectExpression;
@@ -38,7 +39,7 @@ public class RightValueParser {
         } else if (next.equals(BracketToken.ROUND_L)) {
             /* initialize objects */
             lexer.rewind();
-            List<JavaExpression> arguments = FunctionParser.parseCallArguments(lexer);
+            List<JavaRightValue> arguments = FunctionParser.parseCallArguments(lexer);
             return new NewObjectExpression(type, arguments);
 
         } else {

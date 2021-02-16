@@ -1,7 +1,10 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
+import javatoarm.javaast.JavaCode;
+import javatoarm.javaast.JavaLambda;
 import javatoarm.javaast.JavaLeftValue;
+import javatoarm.javaast.JavaRightValue;
 import javatoarm.javaast.expression.*;
 import javatoarm.javaast.statement.JavaAssignment;
 import javatoarm.javaast.statement.JavaFunctionCall;
@@ -10,6 +13,7 @@ import javatoarm.javaast.type.JavaType;
 import javatoarm.token.*;
 import javatoarm.token.operator.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -44,7 +48,7 @@ public class ExpressionParser {
                     // Function call
                     lexer.rewind();
                     String name = elements.pop().expression().toString();
-                    List<JavaExpression> arguments = FunctionParser.parseCallArguments(lexer);
+                    List<JavaRightValue> arguments = FunctionParser.parseCallArguments(lexer);
                     addElement(elements, new JavaFunctionCall(name, arguments));
                 } else {
                     lexer.createCheckPoint();
@@ -94,7 +98,7 @@ public class ExpressionParser {
             throw new JTAException.UnexpectedToken("expression", lexer.peek());
         }
 
-        // TODO: performance
+        // TODO: improve performance
         parseIncrementDecrement(elements);
         parseUnaryExpression(elements);
         parseBinaryExpression(elements);

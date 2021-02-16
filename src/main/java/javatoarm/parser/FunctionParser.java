@@ -1,10 +1,7 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.javaast.JavaAnnotation;
-import javatoarm.javaast.JavaBlock;
-import javatoarm.javaast.JavaFunction;
-import javatoarm.javaast.JavaProperty;
+import javatoarm.javaast.*;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.statement.JavaVariableDeclare;
 import javatoarm.javaast.type.JavaArrayType;
@@ -97,13 +94,13 @@ public class FunctionParser {
      * @return
      * @throws JTAException
      */
-    public static List<JavaExpression> parseCallArguments(JavaLexer lexer)
+    public static List<JavaRightValue> parseCallArguments(JavaLexer lexer)
             throws JTAException {
-        List<JavaExpression> arguments = new ArrayList<>();
+        List<JavaRightValue> arguments = new ArrayList<>();
         lexer.next(BracketToken.ROUND_L);
         if (!lexer.peek().equals(BracketToken.ROUND_R)) {
             for (; ; ) {
-                arguments.add(ExpressionParser.parse(lexer));
+                arguments.add(LambdaParser.parseExpressionOrLambda(lexer));
                 Token next = lexer.peek();
                 if (next.equals(BracketToken.ROUND_R)) {
                     break;

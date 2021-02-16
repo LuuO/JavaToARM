@@ -44,6 +44,9 @@ public interface Token {
         if ((token = KeywordToken.get(word)) != null) {
             return token;
         }
+        if ((token = ArrowToken.get(word)) != null) {
+            return token;
+        }
 
         return new NameToken(word);
     }

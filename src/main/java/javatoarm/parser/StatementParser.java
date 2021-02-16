@@ -60,7 +60,7 @@ public class StatementParser {
                 case _this -> {
                     lexer.next();
                     if (lexer.peek().equals(BracketToken.ROUND_L)) {
-                        List<JavaExpression> arguments = FunctionParser.parseCallArguments(lexer);
+                        List<JavaRightValue> arguments = FunctionParser.parseCallArguments(lexer);
                         return new JavaFunctionCall("this", arguments);
                     }
                     lexer.rewind();
