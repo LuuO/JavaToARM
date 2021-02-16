@@ -16,7 +16,7 @@ public class JavaBlock implements JavaCode {
 
     @Override
     public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
-        JavaScope scope = JavaScope.newChildScope(parent, this);
+        JavaScope scope = JavaScope.newChildScope(parent);
         for (JavaCode code : codes) {
             code.compileCode(subroutine, scope);
         }

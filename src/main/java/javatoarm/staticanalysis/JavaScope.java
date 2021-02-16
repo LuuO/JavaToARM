@@ -1,7 +1,6 @@
 package javatoarm.staticanalysis;
 
 import javatoarm.JTAException;
-import javatoarm.assembly.InstructionSet;
 import javatoarm.assembly.RegisterAssigner;
 import javatoarm.javaast.JavaClass;
 import javatoarm.javaast.JavaCode;
@@ -16,30 +15,30 @@ import java.util.Map;
 /**
  * Represent an object that managers the resources accessible to the member of some scopes.
  * Accessible resources include variables, functions, registers, class fields and loops to break.
+ * Always invoke {@link JavaScope#outOfScope()} when the scope is out.
  */
 public class JavaScope {
     public final JavaScope parent;
-    public final JavaCode owner;
+    public final JavaCode breakable;
     public final RegisterAssigner registerAssigner;
     private final Map<String, LocalVariable> variables;
     private final JavaClass javaClass;
     private final JavaFunction function;
 
-    // JavaCode owner - breakable
-    private JavaScope(JavaScope parent, JavaCode owner, JavaClass javaClass, JavaFunction function,
+    private JavaScope(JavaScope parent, JavaCode breakable, JavaClass javaClass, JavaFunction function,
                       RegisterAssigner registerAssigner) {
         this.variables = new HashMap<>();
         this.parent = parent;
-        this.owner = owner;
+        this.breakable = breakable;
         this.javaClass = javaClass;
         this.function = function;
         this.registerAssigner = registerAssigner;
     }
 
-    private JavaScope(JavaScope parent, JavaCode owner) {
+    private JavaScope(JavaScope parent, JavaCode breakable) {
         this.variables = new HashMap<>();
         this.parent = parent;
-        this.owner = owner;
+        this.breakable = breakable;
         this.javaClass = parent.javaClass;
         this.function = parent.function;
         this.registerAssigner = parent.registerAssigner;
@@ -49,17 +48,33 @@ public class JavaScope {
      * Create a child scope of some other scope
      *
      * @param parent the parent scope
-     * @param owner
      * @return the created scope
      */
-    public static JavaScope newChildScope(JavaScope parent, JavaCode owner) {
-        return new JavaScope(parent, owner);
+    public static JavaScope newChildScope(JavaScope parent) {
+        return new JavaScope(parent, parent.breakable);
     }
 
+    /**
+     * Create a breakable child scope (loop or switch) of some other scope.
+     *
+     * @param parent    the parent scope
+     * @param breakable the breakable loop or switch
+     * @return the created scope
+     */
+    public static JavaScope newChildScope(JavaScope parent, JavaCode breakable) {
+        return new JavaScope(parent, breakable);
+    }
 
-    public static JavaScope newClassScope(JavaClass javaClass, InstructionSet is) {
+    /**
+     * Create a new scope representing a class.
+     *
+     * @param javaClass        the parent scope
+     * @param registerAssigner the registerAssigner
+     * @return the created class scope
+     */
+    public static JavaScope newClassScope(JavaClass javaClass, RegisterAssigner registerAssigner) {
         return new JavaScope(null, null,
-                javaClass, null, new RegisterAssigner(is));
+                javaClass, null, registerAssigner);
     }
 
     /**
@@ -105,6 +120,12 @@ public class JavaScope {
         return variable;
     }
 
+    /**
+     * Try obtaining the variable with the provided name
+     *
+     * @param name the name of the variable
+     * @return if the variable is reachable, returns the variable. Otherwise, returns null.
+     */
     private LocalVariable tryGetVariable(String name) {
         LocalVariable var = variables.get(name);
         if (var == null && parent != null) {
@@ -113,18 +134,38 @@ public class JavaScope {
         return var;
     }
 
-
+    /**
+     * Get the return type of the function with a provided name and a list of argument types
+     *
+     * @param name          the name of the function
+     * @param argumentTypes the list of argument types of the function
+     * @return the return type of the function
+     * @throws JTAException if the function does not exist or an error occurs
+     */
     public final JavaType getFunctionReturnType(String name, List<JavaType> argumentTypes)
             throws JTAException {
-        // TODO: check arguments
+
         JavaFunction.Interface functionInterface = new JavaFunction.Interface(name, argumentTypes);
         return javaClass.getFunctionReturnType(functionInterface);
     }
 
+    /**
+     * Returns the function epilogue label for return statements
+     *
+     * @return the function epilogue label
+     */
     public final String getEpilogueLabel() {
         return function.epilogueLabel;
     }
 
+    /**
+     * Declare a new variable in this scope
+     *
+     * @param type the type of the new variable
+     * @param name the name of the new variable
+     * @return a newly created LocalVariable representing the variable
+     * @throws JTAException if some other non-class variable with the same name is already declared or an error occurs
+     */
     public final LocalVariable declareVariable(JavaType type, String name) throws JTAException {
         LocalVariable existed = tryGetVariable(name);
         if (existed != null && existed.holder.javaClass != null) {
@@ -136,8 +177,10 @@ public class JavaScope {
         return var;
     }
 
-    private void declareArguments(List<JavaVariableDeclare> argumentDeclares)
-            throws JTAException {
+    /**
+     * Declares function arguments
+     */
+    private void declareArguments(List<JavaVariableDeclare> argumentDeclares) throws JTAException {
         for (JavaVariableDeclare declare : argumentDeclares) {
             String name = declare.name();
             Argument argument =

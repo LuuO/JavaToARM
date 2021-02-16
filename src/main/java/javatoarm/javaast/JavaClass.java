@@ -3,6 +3,7 @@ package javatoarm.javaast;
 import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
 import javatoarm.assembly.InstructionSet;
+import javatoarm.assembly.RegisterAssigner;
 import javatoarm.javaast.statement.JavaVariableDeclare;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.staticanalysis.JavaScope;
@@ -60,8 +61,7 @@ public class JavaClass implements JavaClassMember {
         }
     }
 
-    public JavaType getFunctionReturnType(JavaFunction.Interface functionInterface)
-            throws JTAException {
+    public JavaType getFunctionReturnType(JavaFunction.Interface functionInterface) throws JTAException {
 
         for (Map.Entry<JavaFunction.Interface, JavaType> entry : functionInterfaces.entrySet()) {
             JavaFunction.Interface key = entry.getKey();
@@ -85,7 +85,7 @@ public class JavaClass implements JavaClassMember {
     }
 
     public void compileTo(Compiler compiler, InstructionSet is) throws JTAException {
-        JavaScope scope = JavaScope.newClassScope(this, is);
+        JavaScope scope = JavaScope.newClassScope(this, new RegisterAssigner(is));
 
         compiler.addLabel("class_" + name);
         if (fields.size() != 0) {

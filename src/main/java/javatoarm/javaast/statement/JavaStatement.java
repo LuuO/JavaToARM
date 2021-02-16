@@ -41,13 +41,13 @@ public interface JavaStatement extends JavaCode {
         public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
             JavaScope current = parent;
             // TODO support switch break
-            while (!(current.owner instanceof JavaLoop)) {
+            while (!(current.breakable instanceof JavaLoop)) {
                 current = current.parent;
                 if (current == null) {
                     throw new JTAException.NotInALoop("");
                 }
             }
-            JavaLoop loop = (JavaLoop) current.owner;
+            JavaLoop loop = (JavaLoop) current.breakable;
             loop.addBreak(subroutine);
         }
     }
@@ -57,13 +57,13 @@ public interface JavaStatement extends JavaCode {
         @Override
         public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
             JavaScope current = parent;
-            while (!(current.owner instanceof JavaLoop)) {
+            while (!(current.breakable instanceof JavaLoop)) {
                 current = current.parent;
                 if (current == null) {
                     throw new JTAException.NotInALoop("");
                 }
             }
-            JavaLoop loop = (JavaLoop) current.owner;
+            JavaLoop loop = (JavaLoop) current.breakable;
             loop.addContinue(subroutine);
         }
     }
