@@ -89,66 +89,6 @@ public class JavaParser {
         }
     }
 
-    public static JavaType parseType(JavaLexer lexer, boolean checkIsArray) throws JTAException {
-        JavaType type;
-        Token token = lexer.next();
-        if (token instanceof KeywordToken) {
-            type = JavaSimpleType.get((KeywordToken) token);
-            if (type == null) {
-                throw new JTAException.UnexpectedToken("data type", token);
-            }
-        } else if (token instanceof NameToken) {
-            lexer.rewind();
-            JavaName typeName = parseNamePath(lexer);
-
-            /* check type parameter */
-            if (lexer.nextIf(AngleToken.LEFT)) {
-                List<JavaType> typeParameters = new ArrayList<>();
-
-                if (!lexer.nextIf(AngleToken.RIGHT)) {
-                    do {
-                        if (lexer.nextIf(TernaryToken.QUESTION)) {
-                            JavaTypeWildcard.Bound bound;
-                            JavaType wildcardType;
-                            if (lexer.nextIf(KeywordToken.Keyword._extends)) {
-                                bound = JavaTypeWildcard.Bound.EXTEND;
-                                wildcardType = parseType(lexer, false);
-                            } else if (lexer.nextIf(KeywordToken.Keyword._super)) {
-                                bound = JavaTypeWildcard.Bound.SUPER;
-                                wildcardType = parseType(lexer, false);
-                            } else {
-                                bound = JavaTypeWildcard.Bound.UNBOUNDED;
-                                wildcardType = null;
-                            }
-                            typeParameters.add(new JavaTypeWildcard(bound, wildcardType));
-                        } else {
-                            typeParameters.add(parseType(lexer, false));
-                        }
-                    } while (lexer.nextIf(SplitterToken.COMMA));
-                    lexer.next(AngleToken.RIGHT);
-                }
-
-                type = new JavaParametrizedType(typeName, typeParameters);
-            } else {
-                type = JavaSimpleType.get(typeName);
-            }
-        } else {
-            throw new JTAException.UnexpectedToken("data type", token);
-        }
-        /* check varargs */
-        if (lexer.nextIf(MemberAccessToken.INSTANCE)) {
-            lexer.next(MemberAccessToken.INSTANCE);
-            lexer.next(MemberAccessToken.INSTANCE);
-            type = new JavaArrayType(type);
-        } else {
-            while (checkIsArray && lexer.nextIf(BracketToken.SQUARE_L)) {
-                lexer.next(BracketToken.SQUARE_R);
-                type = new JavaArrayType(type);
-            }
-        }
-        return type;
-    }
-
     public static String parseSimpleName(JavaLexer lexer) throws JTAException {
         return lexer.next(NameToken.class).toString();
     }

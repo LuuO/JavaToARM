@@ -77,7 +77,7 @@ public class StatementParser {
                 properties = Collections.emptySet();
             }
 
-            JavaType type = JavaParser.parseType(lexer, true);
+            JavaType type = TypeParser.parseType(lexer, true);
             String name = JavaParser.parseSimpleName(lexer);
             JavaRightValue initialValue = null;
             if (lexer.nextIf(BracketToken.SQUARE_L)) {

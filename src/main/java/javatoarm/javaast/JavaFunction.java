@@ -18,14 +18,16 @@ public class JavaFunction implements JavaClassMember {
     private final String name;
     private final List<JavaVariableDeclare> arguments;
     private final List<JavaAnnotation> annotations;
+    private final List<JavaType> typeParameters;
     private final List<JavaType> exceptions;
     private final JavaBlock body;
 
-    public JavaFunction(List<JavaAnnotation> annotations, Set<JavaProperty> properties,
+    public JavaFunction(List<JavaAnnotation> annotations, Set<JavaProperty> properties, List<JavaType> typeParameters,
                         JavaType returnType, String name, List<JavaVariableDeclare> arguments,
                         List<JavaType> exceptions, JavaBlock body) throws JTAException {
 
         this.returnType = returnType;
+        this.typeParameters = typeParameters;
         this.name = name;
         this.arguments = arguments;
         this.body = body;

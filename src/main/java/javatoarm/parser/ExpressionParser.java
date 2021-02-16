@@ -52,7 +52,7 @@ public class ExpressionParser {
                     JavaType type;
                     boolean isType;
                     try {
-                        type = JavaParser.parseType(lexer, true);
+                        type = TypeParser.parseType(lexer, true);
                         isType = true;
                     } catch (JTAException e) {
                         isType = false;
@@ -84,7 +84,7 @@ public class ExpressionParser {
                 addElement(elements, name);
             } else if (token.equals(new KeywordToken(KeywordToken.Keyword._instanceof))) {
                 elements.add(new InstanceOf());
-                elements.add(new Type(JavaParser.parseType(lexer, true)));
+                elements.add(new Type(TypeParser.parseType(lexer, true)));
             } else {
                 lexer.rewind();
                 break;

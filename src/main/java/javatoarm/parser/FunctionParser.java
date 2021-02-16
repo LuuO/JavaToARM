@@ -18,13 +18,18 @@ public class FunctionParser {
                                      List<JavaAnnotation> annotations) throws JTAException {
         Set<JavaProperty> properties =
                 JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
-        JavaType returnType = JavaParser.parseType(lexer, true);
+        List<JavaType> typeParameters = null;
+        if (lexer.peek().equals(AngleToken.LEFT)) {
+            typeParameters = TypeParser.parseTypeParameters(lexer);
+        }
+        JavaType returnType = TypeParser.parseType(lexer, true);
 
         String methodName;
         if (lexer.peek().equals(BracketToken.ROUND_L) && returnType.name().equals(className)) {
-            // constructor
+            /* constructor */
             methodName = returnType.toString();
         } else {
+            /* other functions */
             methodName = JavaParser.parseSimpleName(lexer);
         }
 
@@ -33,7 +38,7 @@ public class FunctionParser {
 
         if (lexer.nextIf(KeywordToken.Keyword._throws)) {
             for (; ; ) {
-                exceptions.add(JavaParser.parseType(lexer, false));
+                exceptions.add(TypeParser.parseType(lexer, false));
                 if (lexer.peek().equals(BracketToken.CURLY_L)
                         || lexer.peek().equals(SplitterToken.SEMI_COLON)) {
                     break;
@@ -51,8 +56,8 @@ public class FunctionParser {
             body = CodeParser.parseBlock(lexer);
         }
 
-        return new JavaFunction(
-                annotations, properties, returnType, methodName, arguments, exceptions, body);
+        return new JavaFunction(annotations, properties, typeParameters,
+                returnType, methodName, arguments, exceptions, body);
     }
 
     public static List<JavaVariableDeclare> parseArgumentDeclares(JavaLexer lexer)
@@ -62,7 +67,7 @@ public class FunctionParser {
         lexer.next(BracketToken.ROUND_L);
         if (!lexer.nextIf(BracketToken.ROUND_R)) {
             for (; ; ) {
-                JavaType type = JavaParser.parseType(lexer, true);
+                JavaType type = TypeParser.parseType(lexer, true);
                 String name = JavaParser.parseSimpleName(lexer);
                 Token next = lexer.next();
 

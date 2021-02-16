@@ -8,8 +8,8 @@ import javatoarm.token.Token;
 /**
  * Java to ARM checked exceptions
  */
-public abstract class JTAException extends Exception {
-    private JTAException(String message) {
+public class JTAException extends Exception {
+    public JTAException(String message) {
         super(message);
     }
 

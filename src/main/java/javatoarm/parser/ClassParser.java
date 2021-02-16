@@ -144,9 +144,9 @@ public class ClassParser {
 
     private static Set<JavaType> parseTypes(JavaLexer lexer) throws JTAException {
         Set<JavaType> types = new HashSet<>();
-        types.add(JavaParser.parseType(lexer, true));
+        types.add(TypeParser.parseType(lexer, true));
         while (lexer.nextIf(SplitterToken.COMMA)) {
-            types.add(JavaParser.parseType(lexer, true));
+            types.add(TypeParser.parseType(lexer, true));
         }
         return types;
     }

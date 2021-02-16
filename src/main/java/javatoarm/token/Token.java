@@ -51,4 +51,17 @@ public interface Token {
         return new NameToken(word);
     }
 
+    /**
+     * A helper method for keyword tokens
+     *
+     * @param keyword the keyword to compare
+     * @return true if this is an instance of KeywordToken and the keyword of this equals to the provided keyword,
+     * false otherwise.
+     */
+    default boolean equals(KeywordToken.Keyword keyword) {
+        if (this instanceof KeywordToken) {
+            return ((KeywordToken) this).keyword.equals(keyword);
+        }
+        return false;
+    }
 }

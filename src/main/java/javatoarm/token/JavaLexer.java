@@ -270,7 +270,7 @@ public class JavaLexer {
     public Token next(Class<?> expected) throws JTAException {
         Token next = getNextToken();
         nextIndex += 1;
-        if (next.getClass() != expected) {
+        if (!expected.isAssignableFrom(next.getClass())) {
             throw new JTAException.UnexpectedToken(expected.toString(), next);
         } else {
             return next;
