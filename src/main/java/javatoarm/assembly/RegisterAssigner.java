@@ -54,16 +54,17 @@ public class RegisterAssigner {
 
     public Register requestArgumentRegister(LocalVariable argument) throws JTAException {
         switch (isa) {
-            case ARMv7:
+            case ARMv7 -> {
                 for (int i = 0; i < 4; i++) {
                     if (holders[i] == null) {
                         holders[i] = argument;
+                        return registers[i];
                     }
-                    return registers[i];
                 }
                 throw new JTAException.Unsupported("too many arguments");
-            default:
-                throw new UnsupportedOperationException();
+            }
+            case X86_64 -> throw new JTAException.NotImplemented("x86");
+            default -> throw new UnsupportedOperationException();
         }
     }
 }

@@ -6,6 +6,7 @@ import javatoarm.assembly.Register;
 import javatoarm.assembly.Subroutine;
 import javatoarm.staticanalysis.*;
 import javatoarm.token.operator.ArithmeticOperator;
+import javatoarm.token.operator.LogicalNot;
 import javatoarm.token.operator.OperatorToken;
 import javatoarm.token.operator.PlusMinus;
 
@@ -41,7 +42,7 @@ public class ARMSubroutine implements Subroutine {
             Immediate imm = ((Immediate) source);
             TemporaryVariable temp = imm.getTemporary();
 
-            if (imm.numberOfBitsLessThan(12)) {
+            if (imm.numberOfBitsLessThan(8)) {
                 ARMInstruction.move(text, Condition.ALWAYS, temp.getRegister(), imm.toNumberRep());
             } else {
                 Integer immValue = imm.toNumberRep();
@@ -132,7 +133,7 @@ public class ARMSubroutine implements Subroutine {
             OP op = pm.isPlus ? OP.ADD : OP.SUB;
 
             //TODO magic number
-            if (right instanceof Immediate && ((Immediate) right).numberOfBitsLessThan(12)) {
+            if (right instanceof Immediate && ((Immediate) right).numberOfBitsLessThan(8)) {
                 ARMInstruction.instruction(text, op,
                         resultRegister, leftReg, ((Immediate) right).toNumberRep());
 
@@ -154,8 +155,24 @@ public class ARMSubroutine implements Subroutine {
     }
 
     @Override
-    public void addALU(OperatorToken operator, Variable operand, Variable result) {
-
+    public void addALU(OperatorToken.Unary operator, Variable operand, Variable result) throws JTAException {
+        Register src = use(operand);
+        Register dest = prepareStore(result);
+        if (operator instanceof LogicalNot) {
+            ARMInstruction.instruction(text, OP.CMP, src, 0);
+            ARMInstruction.move(text, Condition.EQUAL, dest, 1);
+            ARMInstruction.move(text, Condition.UNEQUAL, dest, 0);
+        } else if (operator instanceof PlusMinus) {
+            if (!((PlusMinus) operator).isPlus) {
+                ARMInstruction.move(text, Condition.ALWAYS, dest, 0);
+                ARMInstruction.instruction(text, OP.SUB, dest, dest, src);
+            }
+            /* else do nothing */
+        } else {
+            throw new JTAException.NotImplemented("Unary operator");
+        }
+        store(dest, result);
+        operand.deleteIfIsTemp();
     }
 
     @Override
@@ -172,7 +189,7 @@ public class ARMSubroutine implements Subroutine {
 
         int value;
         if (right instanceof Immediate &&
-                ((Immediate) right).numberOfBitsLessThan(12)) {
+                ((Immediate) right).numberOfBitsLessThan(8)) {
 
             ARMInstruction.instruction(text, OP.CMP, leftReg, ((Immediate) right).toNumberRep());
 

@@ -7,12 +7,11 @@ import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.OperatorToken;
 
-//TODO bool
 public class UnaryExpression implements JavaExpression {
-    OperatorToken operator;
+    OperatorToken.Unary operator;
     JavaExpression operand;
 
-    public UnaryExpression(OperatorToken token, JavaExpression operand) {
+    public UnaryExpression(OperatorToken.Unary token, JavaExpression operand) {
         this.operator = token;
         this.operand = operand;
     }

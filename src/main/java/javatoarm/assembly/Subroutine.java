@@ -19,7 +19,7 @@ public interface Subroutine {
     void addALU(OperatorToken.Binary operator, Variable left, Variable right, Variable result)
             throws JTAException;
 
-    void addALU(OperatorToken operator, Variable operand, Variable result);
+    void addALU(OperatorToken.Unary operator, Variable operand, Variable result) throws JTAException;
 
     void addAssignment(Variable left, Variable right) throws JTAException;
 
