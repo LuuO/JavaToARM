@@ -2,7 +2,7 @@ package javatoarm.javaast;
 
 import java.util.HashSet;
 
-public class Fibb {
+public class Test1 {
 
     public static int fibonacci(int n) {
         if (n <= 1) {//
@@ -21,7 +21,7 @@ public class Fibb {
         int R1 = false;
 
         int[] arr = newArray(546, 78765);
-        int n = numberOfElmentGreaterThan(arr, 78765 - 546 + 1, 49999);
+        int n = numberOfElementGreaterThan(arr, 78765 - 546 + 1, 49999);
         boolean arrayPass = n == 78765 - 49999;
 
         boolean majorityPass = !majority(false, false, false)
@@ -70,7 +70,7 @@ public class Fibb {
         return ((554 * a + 32) - (((-a + 42) * (86 - c)) + (b - c))) * (c + 73);
     }
 
-    public static int numberOfElmentGreaterThan(int[] array, int length, int threshold) {
+    public static int numberOfElementGreaterThan(int[] array, int length, int threshold) {
         int count = 0; // R3
         int i = 0; // R4
         while (i < length) {

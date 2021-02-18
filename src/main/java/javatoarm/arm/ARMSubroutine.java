@@ -266,7 +266,7 @@ public class ARMSubroutine implements Subroutine {
 
     @Override
     public void addComment(String comment) {
-        text.append("\t\t//").append(comment).append('\n');
+        text.append("\t\t// ").append(comment).append('\n');
     }
 
     @Override
