@@ -121,7 +121,7 @@ public class ClassParser {
                 // TODO: Assuming all native members are functions
                 lexer.returnToLastCheckPoint();
                 return MemberType.FUNCTION;
-            } else if (next.equals(SplitterToken.SEMI_COLON)) {
+            } else if (next.equals(CharToken.SEMI_COLON)) {
                 lexer.returnToLastCheckPoint();
                 return MemberType.FIELD;
             } else if (next.equals(BracketToken.CURLY_L)) {
@@ -145,7 +145,7 @@ public class ClassParser {
     private static Set<JavaType> parseTypes(JavaLexer lexer) throws JTAException {
         Set<JavaType> types = new HashSet<>();
         types.add(TypeParser.parseType(lexer, true));
-        while (lexer.nextIf(SplitterToken.COMMA)) {
+        while (lexer.nextIf(CharToken.COMMA)) {
             types.add(TypeParser.parseType(lexer, true));
         }
         return types;

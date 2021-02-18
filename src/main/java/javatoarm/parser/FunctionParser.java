@@ -40,9 +40,9 @@ public class FunctionParser {
             for (; ; ) {
                 exceptions.add(TypeParser.parseType(lexer, false));
                 if (lexer.peek().equals(BracketToken.CURLY_L)
-                        || lexer.peek().equals(SplitterToken.SEMI_COLON)) {
+                        || lexer.peek().equals(CharToken.SEMI_COLON)) {
                     break;
-                } else if (!lexer.nextIf(SplitterToken.COMMA)) {
+                } else if (!lexer.nextIf(CharToken.COMMA)) {
                     throw new JTAException.UnexpectedToken("Throwable", lexer.peek());
                 }
             }
@@ -50,7 +50,7 @@ public class FunctionParser {
         }
 
         JavaBlock body;
-        if (lexer.nextIf(SplitterToken.SEMI_COLON)) {
+        if (lexer.nextIf(CharToken.SEMI_COLON)) {
             body = null;
         } else {
             body = CodeParser.parseBlock(lexer);
@@ -82,7 +82,7 @@ public class FunctionParser {
                         Collections.emptySet(), type, name, null));
                 if (next.equals(BracketToken.ROUND_R)) {
                     break;
-                } else if (!next.equals(SplitterToken.COMMA)) {
+                } else if (!next.equals(CharToken.COMMA)) {
                     throw new JTAException.UnexpectedToken("',' or ')'", next);
                 }
             }
@@ -108,7 +108,7 @@ public class FunctionParser {
                 Token next = lexer.peek();
                 if (next.equals(BracketToken.ROUND_R)) {
                     break;
-                } else if (next.equals(SplitterToken.COMMA)) {
+                } else if (next.equals(CharToken.COMMA)) {
                     lexer.next();
                 } else {
                     throw new JTAException.UnexpectedToken("',' or ')'", next);

@@ -26,7 +26,7 @@ public class JavaParser {
 
     public static void eatSemiColons(JavaLexer lexer) throws JTAException {
         //noinspection StatementWithEmptyBody
-        while (lexer.hasNext() && lexer.nextIf(SplitterToken.SEMI_COLON)) ;
+        while (lexer.hasNext() && lexer.nextIf(CharToken.SEMI_COLON)) ;
     }
 
     public static ImmediateExpression parseConstant(JavaType type, JavaLexer lexer) throws JTAException {
@@ -49,7 +49,7 @@ public class JavaParser {
 
                     if (lexer.nextIf(BracketToken.CURLY_R)) {
                         break;
-                    } else if (!lexer.nextIf(SplitterToken.SEMI_COLON)) {
+                    } else if (!lexer.nextIf(CharToken.SEMI_COLON)) {
                         throw new JTAException.UnexpectedToken("',' or '}'", next);
                     }
                 }
@@ -95,7 +95,7 @@ public class JavaParser {
         if (token instanceof NameToken || token.equals(KeywordToken.THIS)) {
             List<String> path = new ArrayList<>();
             path.add(token.toString());
-            while (lexer.nextIf(MemberAccessToken.INSTANCE)) {
+            while (lexer.nextIf(CharToken.DOT)) {
                 Token next = lexer.next();
                 if (next instanceof NameToken) {
                     path.add(next.toString());

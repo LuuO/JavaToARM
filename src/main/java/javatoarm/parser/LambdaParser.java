@@ -27,7 +27,7 @@ public class LambdaParser {
                 lexer.returnToLastCheckPoint();
                 return true;
             } else if (!token.equals(BracketToken.ROUND_L) && !token.equals(BracketToken.ROUND_R)
-                    && !token.equals(SplitterToken.COMMA) && !(token instanceof NameToken)) {
+                    && !token.equals(CharToken.COMMA) && !(token instanceof NameToken)) {
                 lexer.returnToLastCheckPoint();
                 return false;
             }
@@ -41,7 +41,7 @@ public class LambdaParser {
         if (lexer.nextIf(BracketToken.ROUND_L)) {
             do {
                 parameters.add(lexer.next(NameToken.class).toString());
-            } while (lexer.nextIf(SplitterToken.COMMA));
+            } while (lexer.nextIf(CharToken.COMMA));
         } else {
             parameters.add(lexer.next(NameToken.class).toString());
         }

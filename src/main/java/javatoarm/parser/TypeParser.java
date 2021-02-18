@@ -36,9 +36,9 @@ public class TypeParser {
             throw new JTAException.UnexpectedToken("data type", token);
         }
         /* check varargs */
-        if (lexer.nextIf(MemberAccessToken.INSTANCE)) {
-            lexer.next(MemberAccessToken.INSTANCE);
-            lexer.next(MemberAccessToken.INSTANCE);
+        if (lexer.nextIf(CharToken.DOT)) {
+            lexer.next(CharToken.DOT);
+            lexer.next(CharToken.DOT);
             type = new JavaArrayType(type);
         } else {
             while (checkIsArray && lexer.nextIf(BracketToken.SQUARE_L)) {
@@ -75,7 +75,7 @@ public class TypeParser {
             } else {
                 typeParameters.add(parseType(lexer, false));
             }
-        } while (lexer.nextIf(SplitterToken.COMMA));
+        } while (lexer.nextIf(CharToken.COMMA));
         lexer.next(AngleToken.RIGHT);
 
         return typeParameters;

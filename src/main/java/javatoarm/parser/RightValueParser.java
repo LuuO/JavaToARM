@@ -24,7 +24,7 @@ public class RightValueParser {
                 List<JavaExpression> values = new ArrayList<>();
                 if (!lexer.peek().equals(BracketToken.CURLY_R)) {
                     values.add(ExpressionParser.parse(lexer));
-                    while (lexer.peek().equals(SplitterToken.COMMA)) {
+                    while (lexer.peek().equals(CharToken.COMMA)) {
                         values.add(ExpressionParser.parse(lexer));
                     }
                 }

@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 public class Tests {
 
     @Test
-    public void test() {
+    public void test1() {
         JavaToARM.main(new String[]{"resources/Test1.java"});
     }
 

@@ -98,7 +98,7 @@ public class ControlParser {
         lexer.next(BracketToken.ROUND_L);
         while (lexer.hasNext()) {
             Token next = lexer.next();
-            if (next.equals(SplitterToken.SEMI_COLON)) {
+            if (next.equals(CharToken.SEMI_COLON)) {
                 lexer.returnToLastCheckPoint();
                 return false;
             } else if (next.equals(QuestColon.COLON)) {
@@ -124,15 +124,15 @@ public class ControlParser {
             lexer.next(BracketToken.ROUND_L);
             JavaStatement initial = null, increment = null;
             JavaExpression condition = null;
-            if (!lexer.peek().equals(SplitterToken.SEMI_COLON)) {
+            if (!lexer.peek().equals(CharToken.SEMI_COLON)) {
                 initial = StatementParser.parse(lexer);
             }
-            lexer.next(SplitterToken.SEMI_COLON);
-            if (!lexer.peek().equals(SplitterToken.SEMI_COLON)) {
+            lexer.next(CharToken.SEMI_COLON);
+            if (!lexer.peek().equals(CharToken.SEMI_COLON)) {
                 condition = ExpressionParser.parse(lexer);
             }
-            lexer.next(SplitterToken.SEMI_COLON);
-            if (!lexer.peek().equals(SplitterToken.SEMI_COLON)) {
+            lexer.next(CharToken.SEMI_COLON);
+            if (!lexer.peek().equals(CharToken.SEMI_COLON)) {
                 increment = StatementParser.parse(lexer);
             }
             lexer.next(BracketToken.ROUND_R);
@@ -156,7 +156,7 @@ public class ControlParser {
                 do {
                     ImmediateToken immediate = (ImmediateToken) lexer.next(ImmediateToken.class);
                     caseConditions.add(new ImmediateExpression(immediate));
-                } while (lexer.nextIf(SplitterToken.COMMA));
+                } while (lexer.nextIf(CharToken.COMMA));
                 isDefault = false;
 
             } else if (lexer.nextIf(KeywordToken.Keyword._default)) {

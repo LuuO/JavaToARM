@@ -6,9 +6,9 @@ import javatoarm.javaast.JavaProperty;
 import javatoarm.javaast.JavaRightValue;
 import javatoarm.javaast.statement.JavaVariableDeclare;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.token.CharToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.KeywordToken;
-import javatoarm.token.SplitterToken;
 import javatoarm.token.Token;
 import javatoarm.token.operator.AssignmentOperator;
 
@@ -34,7 +34,7 @@ public class FieldParser {
             }
             token = lexer.next();
         }
-        if (!token.equals(SplitterToken.SEMI_COLON)) {
+        if (!token.equals(CharToken.SEMI_COLON)) {
             throw new JTAException.UnexpectedToken("';' or '='", token);
         }
 

@@ -43,7 +43,7 @@ public class StatementParser {
                 }
                 case _return -> {
                     lexer.next();
-                    if (lexer.peek().equals(SplitterToken.SEMI_COLON)) {
+                    if (lexer.peek().equals(CharToken.SEMI_COLON)) {
                         return new JavaStatement.Return();
                     } else {
                         return new JavaStatement.Return(ExpressionParser.parse(lexer));
@@ -125,7 +125,7 @@ public class StatementParser {
             } else if (token.equals(AngleToken.LEFT)) {
                 lexer.returnToLastCheckPoint();
                 return true;
-            } else if (token.equals(SplitterToken.COMMA)) {
+            } else if (token.equals(CharToken.COMMA)) {
                 /* Commas only appear in variable declarations */
                 lexer.returnToLastCheckPoint();
                 return true;
@@ -140,7 +140,7 @@ public class StatementParser {
                 lexer.returnToLastCheckPoint();
                 return next.equals(BracketToken.SQUARE_R);
 
-            } else if (token.equals(SplitterToken.SEMI_COLON)) {
+            } else if (token.equals(CharToken.SEMI_COLON)) {
                 /* short statement: int a; */
                 return true;
 
