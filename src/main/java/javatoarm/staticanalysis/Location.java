@@ -1,4 +1,4 @@
-package javatoarm.assembly;
+package javatoarm.staticanalysis;
 
 /**
  * Represent where the variable is stored.

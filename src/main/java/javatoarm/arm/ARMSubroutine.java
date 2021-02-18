@@ -2,7 +2,6 @@ package javatoarm.arm;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Condition;
-import javatoarm.assembly.Register;
 import javatoarm.assembly.Subroutine;
 import javatoarm.staticanalysis.*;
 import javatoarm.token.operator.ArithmeticOperator;

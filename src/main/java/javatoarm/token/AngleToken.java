@@ -41,7 +41,7 @@ public enum AngleToken implements Comparison {
     public String toString() {
         return switch (this) {
             case LEFT -> "<";
-            case RIGHT ->">";
+            case RIGHT -> ">";
         };
     }
 }

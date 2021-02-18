@@ -1,23 +1,13 @@
-package javatoarm.assembly;
+package javatoarm.staticanalysis;
 
 import javatoarm.JTAException;
-import javatoarm.staticanalysis.LocalVariable;
-import javatoarm.staticanalysis.Variable;
+import javatoarm.assembly.InstructionSet;
 
 public class RegisterAssigner {
-
-    public static String SP = "sp";
 
     private final InstructionSet isa;
     private final Register[] registers;
     private final Variable[] holders;
-
-    /*
-        AF:
-            GENERAL is the holder of registers that never goes out of scope. (e.g. Stack Pointer)
-            holders.get(i) stores the variable using Register i.
-            variableNames.get(i) stores the name of the variable correspond to Register i.
-     */
 
     public RegisterAssigner(InstructionSet isa) {
         int numberOfRegisters = switch (isa) {

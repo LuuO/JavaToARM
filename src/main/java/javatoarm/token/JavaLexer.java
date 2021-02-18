@@ -2,7 +2,10 @@ package javatoarm.token;
 
 import javatoarm.JTAException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.Stack;
 
 /**
  * A tokenizer that breaks Java code into tokens
@@ -32,6 +35,17 @@ public class JavaLexer {
         this.words = new ArrayList<>();
         this.checkPoints = new Stack<>();
         scan(code);
+    }
+
+    /**
+     * Check if the character can appear in a name in Java.
+     *
+     * @param c the character
+     * @return true if it can appear in a name in Java, false otherwise.
+     */
+    public static boolean isNameableChar(char c) {
+        return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
+                || (c >= '0' && c <= '9') || c == '$' || c == '_';
     }
 
     /**
@@ -171,17 +185,6 @@ public class JavaLexer {
      */
     public void deleteLastCheckPoint() {
         checkPoints.pop();
-    }
-
-    /**
-     * Check if the character can appear in a name in Java.
-     *
-     * @param c the character
-     * @return true if it can appear in a name in Java, false otherwise.
-     */
-    public static boolean isNameableChar(char c) {
-        return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
-                || (c >= '0' && c <= '9') || c == '$' || c == '_';
     }
 
     private void scan(String code) throws JTAException.UnknownCharacter {

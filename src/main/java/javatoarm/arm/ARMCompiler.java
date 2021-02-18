@@ -2,7 +2,10 @@ package javatoarm.arm;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
-import javatoarm.assembly.*;
+import javatoarm.assembly.Condition;
+import javatoarm.assembly.InstructionSet;
+import javatoarm.assembly.Subroutine;
+import javatoarm.staticanalysis.Register;
 
 import java.util.List;
 import java.util.Scanner;

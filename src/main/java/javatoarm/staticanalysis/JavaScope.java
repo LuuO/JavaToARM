@@ -1,7 +1,6 @@
 package javatoarm.staticanalysis;
 
 import javatoarm.JTAException;
-import javatoarm.assembly.RegisterAssigner;
 import javatoarm.javaast.JavaClass;
 import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.JavaFunction;

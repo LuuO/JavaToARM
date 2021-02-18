@@ -1,6 +1,7 @@
 package javatoarm.assembly;
 
 import javatoarm.JTAException;
+import javatoarm.staticanalysis.Register;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.OperatorToken;
 
