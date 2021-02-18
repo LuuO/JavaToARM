@@ -61,10 +61,10 @@ public class TypeParser {
             if (lexer.nextIf(QuestColon.QUESTION)) {
                 JavaTypeWildcard.Bound bound;
                 JavaType wildcardType;
-                if (lexer.nextIf(KeywordToken.Keyword._extends)) {
+                if (lexer.nextIf(KeywordToken._extends)) {
                     bound = JavaTypeWildcard.Bound.EXTEND;
                     wildcardType = parseType(lexer, false);
-                } else if (lexer.nextIf(KeywordToken.Keyword._super)) {
+                } else if (lexer.nextIf(KeywordToken._super)) {
                     bound = JavaTypeWildcard.Bound.SUPER;
                     wildcardType = parseType(lexer, false);
                 } else {

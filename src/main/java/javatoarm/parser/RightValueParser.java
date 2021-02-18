@@ -14,7 +14,7 @@ import java.util.List;
 public class RightValueParser {
 
     public static JavaExpression parseNewInit(JavaLexer lexer) throws JTAException {
-        lexer.next(KeywordToken.Keyword._new);
+        lexer.next(KeywordToken._new);
         JavaType type = TypeParser.parseType(lexer, false);
         Token next = lexer.next();
         if (next.equals(BracketToken.SQUARE_L)) {

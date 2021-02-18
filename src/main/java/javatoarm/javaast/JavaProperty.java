@@ -9,7 +9,7 @@ public enum JavaProperty {
 
     public static JavaProperty get(Token token) {
         if (token instanceof KeywordToken) {
-            return switch ((((KeywordToken) token).keyword)) {
+            return switch ((KeywordToken) token) {
                 case _public -> PUBLIC;
                 case _private -> PRIVATE;
                 case _protected -> PROTECTED;

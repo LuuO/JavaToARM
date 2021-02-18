@@ -24,61 +24,58 @@ public class ControlParser {
     public static JavaCode parse(JavaLexer lexer) throws JTAException {
         Token token = lexer.next();
         if (token instanceof KeywordToken) {
-            KeywordToken keywordToken = (KeywordToken) token;
+            switch ((KeywordToken) token) {
+                case _for:
+                    return parseForLoop(lexer);
 
-            if (keywordToken.keyword == KeywordToken.Keyword._for) {
-                return parseForLoop(lexer);
+                case _switch:
+                    return parseSwitch(lexer);
 
-            } else if (keywordToken.keyword == KeywordToken.Keyword._switch) {
-                return parseSwitch(lexer);
+                case _do:
+                    JavaCode bodyDo = CodeParser.parseCode(lexer);
+                    lexer.next(KeywordToken._while);
+                    JavaExpression conditionDo = parseConditionInBrackets(lexer);
+                    return JavaLoop.doWhileLoop(bodyDo, conditionDo);
 
-            } else if (keywordToken.keyword == KeywordToken.Keyword._do) {
-                JavaCode body = CodeParser.parseCode(lexer);
-                lexer.next(KeywordToken.Keyword._while);
-                JavaExpression condition = parseConditionInBrackets(lexer);
-                return JavaLoop.doWhileLoop(body, condition);
+                case _if:
+                    JavaExpression conditionIf = parseConditionInBrackets(lexer);
+                    JavaCode bodyTrue = CodeParser.parseCode(lexer);
+                    JavaCode bodyFalse = null;
+                    if (lexer.nextIf(KeywordToken._else)) {
+                        bodyFalse = CodeParser.parseCode(lexer);
+                    }
+                    return new JavaIfElse(conditionIf, bodyTrue, bodyFalse);
 
-            } else if (keywordToken.keyword == KeywordToken.Keyword._if) {
-                JavaExpression condition = parseConditionInBrackets(lexer);
-                JavaCode bodyTrue = CodeParser.parseCode(lexer);
-                JavaCode bodyFalse = null;
-                if (lexer.nextIf(KeywordToken.Keyword._else)) {
-                    bodyFalse = CodeParser.parseCode(lexer);
-                }
-                return new JavaIfElse(condition, bodyTrue, bodyFalse);
+                case _while:
+                    JavaExpression conditionWhile = parseConditionInBrackets(lexer);
+                    JavaCode bodyWhile = CodeParser.parseCode(lexer);
+                    return JavaLoop.whileLoop(bodyWhile, conditionWhile);
 
-            } else if (keywordToken.keyword == KeywordToken.Keyword._while) {
-                JavaExpression condition = parseConditionInBrackets(lexer);
-                JavaCode body = CodeParser.parseCode(lexer);
-                return JavaLoop.whileLoop(body, condition);
+                case _synchronized:
+                    JavaExpression lock;
+                    if (lexer.nextIf(BracketToken.ROUND_L)) {
+                        lock = ExpressionParser.parse(lexer);
+                        lexer.next(BracketToken.ROUND_R);
+                    } else {
+                        lock = new JavaName("this");
+                    }
+                    JavaBlock bodySynchronized = CodeParser.parseBlock(lexer);
+                    return new JavaSynchronized(lock, bodySynchronized);
 
-            } else if (keywordToken.keyword == KeywordToken.Keyword._synchronized) {
-                JavaExpression lock;
-                if (lexer.nextIf(BracketToken.ROUND_L)) {
-                    lock = ExpressionParser.parse(lexer);
-                    lexer.next(BracketToken.ROUND_R);
-                } else {
-                    lock = new JavaName("this");
-                }
-                JavaBlock body = CodeParser.parseBlock(lexer);
-                return new JavaSynchronized(lock, body);
-
-            } else if (keywordToken.keyword == KeywordToken.Keyword._try) {
-                JavaBlock tryBlock = CodeParser.parseBlock(lexer);
-                lexer.next(KeywordToken.Keyword._catch);
-                List<JavaVariableDeclare> exceptions = FunctionParser.parseArgumentDeclares(lexer);
-                JavaBlock catchBlock = CodeParser.parseBlock(lexer);
-                return new JavaTryBlock(tryBlock, exceptions, catchBlock);
+                case _try:
+                    JavaBlock tryBlock = CodeParser.parseBlock(lexer);
+                    lexer.next(KeywordToken._catch);
+                    List<JavaVariableDeclare> exceptions = FunctionParser.parseArgumentDeclares(lexer);
+                    JavaBlock catchBlock = CodeParser.parseBlock(lexer);
+                    return new JavaTryBlock(tryBlock, exceptions, catchBlock);
             }
         }
-
         throw new JTAException.UnexpectedToken("control token", token);
     }
 
     public static boolean isControlToken(Token token) {
         if (token instanceof KeywordToken) {
-            KeywordToken.Keyword keyword = ((KeywordToken) token).keyword;
-            return switch (keyword) {
+            return switch ((KeywordToken) token) {
                 case _for, _switch, _do, _if, _while, _synchronized, _try -> true;
                 default -> false;
             };
@@ -152,14 +149,14 @@ public class ControlParser {
         while (!lexer.nextIf(BracketToken.CURLY_R)) {
             List<ImmediateExpression> caseConditions = new ArrayList<>();
             boolean isDefault;
-            if (lexer.nextIf(KeywordToken.Keyword._case)) {
+            if (lexer.nextIf(KeywordToken._case)) {
                 do {
                     ImmediateToken immediate = (ImmediateToken) lexer.next(ImmediateToken.class);
                     caseConditions.add(new ImmediateExpression(immediate));
                 } while (lexer.nextIf(CharToken.COMMA));
                 isDefault = false;
 
-            } else if (lexer.nextIf(KeywordToken.Keyword._default)) {
+            } else if (lexer.nextIf(KeywordToken._default)) {
                 isDefault = true;
 
             } else {
@@ -168,8 +165,8 @@ public class ControlParser {
             lexer.next(QuestColon.COLON);
 
             List<JavaCode> body = new ArrayList<>();
-            while (!lexer.peek().equals(KeywordToken.Keyword._case)
-                    && !lexer.peek().equals(KeywordToken.Keyword._default)
+            while (!lexer.peek().equals(KeywordToken._case)
+                    && !lexer.peek().equals(KeywordToken._default)
                     && !lexer.peek().equals(BracketToken.CURLY_R)) {
 
                 body.add(CodeParser.parseCode(lexer));

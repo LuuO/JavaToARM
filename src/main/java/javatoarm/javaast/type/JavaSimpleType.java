@@ -31,7 +31,7 @@ public class JavaSimpleType extends JavaType {
     }
 
     public static JavaType get(KeywordToken keywordToken) {
-        return switch (keywordToken.keyword) {
+        return switch (keywordToken) {
             case _boolean -> BOOL;
             case _double -> DOUBLE;
             case _float -> FLOAT;

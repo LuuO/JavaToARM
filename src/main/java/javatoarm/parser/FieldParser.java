@@ -27,7 +27,7 @@ public class FieldParser {
         JavaRightValue initialValue = null;
         Token token = lexer.next();
         if (token instanceof AssignmentOperator.Simple) {
-            if (lexer.peek().equals(KeywordToken.Keyword._new)) {
+            if (lexer.peek().equals(KeywordToken._new)) {
                 initialValue = RightValueParser.parseNewInit(lexer);
             } else {
                 initialValue = ExpressionParser.parse(lexer);

@@ -31,7 +31,7 @@ public class StatementParser {
         /* control statement */
         Token next = lexer.peek();
         if (next instanceof KeywordToken) {
-            KeywordToken.Keyword keyword = ((KeywordToken) next).keyword;
+            KeywordToken keyword = (KeywordToken) next;
             switch (keyword) {
                 case _break -> {
                     lexer.next();
@@ -71,7 +71,7 @@ public class StatementParser {
         /* object creation or expression */
         if (isObjectCreation(lexer)) {
             Set<JavaProperty> properties;
-            if (lexer.nextIf(KeywordToken.Keyword._final)) {
+            if (lexer.nextIf(KeywordToken._final)) {
                 properties = Set.of(JavaProperty.FINAL);
             } else {
                 properties = Collections.emptySet();
@@ -86,7 +86,7 @@ public class StatementParser {
             }
 
             if (lexer.nextIf(AssignmentOperator.Simple.class)) {
-                if (lexer.peek().equals(KeywordToken.Keyword._new)) {
+                if (lexer.peek().equals(KeywordToken._new)) {
                     initialValue = RightValueParser.parseNewInit(lexer);
                 } else {
                     initialValue = ExpressionParser.parse(lexer);
@@ -109,7 +109,7 @@ public class StatementParser {
 
         if (lexer.peek() instanceof KeywordToken) {
             KeywordToken keywordToken = (KeywordToken) lexer.peek();
-            if (keywordToken.keyword == KeywordToken.Keyword._final) {
+            if (lexer.peek().equals(KeywordToken._final)) {
                 return true;
             }
             return JavaSimpleType.get(keywordToken) != null;

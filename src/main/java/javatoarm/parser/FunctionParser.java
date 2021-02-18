@@ -36,7 +36,7 @@ public class FunctionParser {
         List<JavaVariableDeclare> arguments = parseArgumentDeclares(lexer);
         List<JavaType> exceptions = new ArrayList<>();
 
-        if (lexer.nextIf(KeywordToken.Keyword._throws)) {
+        if (lexer.nextIf(KeywordToken._throws)) {
             for (; ; ) {
                 exceptions.add(TypeParser.parseType(lexer, false));
                 if (lexer.peek().equals(BracketToken.CURLY_L)

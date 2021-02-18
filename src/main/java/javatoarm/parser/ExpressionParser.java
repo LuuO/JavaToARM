@@ -67,7 +67,7 @@ public class ExpressionParser {
                         addElement(elements, expression);
                     }
                 }
-            } else if (token.equals(KeywordToken.Keyword._new)) {
+            } else if (token.equals(KeywordToken._new)) {
                 lexer.rewind();
                 JavaExpression rightValue = RightValueParser.parseNewInit(lexer);
                 addElement(elements, rightValue);
@@ -76,11 +76,11 @@ public class ExpressionParser {
             } else if (token instanceof ImmediateToken) {
                 ImmediateExpression constant = new ImmediateExpression(((ImmediateToken) token));
                 addElement(elements, constant);
-            } else if (token instanceof NameToken || token.equals(KeywordToken.Keyword._this)) {
+            } else if (token instanceof NameToken || token.equals(KeywordToken._this)) {
                 lexer.rewind();
                 JavaName name = JavaParser.parseNamePath(lexer);
                 addElement(elements, name);
-            } else if (token.equals(KeywordToken.Keyword._instanceof)) {
+            } else if (token.equals(KeywordToken._instanceof)) {
                 elements.add(new InstanceOf());
                 elements.add(new Type(TypeParser.parseType(lexer, true)));
             } else {

@@ -16,10 +16,10 @@ gradle build
 
 Step 3. Run the program to compile your .java file
 ```
-java -cp build/classes/java/main/ javatoarm.JavaToARM "path/to/the_file_to_compile.java" [Memory Size (in MB)]
+java -cp build/classes/java/main/ javatoarm.JavaToARM "path/to/the_file_to_compile.java" [Memory Size (in MB) (Optional)]
 ```
 
-A suggested ARMv7 Simulator: https://cpulator.01xz.net/?sys=arm
+Suggested ARMv7 Simulator: <https://cpulator.01xz.net/?sys=arm>
 
 ### Samples:
 
@@ -28,6 +28,13 @@ Some sample test files included under ``resources/``:
 * ``String.java`` from Java Standard Library
 
 ### Features:
+
+####Front-end:
+
+* Support most Java syntax (Everything in ``String.java``)
+
+####Back-end:
+
 * Supported data types: ``int``, ``boolean``, and arrays
 * Mini malloc
 * 

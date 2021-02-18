@@ -92,7 +92,7 @@ public class JavaParser {
 
     public static JavaName parseNamePath(JavaLexer lexer) throws JTAException {
         Token token = lexer.next();
-        if (token instanceof NameToken || token.equals(KeywordToken.Keyword._this)) {
+        if (token instanceof NameToken || token.equals(KeywordToken._this)) {
             List<String> path = new ArrayList<>();
             path.add(token.toString());
             while (lexer.nextIf(CharToken.DOT)) {

@@ -21,12 +21,12 @@ public class ClassParser {
         String className = JavaParser.parseSimpleName(lexer);
 
         Set<JavaType> superClass, superInterface;
-        if (lexer.nextIf(KeywordToken.Keyword._extends)) {
+        if (lexer.nextIf(KeywordToken._extends)) {
             superClass = parseTypes(lexer);
         } else {
             superClass = Collections.emptySet();
         }
-        if (lexer.nextIf(KeywordToken.Keyword._implements)) {
+        if (lexer.nextIf(KeywordToken._implements)) {
             superInterface = parseTypes(lexer);
         } else {
             superInterface = Collections.emptySet();
@@ -60,7 +60,7 @@ public class ClassParser {
         Set<JavaProperty> properties =
                 JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS);
 
-        lexer.next(KeywordToken.Keyword._class);
+        lexer.next(KeywordToken._class);
         return properties;
     }
 
@@ -89,7 +89,7 @@ public class ClassParser {
             case INITIALIZER:
                 return new JavaClass.Initializer(CodeParser.parseBlock(lexer), false);
             case STATIC_INITIALIZER:
-                lexer.next(KeywordToken.Keyword._static);
+                lexer.next(KeywordToken._static);
                 return new JavaClass.Initializer(CodeParser.parseBlock(lexer), true);
             default:
                 throw new AssertionError();
@@ -102,7 +102,7 @@ public class ClassParser {
         }
 
         lexer.createCheckPoint();
-        if (lexer.nextIf(KeywordToken.Keyword._static) && lexer.nextIf(BracketToken.CURLY_L)) {
+        if (lexer.nextIf(KeywordToken._static) && lexer.nextIf(BracketToken.CURLY_L)) {
             lexer.returnToLastCheckPoint();
             return MemberType.STATIC_INITIALIZER;
         }
@@ -111,11 +111,11 @@ public class ClassParser {
         lexer.createCheckPoint();
         while (lexer.hasNext() && !lexer.peek().equals(BracketToken.CURLY_R)) {
             Token next = lexer.next();
-            if (next.equals(KeywordToken.Keyword._class)) {
+            if (next.equals(KeywordToken._class)) {
 
                 lexer.returnToLastCheckPoint();
                 return MemberType.CLASS;
-            } else if (next.equals(KeywordToken.Keyword._native)) {
+            } else if (next.equals(KeywordToken._native)) {
                 // TODO: Assuming all native members are functions
                 lexer.returnToLastCheckPoint();
                 return MemberType.FUNCTION;

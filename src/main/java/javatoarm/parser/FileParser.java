@@ -15,7 +15,7 @@ import java.util.Set;
 public class FileParser {
 
     public static JavaFile parseFile(JavaLexer lexer) throws JTAException {
-        lexer.next(KeywordToken.Keyword._package);
+        lexer.next(KeywordToken._package);
         JavaName packageName = JavaParser.parseNamePath(lexer);
         JavaParser.eatSemiColons(lexer);
 
@@ -35,9 +35,9 @@ public class FileParser {
         Set<JavaFile.Import> imports = new HashSet<>();
 
         while (lexer.hasNext()) {
-            if (lexer.nextIf(KeywordToken.Keyword._import)) {
+            if (lexer.nextIf(KeywordToken._import)) {
                 boolean isStatic = false;
-                if (lexer.nextIf(KeywordToken.Keyword._static)) {
+                if (lexer.nextIf(KeywordToken._static)) {
                     isStatic = true;
                 }
                 imports.add(new JavaFile.Import(JavaParser.parseNamePath(lexer), isStatic));
