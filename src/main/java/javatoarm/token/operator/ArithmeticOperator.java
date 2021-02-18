@@ -7,8 +7,8 @@ public interface ArithmeticOperator extends OperatorToken.Binary {
             return null;
         }
         return switch (operator.charAt(0)) {
-            case '+' -> new PlusMinus(true);
-            case '-' -> new PlusMinus(false);
+            case '+' -> PlusMinus.PLUS;
+            case '-' -> PlusMinus.MINUS;
             case '*' -> new Multiply();
             case '/' -> new Divide();
             case '%' -> new Modulus();

@@ -129,8 +129,7 @@ public class ARMSubroutine implements Subroutine {
         Register leftReg = use(left);
         Register resultRegister = prepareStore(result);
         if (operator instanceof PlusMinus) {
-            PlusMinus pm = (PlusMinus) operator;
-            OP op = pm.isPlus ? OP.ADD : OP.SUB;
+            OP op = operator == PlusMinus.PLUS ? OP.ADD : OP.SUB;
 
             //TODO magic number
             if (right instanceof Immediate && ((Immediate) right).numberOfBitsLessThan(8)) {
@@ -163,7 +162,7 @@ public class ARMSubroutine implements Subroutine {
             ARMInstruction.move(text, Condition.EQUAL, dest, 1);
             ARMInstruction.move(text, Condition.UNEQUAL, dest, 0);
         } else if (operator instanceof PlusMinus) {
-            if (!((PlusMinus) operator).isPlus) {
+            if (operator == PlusMinus.MINUS) {
                 ARMInstruction.move(text, Condition.ALWAYS, dest, 0);
                 ARMInstruction.instruction(text, OP.SUB, dest, dest, src);
             }

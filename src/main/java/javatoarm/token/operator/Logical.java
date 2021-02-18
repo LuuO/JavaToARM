@@ -1,23 +1,22 @@
 package javatoarm.token.operator;
 
-public class Logical implements OperatorToken.Binary {
-    public final boolean isAnd;
-
-    private Logical(boolean isAnd) {
-        this.isAnd = isAnd;
-    }
+public enum Logical implements OperatorToken.Binary {
+    AND, OR;
 
     public static Logical get(String operator) {
         return switch (operator) {
-            case "&&" -> new Logical(true);
-            case "||" -> new Logical(false);
+            case "&&" -> AND;
+            case "||" -> OR;
             default -> null;
         };
     }
 
     @Override
     public int getPrecedenceLevel() {
-        return isAnd ? 4 : 3;
+        return switch (this) {
+            case AND -> 4;
+            case OR -> 3;
+        };
     }
 
 }

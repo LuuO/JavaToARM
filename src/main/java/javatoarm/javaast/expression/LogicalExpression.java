@@ -43,7 +43,7 @@ public class LogicalExpression implements BooleanExpression {
         Variable left = operandLeft.compileExpression(subroutine, parent);
         Variable right = operandRight.compileExpression(subroutine, parent);
         TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, JavaSimpleType.BOOL);
-        subroutine.addLogic(saveResult, operator.isAnd, left, right, result);
+        subroutine.addLogic(saveResult, operator == Logical.AND, left, right, result);
         return result;
     }
 }

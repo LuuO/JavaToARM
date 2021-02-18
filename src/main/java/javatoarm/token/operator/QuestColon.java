@@ -25,4 +25,9 @@ public class QuestColon implements OperatorToken {
     public int getPrecedenceLevel() {
         return 2;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(c);
+    }
 }

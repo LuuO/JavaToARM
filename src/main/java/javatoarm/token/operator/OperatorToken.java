@@ -48,8 +48,8 @@ public interface OperatorToken extends Token {
             return switch (operator) {
                 case "++" -> new IncrementDecrement(true);
                 case "--" -> new IncrementDecrement(false);
-                case "+" -> new PlusMinus(true);
-                case "-" -> new PlusMinus(false);
+                case "+" -> PlusMinus.PLUS;
+                case "-" -> PlusMinus.MINUS;
                 case "!" -> new LogicalNot();
                 case "~" -> new BitwiseNot();
                 default -> null;

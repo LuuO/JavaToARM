@@ -15,13 +15,11 @@ public class AngleToken extends BracketToken implements Comparison {
     }
 
     public static AngleToken get(Condition condition) {
-        if (condition == Condition.LESS) {
-            return LEFT;
-        }
-        if (condition == Condition.GREATER) {
-            return RIGHT;
-        }
-        throw new IllegalArgumentException();
+        return switch (condition) {
+            case LESS -> LEFT;
+            case GREATER -> RIGHT;
+            default -> null;
+        };
     }
 
     @Override

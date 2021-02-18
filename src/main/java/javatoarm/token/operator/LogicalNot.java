@@ -5,4 +5,9 @@ public class LogicalNot implements OperatorToken.Unary {
     public Type getUnaryOperatorType() {
         return Type.LOGICAL_NOT;
     }
+
+    @Override
+    public String toString() {
+        return "!";
+    }
 }
