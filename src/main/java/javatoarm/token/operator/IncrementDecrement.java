@@ -1,5 +1,8 @@
 package javatoarm.token.operator;
 
+/**
+ * Represent a increment of decrement operator token (++ or --)
+ */
 public enum IncrementDecrement implements OperatorToken.Unary, AssignmentOperator {
     INCREMENT, DECREMENT;
 

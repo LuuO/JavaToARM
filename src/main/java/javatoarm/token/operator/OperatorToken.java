@@ -2,8 +2,18 @@ package javatoarm.token.operator;
 
 import javatoarm.token.Token;
 
+/**
+ * Represent an operator in Java code. An operator can be unary, binary, or ternary (C?T:F)
+ */
 public interface OperatorToken extends Token {
 
+    /**
+     * Get an operator token
+     *
+     * @param operator the operator
+     * @return if the operator string is a operator, returns the corresponding token.
+     * Otherwise returns null.
+     */
     static Token get(String operator) {
         Token token = Unary.get(operator);
         if (token == null) {
@@ -19,8 +29,18 @@ public interface OperatorToken extends Token {
      */
     int getPrecedenceLevel();
 
+    /**
+     * Represent a token of a binary operator
+     */
     interface Binary extends OperatorToken {
 
+        /**
+         * Get a binary operator token
+         *
+         * @param op the operator
+         * @return if the operator string is a binary operator, returns the corresponding token.
+         * Otherwise returns null.
+         */
         static Binary get(String op) {
             Binary token;
             if ((token = AssignmentOperator.get(op)) != null) {
@@ -42,10 +62,20 @@ public interface OperatorToken extends Token {
         }
     }
 
+    /**
+     * Represent a token of an unary operator
+     */
     interface Unary extends OperatorToken {
 
-        static Unary get(String operator) {
-            return switch (operator) {
+        /**
+         * Get an unary operator token
+         *
+         * @param op the operator
+         * @return if the operator string is a unary operator, returns the corresponding token.
+         * Otherwise returns null.
+         */
+        static Unary get(String op) {
+            return switch (op) {
                 case "++" -> IncrementDecrement.INCREMENT;
                 case "--" -> IncrementDecrement.DECREMENT;
                 case "+" -> PlusMinus.PLUS;

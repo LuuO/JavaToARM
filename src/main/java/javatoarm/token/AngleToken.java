@@ -3,13 +3,23 @@ package javatoarm.token;
 import javatoarm.assembly.Condition;
 import javatoarm.token.operator.Comparison;
 
+/**
+ * Token representing < or >
+ */
 public enum AngleToken implements Comparison {
     LEFT, RIGHT;
 
-    public static AngleToken get(Condition condition) {
-        return switch (condition) {
-            case LESS -> LEFT;
-            case GREATER -> RIGHT;
+    /**
+     * Get an angle token
+     *
+     * @param c the character
+     * @return if the provided character is < or >, returns the corresponding token.
+     * Otherwise returns null.
+     */
+    public static AngleToken get(char c) {
+        return switch (c) {
+            case '<' -> LEFT;
+            case '>' -> RIGHT;
             default -> null;
         };
     }

@@ -3,8 +3,18 @@ package javatoarm.token.operator;
 import javatoarm.assembly.Condition;
 import javatoarm.token.AngleToken;
 
+/**
+ * Represent a comparison operator token. A comparison operator compares two values and outputs one boolean value.
+ */
 public interface Comparison extends OperatorToken.Binary {
 
+    /**
+     * Get a comparison token
+     *
+     * @param operator the operator
+     * @return if the operator string is a comparison operator, returns the corresponding token.
+     * Otherwise returns null.
+     */
     static Comparison get(String operator) {
         Condition condition;
         try {
@@ -13,15 +23,25 @@ public interface Comparison extends OperatorToken.Binary {
             return null;
         }
 
-        if (condition == Condition.LESS || condition == Condition.GREATER) {
-            return AngleToken.get(condition);
+        if (condition == Condition.LESS) {
+            return AngleToken.LEFT;
+        } else if (condition == Condition.GREATER) {
+            return AngleToken.RIGHT;
+        } else {
+            return new Impl(condition);
         }
-
-        return new Impl(condition);
     }
 
+    /**
+     * Get the condition when the comparison output is true
+     *
+     * @return the condition
+     */
     Condition getCondition();
 
+    /**
+     * The default implementation of Comparison
+     */
     class Impl implements Comparison {
 
         private final Condition condition;

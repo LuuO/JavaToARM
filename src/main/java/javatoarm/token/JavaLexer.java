@@ -348,7 +348,7 @@ public class JavaLexer {
 
     private Token getNextToken() throws JTAException {
         if (!hasNext()) {
-            throw new NoSuchElementException();
+            throw new JTAException("Unexpected End of File");
         }
         String word = words.get(nextIndex);
         return Token.getObject(word);

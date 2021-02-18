@@ -9,7 +9,7 @@ public enum CharToken implements Token {
     /**
      * Get a char token
      *
-     * @param c the character of token
+     * @param c the character
      * @return if the provided character is a valid CharToken, returns the corresponding token.
      * Otherwise returns null.
      */

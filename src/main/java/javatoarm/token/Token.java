@@ -27,6 +27,9 @@ public interface Token {
             if ((token = BracketToken.get(c)) != null) {
                 return token;
             }
+            if ((token = AngleToken.get(c)) != null) {
+                return token;
+            }
             if ((token = QuestColon.get(c)) != null) {
                 return token;
             }
@@ -48,17 +51,4 @@ public interface Token {
         return new NameToken(word);
     }
 
-//    /**
-//     * A helper function to compare keywords
-//     *
-//     * @param keyword the keyword to compare
-//     * @return true if this is an instance of KeywordToken and the keyword of this equals to the provided keyword,
-//     * false otherwise.
-//     */
-//    default boolean equals(KeywordToken.Keyword keyword) {
-//        if (this instanceof KeywordToken) {
-//            return this.equals(keyword);
-//        }
-//        return false;
-//    }
 }

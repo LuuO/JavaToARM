@@ -1,8 +1,18 @@
 package javatoarm.token;
 
+/**
+ * Tokens that represent brackets: {}[]()
+ */
 public enum BracketToken implements Token {
     CURLY_L, CURLY_R, SQUARE_L, SQUARE_R, ROUND_L, ROUND_R;
 
+    /**
+     * Get a bracket token
+     *
+     * @param c the bracket
+     * @return if the provided bracket is valid (One of "{}[]()"), returns the corresponding token.
+     * Otherwise returns null.
+     */
     public static BracketToken get(char c) {
         return switch (c) {
             case '(' -> ROUND_L;

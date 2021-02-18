@@ -6,6 +6,13 @@ package javatoarm.token.operator;
 public enum QuestColon implements OperatorToken {
     QUESTION, COLON;
 
+    /**
+     * Get a QuestColon token
+     *
+     * @param c the character
+     * @return if the provided character is '?' or ':', returns the corresponding token.
+     * Otherwise returns null.
+     */
     public static QuestColon get(char c) {
         return switch (c) {
             case '?' -> QUESTION;
