@@ -3,16 +3,8 @@ package javatoarm.token;
 import javatoarm.assembly.Condition;
 import javatoarm.token.operator.Comparison;
 
-public class AngleToken extends BracketToken implements Comparison {
-    public static AngleToken LEFT = new AngleToken('<', Condition.LESS);
-    public static AngleToken RIGHT = new AngleToken('>', Condition.GREATER);
-
-    Condition condition;
-
-    private AngleToken(char c, Condition condition) {
-        super(c);
-        this.condition = condition;
-    }
+public enum AngleToken implements Comparison {
+    LEFT, RIGHT;
 
     public static AngleToken get(Condition condition) {
         return switch (condition) {
@@ -24,7 +16,10 @@ public class AngleToken extends BracketToken implements Comparison {
 
     @Override
     public Condition getCondition() {
-        return condition;
+        return switch (this) {
+            case LEFT -> Condition.LESS;
+            case RIGHT -> Condition.GREATER;
+        };
     }
 
     @Override
@@ -33,12 +28,10 @@ public class AngleToken extends BracketToken implements Comparison {
     }
 
     @Override
-    public int hashCode() {
-        return condition.hashCode() * super.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return this == obj;
+    public String toString() {
+        return switch (this) {
+            case LEFT -> "<";
+            case RIGHT ->">";
+        };
     }
 }

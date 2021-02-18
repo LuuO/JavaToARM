@@ -74,7 +74,7 @@ public class ClassParser {
     private static JavaClassMember getMember(JavaLexer lexer, String className)
             throws JTAException {
         List<JavaAnnotation> annotations;
-        if (lexer.peek().equals(AnnotationToken.INSTANCE)) {
+        if (lexer.peek().equals(CharToken.AT)) {
             annotations = JavaParser.parseAnnotations(lexer);
         } else {
             annotations = Collections.emptyList();

@@ -27,9 +27,6 @@ public interface Token {
             if ((token = BracketToken.get(c)) != null) {
                 return token;
             }
-            if ((token = AnnotationToken.get(c)) != null) {
-                return token;
-            }
             if ((token = QuestColon.get(c)) != null) {
                 return token;
             }

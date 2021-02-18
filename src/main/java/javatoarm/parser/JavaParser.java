@@ -112,7 +112,7 @@ public class JavaParser {
 
     public static List<JavaAnnotation> parseAnnotations(JavaLexer lexer) throws JTAException {
         ArrayList<JavaAnnotation> annotations = new ArrayList<>();
-        while (lexer.nextIf(AnnotationToken.INSTANCE)) {
+        while (lexer.nextIf(CharToken.AT)) {
             JavaName name = parseNamePath(lexer);
             if (lexer.nextIf(BracketToken.ROUND_L) && !lexer.nextIf(BracketToken.ROUND_R)) {
                 JavaExpression parameter = ExpressionParser.parse(lexer);

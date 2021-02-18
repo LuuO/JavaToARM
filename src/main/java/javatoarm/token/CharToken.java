@@ -1,10 +1,10 @@
 package javatoarm.token;
 
 /**
- * Represents a comma, a semi-colon, or a dot
+ * Represents a comma, a semi-colon, a dot, or @
  */
 public enum CharToken implements Token {
-    COMMA, SEMI_COLON, DOT;
+    COMMA, SEMI_COLON, DOT, AT;
 
     /**
      * Get a char token
@@ -18,6 +18,7 @@ public enum CharToken implements Token {
             case ';' -> SEMI_COLON;
             case ',' -> COMMA;
             case '.' -> DOT;
+            case '@' -> AT;
             default -> null;
         };
     }
@@ -28,6 +29,7 @@ public enum CharToken implements Token {
             case SEMI_COLON -> ";";
             case COMMA -> ",";
             case DOT -> ".";
+            case AT -> "@";
         };
     }
 
