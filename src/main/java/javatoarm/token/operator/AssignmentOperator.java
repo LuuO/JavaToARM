@@ -24,19 +24,8 @@ public interface AssignmentOperator extends OperatorToken.Binary {
         return 1;
     }
 
-    Type getAssignmentOperatorType();
-
-    enum Type {
-        SIMPLE, COMPOUND
-    }
-
     class Simple implements AssignmentOperator {
         private static final int HASH_CODE = 3435;
-
-        @Override
-        public AssignmentOperator.Type getAssignmentOperatorType() {
-            return AssignmentOperator.Type.SIMPLE;
-        }
 
         @Override
         public int hashCode() {
@@ -65,11 +54,6 @@ public interface AssignmentOperator extends OperatorToken.Binary {
             }
 
             this.implicitOperator = operator;
-        }
-
-        @Override
-        public AssignmentOperator.Type getAssignmentOperatorType() {
-            return AssignmentOperator.Type.COMPOUND;
         }
 
         @Override

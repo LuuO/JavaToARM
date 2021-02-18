@@ -8,23 +8,9 @@ public enum PlusMinus implements ArithmeticOperator, OperatorToken.Unary {
     PLUS, MINUS;
 
     @Override
-    public Unary.Type getUnaryOperatorType() {
-        return switch (this) {
-            case PLUS -> Unary.Type.POSITIVE;
-            case MINUS -> Unary.Type.NEGATIVE;
-        };
-    }
-
-    @Override
     public int getPrecedenceLevel() {
         return 11;
     }
-
-    @Override
-    public ArithmeticOperator.Type getArithmeticOperatorType() {
-        return ArithmeticOperator.Type.ADDITIVE;
-    }
-
 
     @Override
     public String toString() {

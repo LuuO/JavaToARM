@@ -1,8 +1,10 @@
 package javatoarm.token.operator;
 
-public class BitwiseNot implements OperatorToken.Unary {
+public enum BitwiseNot implements OperatorToken.Unary {
+    INSTANCE;
+
     @Override
-    public Type getUnaryOperatorType() {
-        return Type.BITWISE_NOT;
+    public String toString() {
+        return "~";
     }
 }

@@ -46,12 +46,12 @@ public interface OperatorToken extends Token {
 
         static Unary get(String operator) {
             return switch (operator) {
-                case "++" -> new IncrementDecrement(true);
-                case "--" -> new IncrementDecrement(false);
+                case "++" -> IncrementDecrement.INCREMENT;
+                case "--" -> IncrementDecrement.DECREMENT;
                 case "+" -> PlusMinus.PLUS;
                 case "-" -> PlusMinus.MINUS;
-                case "!" -> new LogicalNot();
-                case "~" -> new BitwiseNot();
+                case "!" -> LogicalNot.INSTANCE;
+                case "~" -> BitwiseNot.INSTANCE;
                 default -> null;
             };
         }
@@ -61,10 +61,5 @@ public interface OperatorToken extends Token {
             return 14;
         }
 
-        Type getUnaryOperatorType();
-
-        enum Type {
-            INCREMENT, DECREMENT, POSITIVE, NEGATIVE, LOGICAL_NOT, BITWISE_NOT
-        }
     }
 }

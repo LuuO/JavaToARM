@@ -33,7 +33,7 @@ public class JavaNewArray implements JavaExpression {
             throw new UnsupportedOperationException();
         }
         ImmediateExpression size = new ImmediateExpression(JavaSimpleType.INT, ((JavaSimpleType) type).size());
-        return new NumericExpression(new ArithmeticOperator.Multiply(), numberOfElements, size);
+        return new NumericExpression(ArithmeticOperator.Multi.MULTIPLY, numberOfElements, size);
     }
 
     @Override

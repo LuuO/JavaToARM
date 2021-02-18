@@ -1,15 +1,18 @@
 package javatoarm.token.operator;
 
-//TODO: subtype assignment operator?
-public class IncrementDecrement implements OperatorToken.Unary {
-    public final boolean isIncrement;
+public enum IncrementDecrement implements OperatorToken.Unary, AssignmentOperator {
+    INCREMENT, DECREMENT;
 
-    public IncrementDecrement(boolean isIncrement) {
-        this.isIncrement = isIncrement;
+    @Override
+    public int getPrecedenceLevel() {
+        return 15; // 15 for post, 14 for pre
     }
 
     @Override
-    public Type getUnaryOperatorType() {
-        return isIncrement ? Type.INCREMENT : Type.DECREMENT;
+    public String toString() {
+        return switch (this) {
+            case INCREMENT -> "++";
+            case DECREMENT -> "--";
+        };
     }
 }

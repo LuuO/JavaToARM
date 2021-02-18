@@ -9,54 +9,28 @@ public interface ArithmeticOperator extends OperatorToken.Binary {
         return switch (operator.charAt(0)) {
             case '+' -> PlusMinus.PLUS;
             case '-' -> PlusMinus.MINUS;
-            case '*' -> new Multiply();
-            case '/' -> new Divide();
-            case '%' -> new Modulus();
+            case '*' -> Multi.MULTIPLY;
+            case '/' -> Multi.DIVIDE;
+            case '%' -> Multi.MODULUS;
             default -> null;
         };
     }
 
-    @Override
-    default int getPrecedenceLevel() {
-        if (getArithmeticOperatorType() == Type.MULTI) {
+    enum Multi implements ArithmeticOperator {
+        MULTIPLY, DIVIDE, MODULUS;
+
+        @Override
+        public int getPrecedenceLevel() {
             return 12;
-        } else {
-            return 11;
         }
-    }
 
-    Type getArithmeticOperatorType();
-
-    enum Type {
-        MULTI, ADDITIVE;
-
-        public static Type get(char c) {
-            return switch (c) {
-                case '+', '-' -> ADDITIVE;
-                case '*', '/', '%' -> MULTI;
-                default -> throw new IllegalArgumentException();
+        @Override
+        public String toString() {
+            return switch (this) {
+                case MULTIPLY -> "*";
+                case DIVIDE -> "/";
+                case MODULUS -> "%";
             };
-        }
-    }
-
-    class Multiply implements ArithmeticOperator {
-        @Override
-        public ArithmeticOperator.Type getArithmeticOperatorType() {
-            return ArithmeticOperator.Type.MULTI;
-        }
-    }
-
-    class Divide implements ArithmeticOperator {
-        @Override
-        public ArithmeticOperator.Type getArithmeticOperatorType() {
-            return ArithmeticOperator.Type.MULTI;
-        }
-    }
-
-    class Modulus implements ArithmeticOperator {
-        @Override
-        public ArithmeticOperator.Type getArithmeticOperatorType() {
-            return ArithmeticOperator.Type.MULTI;
         }
     }
 

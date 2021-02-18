@@ -3,15 +3,8 @@ package javatoarm.token.operator;
 /**
  * Represent a question mark or a colon.
  */
-public class QuestColon implements OperatorToken {
-    public static final QuestColon QUESTION = new QuestColon('?');
-    public static final QuestColon COLON = new QuestColon(':');
-
-    public final char c;
-
-    private QuestColon(char c) {
-        this.c = c;
-    }
+public enum QuestColon implements OperatorToken {
+    QUESTION, COLON;
 
     public static QuestColon get(char c) {
         return switch (c) {
@@ -28,6 +21,9 @@ public class QuestColon implements OperatorToken {
 
     @Override
     public String toString() {
-        return String.valueOf(c);
+        return switch (this) {
+            case QUESTION -> "?";
+            case COLON -> ":";
+        };
     }
 }

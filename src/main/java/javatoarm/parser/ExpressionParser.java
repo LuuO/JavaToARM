@@ -142,27 +142,23 @@ public class ExpressionParser {
         for (int i = 0; i < elements.size(); i++) {
             OperatorToken operator = elements.get(i).operator();
             if (operator instanceof IncrementDecrement) {
-                IncrementDecrement idOperator = (IncrementDecrement) operator;
                 elements.remove(i);
 
                 // TODO: check index, is variable
+                boolean post;
                 if (i > 0 && elements.get(i - 1).expression() instanceof JavaName) {
                     i--;
-                    JavaName variable = (JavaName) elements.get(i).expression();
-                    JavaExpression expression = new JavaIncrementDecrement(
-                            variable, true, idOperator.isIncrement);
-                    setElement(elements, i, expression);
-
-                } else if (i < elements.size() &&
-                        elements.get(i).expression() instanceof JavaName) {
-                    JavaName variable = (JavaName) elements.get(i).expression();
-                    JavaExpression expression = new JavaIncrementDecrement(
-                            variable, false, idOperator.isIncrement);
-                    setElement(elements, i, expression);
-
+                    post = true;
+                } else if (i < elements.size() && elements.get(i).expression() instanceof JavaName) {
+                    post = false;
                 } else {
-                    throw new JTAException.InvalidOperation(idOperator.toString());
+                    throw new JTAException.InvalidOperation(operator.toString());
                 }
+
+                JavaName variable = (JavaName) elements.get(i).expression();
+                JavaExpression expression = new JavaIncrementDecrement(
+                        variable, post, operator == IncrementDecrement.INCREMENT);
+                setElement(elements, i, expression);
             }
         }
     }

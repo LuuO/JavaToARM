@@ -131,7 +131,7 @@ public class ARMSubroutine implements Subroutine {
         if (operator instanceof PlusMinus) {
             OP op = operator == PlusMinus.PLUS ? OP.ADD : OP.SUB;
 
-            //TODO magic number
+            // TODO magic number
             if (right instanceof Immediate && ((Immediate) right).numberOfBitsLessThan(8)) {
                 ARMInstruction.instruction(text, op,
                         resultRegister, leftReg, ((Immediate) right).toNumberRep());
@@ -141,7 +141,7 @@ public class ARMSubroutine implements Subroutine {
                 ARMInstruction.instruction(text, op, resultRegister, leftReg, rightReg);
             }
 
-        } else if (operator instanceof ArithmeticOperator.Multiply) {
+        } else if (operator instanceof ArithmeticOperator.Multi) {
             Register rightReg = use(right);
             ARMInstruction.instruction(text, OP.MUL, resultRegister, leftReg, rightReg);
 
