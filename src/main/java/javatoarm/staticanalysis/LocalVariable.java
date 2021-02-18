@@ -36,12 +36,17 @@ public class LocalVariable implements Variable {
         this.name = name;
 
         if (isArgument) {
-            this.register = registerAssigner.requestArgumentRegister(this);
+            this.register = registerAssigner.requestArgumentRegister((Argument) this);
         } else {
             this.register = registerAssigner.request(this);
         }
     }
 
+    /**
+     * Get the register held by this variable
+     *
+     * @return the register held by this variable
+     */
     public Register getRegister() {
         if (isDeleted) {
             throw new UnsupportedOperationException("LocalVariable is already deleted.");
@@ -49,6 +54,7 @@ public class LocalVariable implements Variable {
         return register;
     }
 
+    @Override
     public void delete() {
         if (!isDeleted) {
             registerAssigner.release(register);
@@ -58,7 +64,7 @@ public class LocalVariable implements Variable {
 
     @Override
     public void deleteIfIsTemp() {
-
+        /* do nothing */
     }
 
     @Override

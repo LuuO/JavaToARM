@@ -55,9 +55,9 @@ public class ARMSubroutine implements Subroutine {
         } else if (source instanceof MemoryOffset) {
             MemoryOffset memoryOffset = ((MemoryOffset) source);
             Register result = memoryOffset.getTemporary().getRegister();
-            Register array = use(memoryOffset.array);
-            Register index = use(memoryOffset.index);
-            ARMInstruction.load(text, result, array, index, memoryOffset.shift);
+            Register array = use(memoryOffset.base);
+            Register index = use(memoryOffset.offset);
+            ARMInstruction.load(text, result, array, index, memoryOffset.leftShift);
             return result;
 
         } else {
@@ -84,9 +84,9 @@ public class ARMSubroutine implements Subroutine {
 
         } else if (target instanceof MemoryOffset) {
             MemoryOffset memoryOffset = (MemoryOffset) target;
-            int shift = memoryOffset.shift;
-            Register base = use(memoryOffset.array);
-            Register index = use(memoryOffset.index);
+            int shift = memoryOffset.leftShift;
+            Register base = use(memoryOffset.base);
+            Register index = use(memoryOffset.offset);
             ARMInstruction.store(text, Condition.ALWAYS, source, base, index, shift);
 
         } else if (target instanceof TemporaryVariable) {

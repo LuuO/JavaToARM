@@ -12,7 +12,15 @@ import java.util.List;
 
 public class TypeParser {
 
-    public static JavaType parseType(JavaLexer lexer, boolean checkIsArray) throws JTAException {
+    /**
+     * Parse a Java data type
+     *
+     * @param lexer       the lexer
+     * @param acceptArray true if an array is type is acceptable, false otherwise.
+     * @return the data type
+     * @throws JTAException if an error occurs
+     */
+    public static JavaType parseType(JavaLexer lexer, boolean acceptArray) throws JTAException {
         JavaType type;
         Token token = lexer.next();
         if (token instanceof KeywordToken) {
@@ -41,7 +49,7 @@ public class TypeParser {
             lexer.next(CharToken.DOT);
             type = new JavaArrayType(type);
         } else {
-            while (checkIsArray && lexer.nextIf(BracketToken.SQUARE_L)) {
+            while (acceptArray && lexer.nextIf(BracketToken.SQUARE_L)) {
                 lexer.next(BracketToken.SQUARE_R);
                 type = new JavaArrayType(type);
             }
@@ -49,6 +57,14 @@ public class TypeParser {
         return type;
     }
 
+    /**
+     * Parse type parameters which are enclosed in &lt&gt .
+     * Examples: &lt Integer &gt, &lt? extend Object&gt, &lt Integer, String &gt
+     *
+     * @param lexer the lexer
+     * @return a lists of type parameters. If there are 0 parameters, returns an empty immutable list.
+     * @throws JTAException if an error occurs
+     */
     public static List<JavaType> parseTypeParameters(JavaLexer lexer) throws JTAException {
         lexer.next(AngleToken.LEFT);
         if (lexer.nextIf(AngleToken.RIGHT)) {

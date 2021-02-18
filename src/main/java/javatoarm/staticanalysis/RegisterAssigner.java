@@ -3,16 +3,26 @@ package javatoarm.staticanalysis;
 import javatoarm.JTAException;
 import javatoarm.assembly.InstructionSet;
 
+/**
+ * An object that assigns Registers to Variables. A Register should be requested when creating the variable,
+ * and freed when the variable goes out of scope.
+ */
 public class RegisterAssigner {
 
     private final InstructionSet isa;
     private final Register[] registers;
     private final Variable[] holders;
 
-    public RegisterAssigner(InstructionSet isa) {
+    /**
+     * Construct a new Register Assigner with the specified Instruction Set
+     *
+     * @param isa the instruction set
+     * @throws JTAException if an error occurs
+     */
+    public RegisterAssigner(InstructionSet isa) throws JTAException {
         int numberOfRegisters = switch (isa) {
             case ARMv7 -> 16;
-            case X86_64 -> throw new UnsupportedOperationException();
+            case X86_64 -> throw new JTAException.NotImplemented("X86");
         };
         this.isa = isa;
         holders = new Variable[numberOfRegisters];
@@ -22,6 +32,13 @@ public class RegisterAssigner {
         }
     }
 
+    /**
+     * Request a general purpose register
+     *
+     * @param variable the holder variable of the register
+     * @return the register assigned
+     * @throws JTAException if an error occurs
+     */
     public Register request(Variable variable) throws JTAException {
         for (int i = 0; i < holders.length; i++) {
             if (holders[i] == null && !registers[i].hasSpecialPurpose()) {
@@ -42,7 +59,15 @@ public class RegisterAssigner {
         holders[register.index] = null;
     }
 
-    public Register requestArgumentRegister(LocalVariable argument) throws JTAException {
+    /**
+     * Request a register to store function argument,
+     * following the calling convention in the instruction set.
+     *
+     * @param argument the holder argument of the register
+     * @return the register assigned
+     * @throws JTAException if an error occurs
+     */
+    public Register requestArgumentRegister(Argument argument) throws JTAException {
         switch (isa) {
             case ARMv7 -> {
                 for (int i = 0; i < 4; i++) {
@@ -54,7 +79,7 @@ public class RegisterAssigner {
                 throw new JTAException.Unsupported("too many arguments");
             }
             case X86_64 -> throw new JTAException.NotImplemented("x86");
-            default -> throw new UnsupportedOperationException();
+            default -> throw new IllegalArgumentException();
         }
     }
 }

@@ -3,22 +3,41 @@ package javatoarm.staticanalysis;
 import javatoarm.JTAException;
 import javatoarm.javaast.type.JavaType;
 
+/**
+ * Represent a variable that is stored in the memory and constitutes of a base variable and an offset variable.
+ * Examples include an element of an array.
+ */
 public class MemoryOffset implements Variable {
     public final JavaType type;
-    public final Variable array, index;
+    public final Variable base, offset;
     public final RegisterAssigner registerAssigner;
-    public final int shift;
+    public final int leftShift;
     private TemporaryVariable temp = null;
 
-    public MemoryOffset(Variable array, Variable index, int shift,
+    /**
+     * Construct an MemoryOffset variable.
+     * The address of the variable will be (base + (offset << leftShift)).
+     *
+     * @param base             the base variable
+     * @param offset           the offset variable
+     * @param leftShift        amount of left shift during address calculation
+     * @param registerAssigner the register assigner
+     */
+    public MemoryOffset(Variable base, Variable offset, int leftShift,
                         RegisterAssigner registerAssigner) {
-        this.array = array;
-        this.index = index;
+        this.base = base;
+        this.offset = offset;
         this.registerAssigner = registerAssigner;
-        this.type = array.getType();
-        this.shift = shift;
+        this.type = base.getType(); // TODO: get the correct type
+        this.leftShift = leftShift;
     }
 
+    /**
+     * Get a temporary variable
+     *
+     * @return a temporary variable
+     * @throws JTAException if error occurs
+     */
     public TemporaryVariable getTemporary() throws JTAException {
         if (temp == null) {
             temp = new TemporaryVariable(registerAssigner, type);
@@ -32,8 +51,8 @@ public class MemoryOffset implements Variable {
             temp.delete();
             temp = null;
         }
-        array.delete();
-        index.delete();
+        base.delete();
+        offset.delete();
     }
 
     @Override
@@ -42,8 +61,8 @@ public class MemoryOffset implements Variable {
             temp.delete();
             temp = null;
         }
-        array.deleteIfIsTemp();
-        index.deleteIfIsTemp();
+        base.deleteIfIsTemp();
+        offset.deleteIfIsTemp();
     }
 
     @Override
