@@ -58,14 +58,18 @@ public class JavaLoop implements JavaCode {
         subroutine.addEmptyLine();
         subroutine.addComment("loop");
 
-        initial.compileCode(subroutine, scope);
+        if (initial != null) {
+            initial.compileCode(subroutine, scope);
+        }
         if (!isDoWhile) {
             subroutine.addJump(Condition.ALWAYS, conditionLabel);
         }
 
         subroutine.addLabel(startLabel);
         body.compileCode(subroutine, scope);
-        increment.compileCode(subroutine, scope);
+        if (increment != null) {
+            increment.compileCode(subroutine, scope);
+        }
 
         subroutine.addLabel(conditionLabel);
         Condition jumpCondition;

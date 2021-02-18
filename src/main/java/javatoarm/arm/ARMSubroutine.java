@@ -179,7 +179,7 @@ public class ARMSubroutine implements Subroutine {
     public void addAssignment(Variable left, Variable right) throws JTAException {
         Register src = use(right);
         store(src, left);
-        left.deleteIfIsTemp();
+        // should not call left.deleteIfIsTemp();
         right.deleteIfIsTemp();
     }
 

@@ -5,12 +5,10 @@ import java.util.HashSet;
 public class Fibb {
 
     public static int fibonacci(int n) {
-        // System.out.println("fibo start");
-        if (n <= 1) {
+        if (n <= 1) {//
             return n;
         } else {
             return fibonacci/**/(n - 1) + fibonacci(n - 2);//
-
         }
     }
 
@@ -21,6 +19,11 @@ public class Fibb {
      */
     public static void main(String[] args) {
         int R1 = false;
+
+        int[] arr = newArray(546, 78765);
+        int n = numberOfElmentGreaterThan(arr, 78765 - 546 + 1, 49999);
+        boolean arrayPass = n == 78765 - 49999;
+
         boolean majorityPass = !majority(false, false, false)
                 && !majority(false, false, true)
                 && !majority(false, true, false)
@@ -31,11 +34,13 @@ public class Fibb {
                 && majority(true, true, true);
 
         boolean fibonacciPass = fibonacci(30) == 0xcb228 && fibonacci2(30) == 0xcb228;
+
         int complexExpressionResult = complexExpression(3, 16, 2);
 
-        if (majorityPass && fibonacciPass && complexExpressionResult == -119700) {
+        if (arrayPass && majorityPass && fibonacciPass && complexExpressionResult == -119700) {
             R1 = true;
         }
+        // R1 will be set to 1 if success
     }
 
     public static int fibonacci2(int n) {
@@ -65,4 +70,31 @@ public class Fibb {
         return ((554 * a + 32) - (((-a + 42) * (86 - c)) + (b - c))) * (c + 73);
     }
 
+    public static int numberOfElmentGreaterThan(int[] array, int length, int threshold) {
+        int count = 0; // R3
+        int i = 0; // R4
+        while (i < length) {
+            if (array[i] > threshold) {
+                count++;
+            }
+            i++;
+        }
+        return count;
+    }
+
+    /**
+     * Requires end > start
+     * inclusive
+     * @param start
+     * @param end
+     * @return
+     */
+    public static int[] newArray(int start, int end) {
+        int[] a = new int[end - start + 1]; // R2
+        int i = 0; // R3
+        do {
+            a[i++] = start++;
+        } while (start <= end);
+        return a;
+    }
 }
