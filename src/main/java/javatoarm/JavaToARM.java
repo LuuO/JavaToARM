@@ -121,7 +121,7 @@ public class JavaToARM {
 
         JavaLexer lexer = new JavaLexer(sourceCode);
         JavaParser parser = new JavaParser(lexer);
-        JavaFile file = parser.toJavaTree();
+        JavaFile file = parser.toJavaAST();
         Compiler compiler = Compiler.getCompiler(InstructionSet.ARMv7);
         file.compileTo(compiler);
         return compiler.toCompleteProgram(mainClass, memorySize);

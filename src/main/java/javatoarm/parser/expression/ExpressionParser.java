@@ -1,4 +1,4 @@
-package javatoarm.parser;
+package javatoarm.parser.expression;
 
 import javatoarm.JTAException;
 import javatoarm.javaast.JavaLeftValue;
@@ -8,6 +8,7 @@ import javatoarm.javaast.statement.JavaAssignment;
 import javatoarm.javaast.statement.JavaFunctionCall;
 import javatoarm.javaast.statement.JavaIncrementDecrement;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.parser.*;
 import javatoarm.token.*;
 import javatoarm.token.operator.*;
 
@@ -17,12 +18,41 @@ import java.util.Stack;
 public class ExpressionParser {
 
     public static JavaExpression parse(JavaLexer lexer) throws JTAException {
+        if (LambdaParser.isLambda(lexer)) {
+            return LambdaParser.parse(lexer);
+        }
+
+        /* collect all elements in the expression */
+        List<ExpressionElement> elements = parseElementList(lexer);
+        if (elements.size() == 0) {
+            throw new JTAException.UnexpectedToken("expression", lexer.peek());
+        }
+
+        /* analyze expression elements */
+        parseIncrementDecrement(elements);
+        parseUnaryOperations(elements);
+        parseTypeCasting(elements);
+        parseBinaryExpression(elements);
+        parseTernaryToken(elements);
+        parseAssignment(elements);
+
+        if (elements.size() > 1) {
+            throw new InvalidExpressionElement(elements.get(1));
+        }
+
+        ExpressionElement result = elements.get(0);
+        if (result.expression() == null) {
+            throw new InvalidExpressionElement(result);
+        }
+        return result.expression();
+    }
+
+    private static List<ExpressionElement> parseElementList(JavaLexer lexer) throws JTAException {
         Stack<ExpressionElement> elements = new Stack<>();
 
         while (true) {
             Token token = lexer.next();
 
-            // TODO: support condition casting, ternary
             if (token.equals(BracketToken.SQUARE_L)) {
                 JavaExpression index = parse(lexer);
                 lexer.next(BracketToken.SQUARE_R);
@@ -42,12 +72,14 @@ public class ExpressionParser {
 
             } else if (token.equals(BracketToken.ROUND_L)) {
                 if (!elements.isEmpty() && elements.peek().expression() instanceof JavaName) {
-                    // Function call
+                    /* Function call */
                     lexer.rewind();
                     String name = elements.pop().expression().toString();
                     List<JavaRightValue> arguments = FunctionParser.parseCallArguments(lexer);
                     addElement(elements, new JavaFunctionCall(name, arguments));
+
                 } else {
+                    /* type casting or sub expression */
                     lexer.createCheckPoint();
                     JavaType type = null;
                     try {
@@ -56,11 +88,11 @@ public class ExpressionParser {
                     }
 
                     if (lexer.nextIf(BracketToken.ROUND_R) && type != null) {
-                        // type casting
+                        /* type casting */
                         lexer.deleteLastCheckPoint();
                         elements.add(new TypeCasting(type));
                     } else {
-                        // sub expression
+                        /* sub expression */
                         lexer.returnToLastCheckPoint();
                         JavaExpression expression = parse(lexer);
                         lexer.next(BracketToken.ROUND_R);
@@ -71,50 +103,29 @@ public class ExpressionParser {
                 lexer.rewind();
                 JavaExpression rightValue = RightValueParser.parseNewInit(lexer);
                 addElement(elements, rightValue);
+
             } else if (token instanceof OperatorToken) {
                 addElement(elements, (OperatorToken) token);
+
             } else if (token instanceof ImmediateToken) {
                 ImmediateExpression constant = new ImmediateExpression(((ImmediateToken) token));
                 addElement(elements, constant);
+
             } else if (token instanceof NameToken || token.equals(KeywordToken._this)) {
                 lexer.rewind();
                 JavaName name = JavaParser.parseNamePath(lexer);
                 addElement(elements, name);
+
             } else if (token.equals(KeywordToken._instanceof)) {
                 elements.add(new InstanceOf());
                 elements.add(new Type(TypeParser.parseType(lexer, true)));
+
             } else {
                 lexer.rewind();
                 break;
             }
         }
-
-        if (elements.size() == 0) {
-            throw new JTAException.UnexpectedToken("expression", lexer.peek());
-        }
-
-        // TODO: improve performance
-        parseIncrementDecrement(elements);
-        parseUnaryOperations(elements);
-        parseTypeCasting(elements);
-        parseBinaryExpression(elements);
-        parseTernaryToken(elements);
-        parseAssignment(elements);
-
-        if (elements.size() > 1) {
-            ExpressionElement element = elements.get(1);
-            if (element.expression() != null) {
-                throw new JTAException.InvalidExpression(element.expression());
-            } else {
-                throw new JTAException.InvalidOperation(element.operator().toString());
-            }
-        }
-
-        ExpressionElement result = elements.get(0);
-        if (result.expression() == null) {
-            throw new JTAException.InvalidOperation(result.operator().toString());
-        }
-        return result.expression();
+        return elements;
     }
 
     private static void addElement(List<ExpressionElement> list, JavaExpression expression) {
@@ -234,7 +245,7 @@ public class ExpressionParser {
         }
     }
 
-    private static void parseTernaryToken(Stack<ExpressionElement> elements) throws JTAException {
+    private static void parseTernaryToken(List<ExpressionElement> elements) throws JTAException {
         for (int i = elements.size() - 1; i >= 0; i--) {
             if (QuestColon.COLON.equals(elements.get(i).operator())) {
                 i -= 3;
@@ -278,72 +289,6 @@ public class ExpressionParser {
 
                 setElement(elements, i, new JavaAssignment(leftValue, value));
             }
-        }
-    }
-
-    private interface ExpressionElement {
-        default JavaExpression expression() {
-            return null;
-        }
-
-        default OperatorToken operator() {
-            return null;
-        }
-
-        default JavaType type() {
-            return null;
-        }
-    }
-
-    private static class Expression implements ExpressionElement {
-        public final JavaExpression expression;
-
-        public Expression(JavaExpression expression) {
-            this.expression = expression;
-        }
-
-        @Override
-        public JavaExpression expression() {
-            return expression;
-        }
-    }
-
-    private static class Operator implements ExpressionElement {
-        public final OperatorToken operator;
-
-        public Operator(OperatorToken operator) {
-            this.operator = operator;
-        }
-
-        @Override
-        public OperatorToken operator() {
-            return operator;
-        }
-    }
-
-    private static class InstanceOf implements ExpressionElement {
-        public InstanceOf() {
-        }
-    }
-
-    private static class Type implements ExpressionElement {
-        public final JavaType type;
-
-        public Type(JavaType type) {
-            this.type = type;
-        }
-
-        @Override
-        public JavaType type() {
-            return type;
-        }
-    }
-
-    private static class TypeCasting implements ExpressionElement {
-        public final JavaType toType;
-
-        public TypeCasting(JavaType toType) {
-            this.toType = toType;
         }
     }
 

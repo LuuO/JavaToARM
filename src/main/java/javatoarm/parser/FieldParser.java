@@ -6,6 +6,7 @@ import javatoarm.javaast.JavaProperty;
 import javatoarm.javaast.JavaRightValue;
 import javatoarm.javaast.statement.JavaVariableDeclare;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.parser.expression.ExpressionParser;
 import javatoarm.token.CharToken;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.KeywordToken;

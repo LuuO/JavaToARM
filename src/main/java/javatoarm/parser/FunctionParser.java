@@ -5,6 +5,7 @@ import javatoarm.javaast.*;
 import javatoarm.javaast.statement.JavaVariableDeclare;
 import javatoarm.javaast.type.JavaArrayType;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.parser.expression.ExpressionParser;
 import javatoarm.token.*;
 
 import java.util.ArrayList;
@@ -104,7 +105,7 @@ public class FunctionParser {
         lexer.next(BracketToken.ROUND_L);
         if (!lexer.peek().equals(BracketToken.ROUND_R)) {
             for (; ; ) {
-                arguments.add(LambdaParser.parseExpressionOrLambda(lexer));
+                arguments.add(ExpressionParser.parse(lexer));
                 Token next = lexer.peek();
                 if (next.equals(BracketToken.ROUND_R)) {
                     break;

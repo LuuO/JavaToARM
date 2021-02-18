@@ -10,6 +10,7 @@ import javatoarm.javaast.expression.JavaName;
 import javatoarm.javaast.type.JavaArrayType;
 import javatoarm.javaast.type.JavaSimpleType;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.parser.expression.ExpressionParser;
 import javatoarm.token.*;
 
 import java.util.ArrayList;
@@ -17,51 +18,45 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Represents an object that can parse tokens into Java Abstract Syntax Tree
+ */
 public class JavaParser {
     private final JavaLexer lexer;
 
+    /**
+     * Initialize an instance of JavaParser
+     *
+     * @param lexer the lexer
+     */
     public JavaParser(JavaLexer lexer) {
         this.lexer = lexer;
     }
 
-    public static void eatSemiColons(JavaLexer lexer) throws JTAException {
-        //noinspection StatementWithEmptyBody
-        while (lexer.hasNext() && lexer.nextIf(CharToken.SEMI_COLON)) ;
+    /**
+     * Convert all tokens to Java AST
+     *
+     * @return the Java AST
+     * @throws JTAException if an error occurs
+     */
+    public JavaFile toJavaAST() throws JTAException {
+        return FileParser.parseFile(lexer);
     }
 
-    public static ImmediateExpression parseConstant(JavaType type, JavaLexer lexer) throws JTAException {
-
-        if (type instanceof JavaSimpleType) {
-            Token next = lexer.next(ImmediateToken.class);
-            return new ImmediateExpression(type, parseValue(type, (ImmediateToken) next));
-        } else if (type instanceof JavaArrayType) {
-            lexer.next(BracketToken.CURLY_L);
-
-            JavaArrayType arrayType = (JavaArrayType) type;
-            JavaType elementType = arrayType.elementType;
-
-            List<Object> arrayValue = new ArrayList<>();
-            if (!lexer.peek().equals(BracketToken.CURLY_R)) {
-                for (Token next = lexer.next(ImmediateToken.class); ;
-                     next = lexer.next(ImmediateToken.class)) {
-
-                    arrayValue.add(parseValue(elementType, (ImmediateToken) next));
-
-                    if (lexer.nextIf(BracketToken.CURLY_R)) {
-                        break;
-                    } else if (!lexer.nextIf(CharToken.SEMI_COLON)) {
-                        throw new JTAException.UnexpectedToken("',' or '}'", next);
-                    }
-                }
-            }
-            return new ImmediateExpression(arrayType, arrayValue);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+    /**
+     * Eat all semi-colons that follow immediately
+     *
+     * @param lexer the lexer
+     * @throws JTAException if an error occurs
+     */
+    public static void eatSemiColons(JavaLexer lexer) throws JTAException {
+        // noinspection StatementWithEmptyBody
+        while (lexer.hasNext() && lexer.nextIf(CharToken.SEMI_COLON)) ;
     }
 
     public static Object parseValue(JavaType type, ImmediateToken immediateToken)
             throws JTAException {
+
         if (!type.equals(immediateToken.getType())) {
             throw new JTAException.TypeMismatch(type, immediateToken.getType());
         }
@@ -126,8 +121,35 @@ public class JavaParser {
         return annotations;
     }
 
-    public JavaFile toJavaTree() throws JTAException {
-        return FileParser.parseFile(lexer);
+    public static ImmediateExpression parseConstant(JavaType type, JavaLexer lexer) throws JTAException {
+
+        if (type instanceof JavaSimpleType) {
+            Token next = lexer.next(ImmediateToken.class);
+            return new ImmediateExpression(type, parseValue(type, (ImmediateToken) next));
+        } else if (type instanceof JavaArrayType) {
+            lexer.next(BracketToken.CURLY_L);
+
+            JavaArrayType arrayType = (JavaArrayType) type;
+            JavaType elementType = arrayType.elementType;
+
+            List<Object> arrayValue = new ArrayList<>();
+            if (!lexer.peek().equals(BracketToken.CURLY_R)) {
+                for (Token next = lexer.next(ImmediateToken.class); ;
+                     next = lexer.next(ImmediateToken.class)) {
+
+                    arrayValue.add(parseValue(elementType, (ImmediateToken) next));
+
+                    if (lexer.nextIf(BracketToken.CURLY_R)) {
+                        break;
+                    } else if (!lexer.nextIf(CharToken.SEMI_COLON)) {
+                        throw new JTAException.UnexpectedToken("',' or '}'", next);
+                    }
+                }
+            }
+            return new ImmediateExpression(arrayType, arrayValue);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
 }

@@ -6,6 +6,7 @@ import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.expression.JavaNewArray;
 import javatoarm.javaast.expression.NewObjectExpression;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.parser.expression.ExpressionParser;
 import javatoarm.token.*;
 
 import java.util.ArrayList;
@@ -13,13 +14,22 @@ import java.util.List;
 
 public class RightValueParser {
 
+    /**
+     * Parse the next expression, which an object/array initialization.
+     *
+     * @param lexer the lexer
+     * @return an initialization expression
+     * @throws JTAException if an error occurs
+     */
     public static JavaExpression parseNewInit(JavaLexer lexer) throws JTAException {
         lexer.next(KeywordToken._new);
         JavaType type = TypeParser.parseType(lexer, false);
         Token next = lexer.next();
+
         if (next.equals(BracketToken.SQUARE_L)) {
-            /* array */
+            /* initializing an array */
             if (lexer.nextIf(BracketToken.SQUARE_R)) {
+                /* unspecified size, has a predetermined list of values */
                 lexer.next(BracketToken.CURLY_L);
                 List<JavaExpression> values = new ArrayList<>();
                 if (!lexer.peek().equals(BracketToken.CURLY_R)) {
@@ -31,13 +41,14 @@ public class RightValueParser {
                 lexer.next(BracketToken.CURLY_R);
                 return new JavaNewArray(type, values);
             } else {
+                /* specified size */
                 JavaExpression size = ExpressionParser.parse(lexer);
                 lexer.next(BracketToken.SQUARE_R);
                 return new JavaNewArray(type, size);
             }
 
         } else if (next.equals(BracketToken.ROUND_L)) {
-            /* initialize objects */
+            /* initializing an object */
             lexer.rewind();
             List<JavaRightValue> arguments = FunctionParser.parseCallArguments(lexer);
             return new NewObjectExpression(type, arguments);

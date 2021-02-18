@@ -10,6 +10,7 @@ import javatoarm.javaast.expression.JavaName;
 import javatoarm.javaast.statement.JavaStatement;
 import javatoarm.javaast.statement.JavaVariableDeclare;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.parser.expression.ExpressionParser;
 import javatoarm.token.*;
 import javatoarm.token.operator.QuestColon;
 
@@ -108,6 +109,7 @@ public class ControlParser {
 
     private static JavaCode parseForLoop(JavaLexer lexer) throws JTAException {
         if (isEnhancedFor(lexer)) {
+            /* for (Element e : list) */
             lexer.next(BracketToken.ROUND_L);
             JavaType elementType = TypeParser.parseType(lexer, false);
             String elementName = JavaParser.parseSimpleName(lexer);
@@ -118,6 +120,7 @@ public class ControlParser {
             return new JavaEnhancedForLoop(elementType, elementName, collection, body);
 
         } else {
+            /* for (int i = 0; i < max; i++) */
             lexer.next(BracketToken.ROUND_L);
             JavaStatement initial = null, increment = null;
             JavaExpression condition = null;

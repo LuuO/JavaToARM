@@ -12,6 +12,7 @@ import javatoarm.javaast.statement.ThrowStatement;
 import javatoarm.javaast.type.JavaArrayType;
 import javatoarm.javaast.type.JavaSimpleType;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.parser.expression.ExpressionParser;
 import javatoarm.token.*;
 import javatoarm.token.operator.AssignmentOperator;
 
@@ -21,12 +22,16 @@ import java.util.Set;
 
 public class StatementParser {
 
-    /*
-        Does not eat terminators
-        TODO: Support int a, b, c; int a[], b, c;
+    /**
+     * Parse a statement. It will not eat the terminating token.
+     *
+     * @param lexer the lexer
+     * @return the next statement
+     * @throws JTAException if an error occurs
      */
     public static JavaStatement parse(JavaLexer lexer)
             throws JTAException {
+        // TODO: Support int a, b, c; int a[], b, c;
 
         /* control statement */
         Token next = lexer.peek();
@@ -68,8 +73,9 @@ public class StatementParser {
             }
         }
 
-        /* object creation or expression */
+        /* Not control statement */
         if (isObjectCreation(lexer)) {
+            /* object creation */
             Set<JavaProperty> properties;
             if (lexer.nextIf(KeywordToken._final)) {
                 properties = Set.of(JavaProperty.FINAL);
@@ -95,6 +101,7 @@ public class StatementParser {
             return new JavaVariableDeclare(properties, type, name, initialValue);
 
         } else {
+            /* expression */
             JavaExpression expression = ExpressionParser.parse(lexer);
             if (expression instanceof JavaStatement) {
                 return (JavaStatement) expression;
@@ -104,15 +111,20 @@ public class StatementParser {
         }
     }
 
-    /* Determine if this is an object creation statement. */
+    /**
+     * Determine if the following is an object creation statement.
+     * @param lexer the lexer
+     * @return true if the following is an object creation statement, false otherwise
+     * @throws JTAException if error occurs
+     */
     private static boolean isObjectCreation(JavaLexer lexer) throws JTAException {
 
-        if (lexer.peek() instanceof KeywordToken) {
-            KeywordToken keywordToken = (KeywordToken) lexer.peek();
-            if (lexer.peek().equals(KeywordToken._final)) {
+        Token peek = lexer.peek();
+        if (peek instanceof KeywordToken) {
+            if (peek.equals(KeywordToken._final)) {
                 return true;
             }
-            return JavaSimpleType.get(keywordToken) != null;
+            return JavaSimpleType.get((KeywordToken) peek) != null;
         }
 
         lexer.createCheckPoint();
@@ -122,9 +134,11 @@ public class StatementParser {
                 lexer.rewind();
                 JavaParser.parseNamePath(lexer);
                 countString++;
+
             } else if (token.equals(AngleToken.LEFT)) {
                 lexer.returnToLastCheckPoint();
                 return true;
+
             } else if (token.equals(CharToken.COMMA)) {
                 /* Commas only appear in variable declarations */
                 lexer.returnToLastCheckPoint();

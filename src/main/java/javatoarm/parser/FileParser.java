@@ -31,7 +31,7 @@ public class FileParser {
         return new JavaFile(packageName, imports, classes);
     }
 
-    public static Set<JavaFile.Import> getImports(JavaLexer lexer) throws JTAException {
+    private static Set<JavaFile.Import> getImports(JavaLexer lexer) throws JTAException {
         Set<JavaFile.Import> imports = new HashSet<>();
 
         while (lexer.hasNext()) {

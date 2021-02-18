@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.Assert.*;
-
 public class Tests {
 
     @Test
@@ -23,7 +21,7 @@ public class Tests {
         String code = Files.readString(Path.of("resources/String.java"));
         JavaLexer lexer = new JavaLexer(code);
         JavaParser parser = new JavaParser(lexer);
-        JavaFile file = parser.toJavaTree();
+        JavaFile file = parser.toJavaAST();
         System.out.println(file);
     }
 }
