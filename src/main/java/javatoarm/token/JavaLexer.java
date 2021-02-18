@@ -4,19 +4,29 @@ import javatoarm.JTAException;
 
 import java.util.*;
 
+/**
+ * A tokenizer that breaks Java code into tokens
+ */
 public class JavaLexer {
     private static final Set<Character> symbols =
             Set.of(';', '{', '}', '(', ')', '[', ']', '.', ',',
                     '=', '+', '-', '*', '/', '&', '|', '%', '^', '!',
                     '\'', '"', '?', ':', '<', '>', '~', '@', '\\');
     private static final Set<String> longOperators =
-            Set.of("++", "--", "==", "!=", "::", "+=", "-=", "*=", "/=", "%=", "<=", ">=", "//", "/*",
-                    "*/", "&&", "||", ">>", "<<", ">>>", "^=", "|=", "<<=", ">>=", ">>>=", "->");
+            Set.of("++", "--", "==", "!=", "::", "+=", "-=", "*=", "/=",
+                    "%=", "<=", ">=", "//", "/*", "*/", "&&", "||", ">>",
+                    "<<", ">>>", "^=", "|=", "<<=", ">>=", ">>>=", "->");
 
     private final List<String> words;
     private final Stack<Integer> checkPoints;
     private int nextIndex;
 
+    /**
+     * Create a lexer with the provided Java code
+     *
+     * @param code the Java code
+     * @throws JTAException if an error occurs
+     */
     public JavaLexer(String code) throws JTAException {
         this.nextIndex = 0;
         this.words = new ArrayList<>();
@@ -24,6 +34,151 @@ public class JavaLexer {
         scan(code);
     }
 
+    /**
+     * Check if there is still tokens left.
+     *
+     * @return true if there is still tokens left, false otherwise.
+     */
+    public boolean hasNext() {
+        return nextIndex < words.size();
+    }
+
+    /**
+     * Get and eat the next token
+     *
+     * @return the next token
+     * @throws JTAException if an error occurs
+     */
+    public Token next() throws JTAException {
+        Token token = getNextToken();
+        nextIndex += 1;
+        return token;
+    }
+
+    /**
+     * Eat next token and ensures it is the same as the expected one
+     *
+     * @param expected the expected token
+     * @throws JTAException.UnexpectedToken if next token is not the same as the expected one
+     * @throws JTAException                 if an error occurs
+     */
+    public void next(Token expected) throws JTAException {
+        Token next = getNextToken();
+        nextIndex += 1;
+        if (!expected.equals(next)) {
+            throw new JTAException.UnexpectedToken(expected, next);
+        }
+    }
+
+    /**
+     * Get next token and ensures it is of some certain type
+     *
+     * @param expected the expected type
+     * @return next token
+     * @throws JTAException.UnexpectedToken if next token is not of the expected type
+     * @throws JTAException                 if an error occurs
+     */
+    public Token next(Class<?> expected) throws JTAException {
+        Token next = getNextToken();
+        nextIndex += 1;
+        if (!expected.isAssignableFrom(next.getClass())) {
+            throw new JTAException.UnexpectedToken(expected.toString(), next);
+        } else {
+            return next;
+        }
+    }
+
+    /**
+     * Eat next token if it is the same as the target one
+     *
+     * @param target the target token
+     * @return true if the next token is the same as the target one, false otherwise
+     * @throws JTAException if an error occurs
+     */
+    public boolean nextIf(Token target) throws JTAException {
+        Token next = getNextToken();
+        if (next.equals(target)) {
+            nextIndex += 1;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Eat next token and ensures it is of some certain type
+     *
+     * @param target the target type
+     * @return true if the next token is of the target type, false otherwise
+     * @throws JTAException.UnexpectedToken if next token is not of the expected type
+     * @throws JTAException                 if an error occurs
+     */
+    public boolean nextIf(Class<?> target) throws JTAException {
+        Token next = getNextToken();
+        if (target.isAssignableFrom(next.getClass())) {
+            nextIndex += 1;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Gets the next token but does not eat it
+     *
+     * @return the next token
+     * @throws JTAException if an error occurs
+     */
+    public Token peek() throws JTAException {
+        return getNextToken();
+    }
+
+    /**
+     * Uneat tokens
+     *
+     * @param steps number of tokens to uneat
+     */
+    public void rewind(int steps) {
+        if (steps > nextIndex) {
+            throw new IllegalArgumentException();
+        }
+        nextIndex -= steps;
+    }
+
+    /**
+     * Uneat 1 token
+     */
+    public void rewind() {
+        rewind(1);
+    }
+
+    /**
+     * Create a check point at current location
+     */
+    public void createCheckPoint() {
+        checkPoints.push(nextIndex);
+    }
+
+    /**
+     * Return to the last created check point and delete it.
+     */
+    public void returnToLastCheckPoint() {
+        nextIndex = checkPoints.pop();
+    }
+
+    /**
+     * Delete the last created check point.
+     */
+    public void deleteLastCheckPoint() {
+        checkPoints.pop();
+    }
+
+    /**
+     * Check if the character can appear in a name in Java.
+     *
+     * @param c the character
+     * @return true if it can appear in a name in Java, false otherwise.
+     */
     public static boolean isNameableChar(char c) {
         return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
                 || (c >= '0' && c <= '9') || c == '$' || c == '_';
@@ -186,27 +341,6 @@ public class JavaLexer {
         };
     }
 
-    private boolean putChar(StringBuilder word, char c) throws JTAException.UnknownCharacter {
-        int lastIndex = word.length() - 1;
-        boolean escaped;
-        if (!word.isEmpty() && word.charAt(lastIndex) == '\\') {
-            switch (c) {
-                case 'b' -> c = '\b';
-                case 'f' -> c = '\f';
-                case 'n' -> c = '\n';
-                case 'r' -> c = '\r';
-                case 't' -> c = '\t';
-                case '\'', '\"', '\\' -> {/* do nothing */}
-                default -> throw new JTAException.UnknownCharacter("\\" + c);
-            }
-            escaped = true;
-        } else {
-            escaped = false;
-        }
-        word.append(c);
-        return escaped;
-    }
-
     private void collectAndClear(StringBuilder builder) {
         words.add(builder.toString());
         builder.setLength(0);
@@ -220,93 +354,8 @@ public class JavaLexer {
         return Token.getObject(word);
     }
 
-    public boolean hasNext() {
-        return nextIndex < words.size();
-    }
-
-    public Token next() throws JTAException {
-        Token token = getNextToken();
-        nextIndex += 1;
-        return token;
-    }
-
-    public Token peek() throws JTAException {
-        return getNextToken();
-    }
-
-    public void rewind(int steps) {
-        if (steps > nextIndex) {
-            throw new IllegalArgumentException();
-        }
-        nextIndex -= steps;
-    }
-
-    public void rewind() {
-        rewind(1);
-    }
-
-    public void createCheckPoint() {
-        checkPoints.push(nextIndex);
-    }
-
-    public void returnToLastCheckPoint() {
-        nextIndex = checkPoints.pop();
-    }
-
-    public void deleteLastCheckPoint() {
-        checkPoints.pop();
-    }
-
-    public void next(Token expected) throws JTAException {
-        Token next = getNextToken();
-        nextIndex += 1;
-        if (!expected.equals(next)) {
-            throw new JTAException.UnexpectedToken(expected, next);
-        }
-    }
-
-    public Token next(Class<?> expected) throws JTAException {
-        Token next = getNextToken();
-        nextIndex += 1;
-        if (!expected.isAssignableFrom(next.getClass())) {
-            throw new JTAException.UnexpectedToken(expected.toString(), next);
-        } else {
-            return next;
-        }
-    }
-
-    public boolean nextIf(Token target) throws JTAException {
-        Token next = getNextToken();
-        if (next.equals(target)) {
-            nextIndex += 1;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean nextIf(KeywordToken keyword) throws JTAException {
-        Token next = getNextToken();
-        if (next instanceof KeywordToken && next.equals(keyword)) {
-            nextIndex += 1;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean nextIf(Class<?> expected) throws JTAException {
-        Token next = getNextToken();
-        if (expected.isAssignableFrom(next.getClass())) {
-            nextIndex += 1;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     /**
-     * State during scanning process
+     * States during scanning process
      */
     private enum State {
         WHITESPACE, NAME, SYMBOL, COMMENT_SL, COMMENT_ML, STRING, STRING_ESCAPE, CHAR
