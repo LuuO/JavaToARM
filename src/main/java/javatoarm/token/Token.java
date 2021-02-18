@@ -52,7 +52,7 @@ public interface Token {
     }
 
     /**
-     * A helper method for keyword tokens
+     * A helper function to compare keywords
      *
      * @param keyword the keyword to compare
      * @return true if this is an instance of KeywordToken and the keyword of this equals to the provided keyword,

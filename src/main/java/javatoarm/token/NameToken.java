@@ -2,16 +2,31 @@ package javatoarm.token;
 
 import javatoarm.JTAException;
 
-public class NameToken implements Token, CharSequence {
+/**
+ * Represent a type, variable, function, or class name in Java
+ */
+public class NameToken implements Token {
     private final String string;
 
+    /**
+     * Create a name token with the provided string
+     *
+     * @param s name
+     * @throws JTAException.InvalidName if the string is not a valid name
+     */
     public NameToken(String s) throws JTAException.InvalidName {
         if (!isValidName(s)) {
-            throw new JTAException.InvalidName(s + " is an invalid name.");
+            throw new JTAException.InvalidName(s + " is not a valid name.");
         }
         string = s;
     }
 
+    /**
+     * Check if the provided string is a valid name in Java
+     *
+     * @param name the string
+     * @return true if the name is valid, false otherwise
+     */
     public static boolean isValidName(String name) {
         if (name.length() == 0 || Character.isDigit(name.charAt(0))) {
             return false;
@@ -29,32 +44,4 @@ public class NameToken implements Token, CharSequence {
         return string;
     }
 
-    public boolean isCharacter() {
-        return string.length() == 1;
-    }
-
-    public char toCharacter() {
-        if (!isCharacter()) {
-            throw new UnsupportedOperationException();
-        }
-
-        return string.charAt(0);
-    }
-
-    // CharSequence
-
-    @Override
-    public int length() {
-        return string.length();
-    }
-
-    @Override
-    public char charAt(int index) {
-        return string.charAt(index);
-    }
-
-    @Override
-    public CharSequence subSequence(int start, int end) {
-        return string.substring(start, end);
-    }
 }

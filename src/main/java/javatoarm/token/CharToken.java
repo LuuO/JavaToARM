@@ -1,14 +1,12 @@
 package javatoarm.token;
 
 /**
- * Represents a comma, a semi-colon, a dot, a question mark, or a colon
+ * Represents a comma, a semi-colon, or a dot
  */
 public class CharToken implements Token {
     public static final CharToken COMMA = new CharToken(',');
     public static final CharToken SEMI_COLON = new CharToken(';');
     public static final CharToken DOT = new CharToken('.');
-    public static final CharToken QUESTION = new CharToken('?');
-    public static final CharToken COLON = new CharToken(':');
 
     public final char c;
 
@@ -16,9 +14,18 @@ public class CharToken implements Token {
         this.c = c;
     }
 
+    /**
+     * Get a char token
+     *
+     * @param c the character of token
+     * @return if the provided character is a valid CharToken, returns the corresponding token.
+     * Otherwise returns null.
+     */
     public static CharToken get(char c) {
         return switch (c) {
-            case ';', ',', '.' -> new CharToken(c);
+            case ';' -> SEMI_COLON;
+            case ',' -> COMMA;
+            case '.' -> DOT;
             default -> null;
         };
     }

@@ -1,15 +1,23 @@
 package javatoarm.token;
 
+/**
+ * Represents a keyword in Java
+ */
 public class KeywordToken implements Token {
-    public static KeywordToken NEW = new KeywordToken(Keyword._new);
-    public static KeywordToken THIS = new KeywordToken(Keyword._this);
 
     public final Keyword keyword;
 
-    public KeywordToken(Keyword keyword) {
+    private KeywordToken(Keyword keyword) {
         this.keyword = keyword;
     }
 
+    /**
+     * Get a keyword token
+     *
+     * @param keyword the keyword string
+     * @return if the keyword string is a valid keyword, returns the corresponding token.
+     * Otherwise returns null.
+     */
     public static KeywordToken get(String keyword) {
         try {
             return new KeywordToken(Keyword.valueOf("_" + keyword));
@@ -37,9 +45,14 @@ public class KeywordToken implements Token {
         return keyword.name().substring(1);
     }
 
+    /**
+     * Keywords in Java
+     */
     public enum Keyword {
         /**
-         * Src https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
+         * Source:
+         * https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
+         * <p>
          * "The keywords const and goto are reserved, even though they are not currently used.
          * true, false, and null might seem like keywords, but they are actually literals"
          */

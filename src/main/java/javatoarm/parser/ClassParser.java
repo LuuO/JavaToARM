@@ -57,12 +57,10 @@ public class ClassParser {
      * @return properties of the class
      */
     private static Set<JavaProperty> parseHeader(JavaLexer lexer) throws JTAException {
-        Token classToken = new KeywordToken(KeywordToken.Keyword._class);
-
         Set<JavaProperty> properties =
                 JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS);
 
-        lexer.next(classToken);
+        lexer.next(KeywordToken.Keyword._class);
         return properties;
     }
 
@@ -91,7 +89,7 @@ public class ClassParser {
             case INITIALIZER:
                 return new JavaClass.Initializer(CodeParser.parseBlock(lexer), false);
             case STATIC_INITIALIZER:
-                lexer.next(new KeywordToken(KeywordToken.Keyword._static));
+                lexer.next(KeywordToken.Keyword._static);
                 return new JavaClass.Initializer(CodeParser.parseBlock(lexer), true);
             default:
                 throw new AssertionError();
@@ -113,11 +111,11 @@ public class ClassParser {
         lexer.createCheckPoint();
         while (lexer.hasNext() && !lexer.peek().equals(BracketToken.CURLY_R)) {
             Token next = lexer.next();
-            if (next.equals(new KeywordToken(KeywordToken.Keyword._class))) {
+            if (next.equals(KeywordToken.Keyword._class)) {
 
                 lexer.returnToLastCheckPoint();
                 return MemberType.CLASS;
-            } else if (next.equals(new KeywordToken(KeywordToken.Keyword._native))) {
+            } else if (next.equals(KeywordToken.Keyword._native)) {
                 // TODO: Assuming all native members are functions
                 lexer.returnToLastCheckPoint();
                 return MemberType.FUNCTION;

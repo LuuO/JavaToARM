@@ -67,7 +67,7 @@ public class ExpressionParser {
                         addElement(elements, expression);
                     }
                 }
-            } else if (token.equals(KeywordToken.NEW)) {
+            } else if (token.equals(KeywordToken.Keyword._new)) {
                 lexer.rewind();
                 JavaExpression rightValue = RightValueParser.parseNewInit(lexer);
                 addElement(elements, rightValue);
@@ -76,11 +76,11 @@ public class ExpressionParser {
             } else if (token instanceof ImmediateToken) {
                 ImmediateExpression constant = new ImmediateExpression(((ImmediateToken) token));
                 addElement(elements, constant);
-            } else if (token instanceof NameToken || token.equals(KeywordToken.THIS)) {
+            } else if (token instanceof NameToken || token.equals(KeywordToken.Keyword._this)) {
                 lexer.rewind();
                 JavaName name = JavaParser.parseNamePath(lexer);
                 addElement(elements, name);
-            } else if (token.equals(new KeywordToken(KeywordToken.Keyword._instanceof))) {
+            } else if (token.equals(KeywordToken.Keyword._instanceof)) {
                 elements.add(new InstanceOf());
                 elements.add(new Type(TypeParser.parseType(lexer, true)));
             } else {
@@ -202,6 +202,7 @@ public class ExpressionParser {
     /**
      * Analyzes binary operations in the expression and reduce them to binary expressions.
      * Precedence level: 12 - 3
+     *
      * @param elements elements of in the expression
      */
     private static void parseBinaryExpression(List<ExpressionElement> elements) {
@@ -239,8 +240,7 @@ public class ExpressionParser {
 
     private static void parseTernaryToken(Stack<ExpressionElement> elements) throws JTAException {
         for (int i = elements.size() - 1; i >= 0; i--) {
-            OperatorToken operator = elements.get(i).operator();
-            if (operator instanceof QuestColon) {
+            if (QuestColon.COLON.equals(elements.get(i).operator())) {
                 i -= 3;
                 if (i < 0) {
                     throw new JTAException.InvalidOperation("missing left value");

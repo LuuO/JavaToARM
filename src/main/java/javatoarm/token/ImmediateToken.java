@@ -1,5 +1,6 @@
 package javatoarm.token;
 
+import javatoarm.JTAException;
 import javatoarm.javaast.type.JavaSimpleType;
 import javatoarm.javaast.type.JavaType;
 
@@ -42,7 +43,13 @@ public interface ImmediateToken extends Token {
      */
     JavaType getType();
 
-    Object getValue();
+    /**
+     * Get the immediate value with corresponding type
+     *
+     * @return the immediate value of type {@link ImmediateToken#getType()}
+     * @throws JTAException if an error occurs
+     */
+    Object getValue() throws JTAException;
 
     /**
      * Represent an immediate string in Java
@@ -113,7 +120,6 @@ public interface ImmediateToken extends Token {
 
     /**
      * Represent integers (int, long, short, byte) in Java.
-     * // TODO: support byte
      */
     class IntegerToken implements ImmediateToken {
         public final long value;
@@ -152,20 +158,26 @@ public interface ImmediateToken extends Token {
                 return JavaSimpleType.LONG;
             } else if (value > Short.MAX_VALUE || -value > Short.MAX_VALUE + 1) {
                 return JavaSimpleType.INT;
-            } else {
+            } else if (value > Byte.MAX_VALUE || -value > Byte.MAX_VALUE + 1) {
                 return JavaSimpleType.SHORT;
+            } else {
+                return JavaSimpleType.BYTE;
             }
         }
 
         @Override
-        public Object getValue() {
-            if (value > Integer.MAX_VALUE || -value > Integer.MAX_VALUE + 1L) {
+        public Object getValue() throws JTAException {
+            JavaType type = getType();
+            if (JavaSimpleType.LONG.equals(type)) {
                 return value;
-            } else if (value > Short.MAX_VALUE || -value > Short.MAX_VALUE + 1) {
+            } else if (JavaSimpleType.INT.equals(type)) {
                 return (int) value;
-            } else {
+            } else if (JavaSimpleType.SHORT.equals(type)) {
                 return (short) value;
+            } else if (JavaSimpleType.BYTE.equals(type)) {
+                return (byte) value;
             }
+            throw new JTAException.NotImplemented(getType().toString());
         }
     }
 
@@ -198,6 +210,9 @@ public interface ImmediateToken extends Token {
         }
     }
 
+    /**
+     * Represent a char value in Java
+     */
     class CharToken implements ImmediateToken {
         char value;
 

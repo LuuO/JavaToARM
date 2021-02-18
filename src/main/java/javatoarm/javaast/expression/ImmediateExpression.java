@@ -20,7 +20,7 @@ public class ImmediateExpression implements JavaRightValue, JavaExpression {
         this.value = value;
     }
 
-    public ImmediateExpression(ImmediateToken token) {
+    public ImmediateExpression(ImmediateToken token) throws JTAException {
         this(token.getType(), token.getValue());
     }
 

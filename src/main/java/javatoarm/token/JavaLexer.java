@@ -12,7 +12,6 @@ public class JavaLexer {
     private static final Set<String> longOperators =
             Set.of("++", "--", "==", "!=", "::", "+=", "-=", "*=", "/=", "%=", "<=", ">=", "//", "/*",
                     "*/", "&&", "||", ">>", "<<", ">>>", "^=", "|=", "<<=", ">>=", ">>>=", "->");
-    // TODO: support longer operators
 
     private final List<String> words;
     private final Stack<Integer> checkPoints;
@@ -38,7 +37,6 @@ public class JavaLexer {
         for (int i = 0; i < charArray.length; i++) {
             char c = charArray[i];
             switch (state) {
-                // TODO: add char, @, \n support
                 case WHITESPACE: /* last char is whitespace */
                     if (Character.isWhitespace(c)) {
                         continue;
@@ -316,7 +314,10 @@ public class JavaLexer {
         }
     }
 
-    enum State {
+    /**
+     * State during scanning process
+     */
+    private enum State {
         WHITESPACE, NAME, SYMBOL, COMMENT_SL, COMMENT_ML, STRING, STRING_ESCAPE, CHAR
     }
 }

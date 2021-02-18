@@ -34,7 +34,7 @@ public class ControlParser {
 
             } else if (keywordToken.keyword == KeywordToken.Keyword._do) {
                 JavaCode body = CodeParser.parseCode(lexer);
-                lexer.next(new KeywordToken(KeywordToken.Keyword._while));
+                lexer.next(KeywordToken.Keyword._while);
                 JavaExpression condition = parseConditionInBrackets(lexer);
                 return JavaLoop.doWhileLoop(body, condition);
 
