@@ -5,7 +5,6 @@ import javatoarm.javaast.JavaBlock;
 import javatoarm.javaast.JavaLambda;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.parser.CodeParser;
-import javatoarm.parser.expression.ExpressionParser;
 import javatoarm.token.*;
 
 import java.util.ArrayList;

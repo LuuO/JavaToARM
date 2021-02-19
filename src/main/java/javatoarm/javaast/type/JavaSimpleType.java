@@ -1,9 +1,10 @@
 package javatoarm.javaast.type;
 
 import javatoarm.JTAException;
-import javatoarm.javaast.expression.JavaName;
+import javatoarm.javaast.expression.JavaMember;
 import javatoarm.token.KeywordToken;
 
+// TODO enum?
 public class JavaSimpleType extends JavaType {
     public static JavaSimpleType STRING = new JavaSimpleType("String");
     public static JavaSimpleType NULL = new JavaSimpleType("null");
@@ -23,11 +24,11 @@ public class JavaSimpleType extends JavaType {
         this.name = name;
     }
 
-    public static JavaSimpleType get(JavaName name) throws JTAException {
-        if (name.isSimple() && name.toSimpleName().equals("String")) {
+    public static JavaSimpleType get(JavaMember typePath) throws JTAException {
+        if (typePath.isSimple() && typePath.toSimpleName().equals("String")) {
             return STRING;
         }
-        return new JavaSimpleType(name.toString());
+        return new JavaSimpleType(typePath.toString());
     }
 
     public static JavaType get(KeywordToken keywordToken) {

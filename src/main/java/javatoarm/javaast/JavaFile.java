@@ -2,13 +2,13 @@ package javatoarm.javaast;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
-import javatoarm.javaast.expression.JavaName;
+import javatoarm.javaast.expression.JavaMember;
 
 import java.util.List;
 import java.util.Set;
 
 public class JavaFile {
-    public final JavaName packageName;
+    public final JavaMember packagePath;
     public final Set<Import> imports;
     private final List<JavaClass> classes;
 
@@ -17,10 +17,10 @@ public class JavaFile {
             classes contains only one public class
      */
 
-    public JavaFile(JavaName packageName, Set<Import> imports, List<JavaClass> classes) {
+    public JavaFile(JavaMember packagePath, Set<Import> imports, List<JavaClass> classes) {
         assertOnePublic(classes);
 
-        this.packageName = packageName;
+        this.packagePath = packagePath;
         this.imports = imports;
         this.classes = classes;
     }
@@ -55,10 +55,10 @@ public class JavaFile {
     }
 
     public static class Import {
-        public final JavaName path;
+        public final JavaMember path;
         public final boolean isStatic;
 
-        public Import(JavaName path, boolean isStatic) {
+        public Import(JavaMember path, boolean isStatic) {
             this.path = path;
             this.isStatic = isStatic;
         }

@@ -10,14 +10,14 @@ import javatoarm.staticanalysis.LocalVariable;
 import java.util.List;
 
 // TODO: rename to JavaMemberName
-public class JavaName implements JavaRightValue, JavaLeftValue, JavaExpression {
+public class JavaMember implements JavaRightValue, JavaLeftValue, JavaExpression {
     public final List<String> path;
 
-    public JavaName(String name) {
+    public JavaMember(String name) {
         this.path = List.of(name);
     }
 
-    public JavaName(List<String> path) {
+    public JavaMember(List<String> path) {
         if (path.size() == 0) {
             throw new IllegalArgumentException();
         }

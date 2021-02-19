@@ -8,7 +8,10 @@ import javatoarm.javaast.statement.JavaAssignment;
 import javatoarm.javaast.statement.JavaFunctionCall;
 import javatoarm.javaast.statement.JavaIncrementDecrement;
 import javatoarm.javaast.type.JavaType;
-import javatoarm.parser.*;
+import javatoarm.parser.FunctionParser;
+import javatoarm.parser.JavaParser;
+import javatoarm.parser.RightValueParser;
+import javatoarm.parser.TypeParser;
 import javatoarm.token.*;
 import javatoarm.token.operator.*;
 
@@ -67,16 +70,16 @@ public class ExpressionParser {
                     throw new JTAException.InvalidOperation("Invalid member access");
                 }
                 JavaExpression left = elements.pop().expression();
-                JavaName right = JavaParser.parseNamePath(lexer);
+                JavaMember right = JavaParser.parseMemberPath(lexer);
                 addElement(elements, new MemberAccessExpression(left, right));
 
             } else if (token.equals(BracketToken.ROUND_L)) {
-                if (!elements.isEmpty() && elements.peek().expression() instanceof JavaName) {
+                if (!elements.isEmpty() && elements.peek().expression() instanceof JavaMember) {
                     /* Function call */
                     lexer.rewind();
-                    String name = elements.pop().expression().toString();
+                    String functionPath = elements.pop().expression().toString();
                     List<JavaRightValue> arguments = FunctionParser.parseCallArguments(lexer);
-                    addElement(elements, new JavaFunctionCall(name, arguments));
+                    addElement(elements, new JavaFunctionCall(functionPath, arguments));
 
                 } else {
                     /* type casting or sub expression */
@@ -113,8 +116,8 @@ public class ExpressionParser {
 
             } else if (token instanceof NameToken || token.equals(KeywordToken._this)) {
                 lexer.rewind();
-                JavaName name = JavaParser.parseNamePath(lexer);
-                addElement(elements, name);
+                JavaMember member = JavaParser.parseMemberPath(lexer);
+                addElement(elements, member);
 
             } else if (token.equals(KeywordToken._instanceof)) {
                 elements.add(new InstanceOf());
@@ -155,20 +158,20 @@ public class ExpressionParser {
             if (operator instanceof IncrementDecrement) {
                 elements.remove(i);
 
-                // TODO: check index, is variable
+                // TODO: check index, is member
                 boolean post;
-                if (i > 0 && elements.get(i - 1).expression() instanceof JavaName) {
+                if (i > 0 && elements.get(i - 1).expression() instanceof JavaMember) {
                     i--;
                     post = true;
-                } else if (i < elements.size() && elements.get(i).expression() instanceof JavaName) {
+                } else if (i < elements.size() && elements.get(i).expression() instanceof JavaMember) {
                     post = false;
                 } else {
                     throw new JTAException.InvalidOperation(operator.toString());
                 }
 
-                JavaName variable = (JavaName) elements.get(i).expression();
+                JavaMember member = (JavaMember) elements.get(i).expression();
                 JavaExpression expression = new JavaIncrementDecrement(
-                        variable, post, operator == IncrementDecrement.INCREMENT);
+                        member, post, operator == IncrementDecrement.INCREMENT);
                 setElement(elements, i, expression);
             }
         }
@@ -236,10 +239,10 @@ public class ExpressionParser {
                     }
                 } else if (current instanceof InstanceOf && level == 9) {
                     i--;
-                    JavaName valuePath = (JavaName) elements.remove(i).expression();
+                    JavaMember memberPath = (JavaMember) elements.remove(i).expression();
                     elements.remove(i);
                     JavaType targetType = elements.remove(i).type();
-                    addElement(elements, (new InstanceOfExpression(valuePath, targetType)));
+                    addElement(elements, (new InstanceOfExpression(memberPath, targetType)));
                 }
             }
         }

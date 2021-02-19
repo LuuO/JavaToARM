@@ -31,7 +31,7 @@ public class FunctionParser {
             methodName = returnType.toString();
         } else {
             /* other functions */
-            methodName = JavaParser.parseSimpleName(lexer);
+            methodName = JavaParser.parseName(lexer);
         }
 
         List<JavaVariableDeclare> arguments = parseArgumentDeclares(lexer);
@@ -69,7 +69,7 @@ public class FunctionParser {
         if (!lexer.nextIf(BracketToken.ROUND_R)) {
             for (; ; ) {
                 JavaType type = TypeParser.parseType(lexer, true);
-                String name = JavaParser.parseSimpleName(lexer);
+                String name = JavaParser.parseName(lexer);
                 Token next = lexer.next();
 
                 // check char value[]

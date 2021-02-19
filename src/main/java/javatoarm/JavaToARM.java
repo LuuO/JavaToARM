@@ -18,7 +18,7 @@ public class JavaToARM {
     public static void main(String[] args) {
         if (args.length < 1 || args.length > 2) {
             System.err.println("Invalid arguments");
-            System.err.println("Format should be: \"path/to/the_file_to_compile.java\" [Memory Size (in MB)]");
+            System.err.println("Format should be: \"path/to/the_file_to_compile.java\" [Memory Size (in MB) (Optional)]");
             return;
         }
 

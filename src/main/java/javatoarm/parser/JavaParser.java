@@ -4,12 +4,8 @@ import javatoarm.JTAException;
 import javatoarm.javaast.JavaAnnotation;
 import javatoarm.javaast.JavaFile;
 import javatoarm.javaast.JavaProperty;
-import javatoarm.javaast.expression.ImmediateExpression;
 import javatoarm.javaast.expression.JavaExpression;
-import javatoarm.javaast.expression.JavaName;
-import javatoarm.javaast.type.JavaArrayType;
-import javatoarm.javaast.type.JavaSimpleType;
-import javatoarm.javaast.type.JavaType;
+import javatoarm.javaast.expression.JavaMember;
 import javatoarm.parser.expression.ExpressionParser;
 import javatoarm.token.*;
 
@@ -34,16 +30,6 @@ public class JavaParser {
     }
 
     /**
-     * Convert all tokens to Java AST
-     *
-     * @return the Java AST
-     * @throws JTAException if an error occurs
-     */
-    public JavaFile toJavaAST() throws JTAException {
-        return FileParser.parseFile(lexer);
-    }
-
-    /**
      * Eat all semi-colons that follow immediately
      *
      * @param lexer the lexer
@@ -54,25 +40,28 @@ public class JavaParser {
         while (lexer.hasNext() && lexer.nextIf(CharToken.SEMI_COLON)) ;
     }
 
-    public static Object parseValue(JavaType type, ImmediateToken immediateToken)
-            throws JTAException {
-
-        if (!type.equals(immediateToken.getType())) {
-            throw new JTAException.TypeMismatch(type, immediateToken.getType());
-        }
-        return immediateToken.getValue();
-    }
-
+    /**
+     * Parse properties of a class, a variable, or a function. This method eats all keyword tokens
+     * after the current position that declare properties immediately, and returns a set of these
+     * properties.
+     *
+     * @param lexer     the lexer
+     * @param validator if not null, uses the provided validator to validate the properties found.
+     * @return a set of the properties. If no property token is found, returns an empty set.
+     * @throws JTAException if an error occurs
+     */
     public static Set<JavaProperty> parseProperties(JavaLexer lexer,
                                                     JavaProperty.Validator validator)
             throws JTAException {
 
         Set<JavaProperty> properties = new HashSet<>();
 
-        for (Token token = lexer.peek(); ; token = lexer.peek()) {
-            JavaProperty property = JavaProperty.get(token);
+        for (; ; ) {
+            JavaProperty property = JavaProperty.get(lexer.peek());
             if (property != null) {
-                validator.validate(property);
+                if (validator != null) {
+                    validator.validate(property);
+                }
                 properties.add(property);
                 lexer.next();
             } else {
@@ -81,75 +70,77 @@ public class JavaParser {
         }
     }
 
-    public static String parseSimpleName(JavaLexer lexer) throws JTAException {
+    /**
+     * Parse the name of a declaration
+     *
+     * @param lexer the lexer
+     * @return the name
+     * @throws JTAException if an error occurs
+     */
+    public static String parseName(JavaLexer lexer) throws JTAException {
         return lexer.next(NameToken.class).toString();
     }
 
-    public static JavaName parseNamePath(JavaLexer lexer) throws JTAException {
+    /**
+     * Parse a member in Java code. A member can be a variable, a function,
+     * a field, or a member of some other member.
+     *
+     * @param lexer the lexer
+     * @return the member
+     * @throws JTAException if an error occurs
+     */
+    public static JavaMember parseMemberPath(JavaLexer lexer) throws JTAException {
         Token token = lexer.next();
-        if (token instanceof NameToken || token.equals(KeywordToken._this)) {
-            List<String> path = new ArrayList<>();
-            path.add(token.toString());
-            while (lexer.nextIf(CharToken.DOT)) {
-                Token next = lexer.next();
-                if (next instanceof NameToken) {
-                    path.add(next.toString());
-                } else {
-                    lexer.rewind(2);
-                    break;
-                }
-            }
-            return new JavaName(path);
-        } else {
+        if (!(token instanceof NameToken) && !token.equals(KeywordToken._this)) {
             throw new JTAException.UnexpectedToken("name", token);
         }
+
+        List<String> path = new ArrayList<>();
+        path.add(token.toString());
+        while (lexer.nextIf(CharToken.DOT)) {
+            Token next = lexer.next();
+            if (next instanceof NameToken) {
+                path.add(next.toString());
+            } else {
+                lexer.rewind(2);
+                break;
+            }
+        }
+        return new JavaMember(path);
     }
 
+    /**
+     * Parse all annotations immediately after the current position
+     *
+     * @param lexer the lexer
+     * @return a list of annotation. If there is not annotation immediately after
+     * the current position, returns an empty list.
+     * @throws JTAException if an error occurs
+     */
     public static List<JavaAnnotation> parseAnnotations(JavaLexer lexer) throws JTAException {
         ArrayList<JavaAnnotation> annotations = new ArrayList<>();
         while (lexer.nextIf(CharToken.AT)) {
-            JavaName name = parseNamePath(lexer);
+            JavaMember annotationType = parseMemberPath(lexer);
             if (lexer.nextIf(BracketToken.ROUND_L) && !lexer.nextIf(BracketToken.ROUND_R)) {
                 JavaExpression parameter = ExpressionParser.parse(lexer);
                 lexer.next(BracketToken.ROUND_R);
 
-                annotations.add(new JavaAnnotation(name, parameter));
+                annotations.add(new JavaAnnotation(annotationType, parameter));
             } else {
-                annotations.add(new JavaAnnotation(name));
+                annotations.add(new JavaAnnotation(annotationType));
             }
         }
         return annotations;
     }
 
-    public static ImmediateExpression parseConstant(JavaType type, JavaLexer lexer) throws JTAException {
-
-        if (type instanceof JavaSimpleType) {
-            Token next = lexer.next(ImmediateToken.class);
-            return new ImmediateExpression(type, parseValue(type, (ImmediateToken) next));
-        } else if (type instanceof JavaArrayType) {
-            lexer.next(BracketToken.CURLY_L);
-
-            JavaArrayType arrayType = (JavaArrayType) type;
-            JavaType elementType = arrayType.elementType;
-
-            List<Object> arrayValue = new ArrayList<>();
-            if (!lexer.peek().equals(BracketToken.CURLY_R)) {
-                for (Token next = lexer.next(ImmediateToken.class); ;
-                     next = lexer.next(ImmediateToken.class)) {
-
-                    arrayValue.add(parseValue(elementType, (ImmediateToken) next));
-
-                    if (lexer.nextIf(BracketToken.CURLY_R)) {
-                        break;
-                    } else if (!lexer.nextIf(CharToken.SEMI_COLON)) {
-                        throw new JTAException.UnexpectedToken("',' or '}'", next);
-                    }
-                }
-            }
-            return new ImmediateExpression(arrayType, arrayValue);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+    /**
+     * Convert all tokens to Java AST
+     *
+     * @return the Java AST
+     * @throws JTAException if an error occurs
+     */
+    public JavaFile toJavaAST() throws JTAException {
+        return FileParser.parseFile(lexer);
     }
 
 }

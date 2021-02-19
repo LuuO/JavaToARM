@@ -3,25 +3,25 @@ package javatoarm.javaast.statement;
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.expression.JavaExpression;
-import javatoarm.javaast.expression.JavaName;
+import javatoarm.javaast.expression.JavaMember;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 
 public class JavaIncrementDecrement implements JavaExpression, JavaStatement {
-    public final JavaName variable;
+    public final JavaMember member;
     public final boolean post;
     public final boolean increase;
 
-    public JavaIncrementDecrement(JavaName variable, boolean post, boolean increase) {
-        this.variable = variable;
+    public JavaIncrementDecrement(JavaMember member, boolean post, boolean increase) {
+        this.member = member;
         this.post = post;
         this.increase = increase;
     }
 
     @Override
     public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
-        Variable variable = this.variable.compileExpression(subroutine, parent);
+        Variable variable = this.member.compileExpression(subroutine, parent);
         if (post) {
             // TODO: improve
             TemporaryVariable temporaryVariable =
@@ -37,7 +37,7 @@ public class JavaIncrementDecrement implements JavaExpression, JavaStatement {
 
     @Override
     public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
-        Variable variable = this.variable.compileExpression(subroutine, parent);
+        Variable variable = this.member.compileExpression(subroutine, parent);
         subroutine.addIncrementDecrement(variable, increase);
     }
 }

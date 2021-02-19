@@ -18,7 +18,7 @@ public class ClassParser {
 
     public static JavaClass parse(JavaLexer lexer) throws JTAException {
         Set<JavaProperty> properties = parseHeader(lexer);
-        String className = JavaParser.parseSimpleName(lexer);
+        String className = JavaParser.parseName(lexer);
 
         Set<JavaType> superClass, superInterface;
         if (lexer.nextIf(KeywordToken._extends)) {

@@ -1,7 +1,7 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.javaast.expression.JavaName;
+import javatoarm.javaast.expression.JavaMember;
 import javatoarm.javaast.type.*;
 import javatoarm.token.*;
 import javatoarm.token.operator.QuestColon;
@@ -31,18 +31,19 @@ public class TypeParser {
 
         } else if (token instanceof NameToken) {
             lexer.rewind();
-            JavaName typeName = JavaParser.parseNamePath(lexer);
+            JavaMember typePath = JavaParser.parseMemberPath(lexer);
 
             /* check type parameter */
             if (lexer.peek().equals(AngleToken.LEFT)) {
-                type = new JavaParametrizedType(typeName, parseTypeParameters(lexer));
+                type = new JavaParametrizedType(typePath, parseTypeParameters(lexer));
             } else {
-                type = JavaSimpleType.get(typeName);
+                type = JavaSimpleType.get(typePath);
             }
 
         } else {
             throw new JTAException.UnexpectedToken("data type", token);
         }
+
         /* check varargs */
         if (lexer.nextIf(CharToken.DOT)) {
             lexer.next(CharToken.DOT);

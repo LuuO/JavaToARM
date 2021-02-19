@@ -84,7 +84,7 @@ public class StatementParser {
             }
 
             JavaType type = TypeParser.parseType(lexer, true);
-            String name = JavaParser.parseSimpleName(lexer);
+            String name = JavaParser.parseName(lexer);
             JavaRightValue initialValue = null;
             if (lexer.nextIf(BracketToken.SQUARE_L)) {
                 lexer.next(BracketToken.SQUARE_R);
@@ -113,6 +113,7 @@ public class StatementParser {
 
     /**
      * Determine if the following is an object creation statement.
+     *
      * @param lexer the lexer
      * @return true if the following is an object creation statement, false otherwise
      * @throws JTAException if error occurs
@@ -132,7 +133,7 @@ public class StatementParser {
             Token token = lexer.next();
             if (token instanceof NameToken) {
                 lexer.rewind();
-                JavaParser.parseNamePath(lexer);
+                JavaParser.parseMemberPath(lexer);
                 countString++;
 
             } else if (token.equals(AngleToken.LEFT)) {

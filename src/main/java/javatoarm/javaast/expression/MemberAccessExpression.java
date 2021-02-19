@@ -5,11 +5,11 @@ import javatoarm.assembly.Subroutine;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.LocalVariable;
 
-public class MemberAccessExpression extends JavaName {
+public class MemberAccessExpression extends JavaMember {
     public final JavaExpression left;
-    public final JavaName right;
+    public final JavaMember right;
 
-    public MemberAccessExpression(JavaExpression left, JavaName right) {
+    public MemberAccessExpression(JavaExpression left, JavaMember right) {
         super(right.path);
         this.left = left;
         this.right = right;

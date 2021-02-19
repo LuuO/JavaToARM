@@ -3,7 +3,7 @@ package javatoarm.parser;
 import javatoarm.JTAException;
 import javatoarm.javaast.JavaClass;
 import javatoarm.javaast.JavaFile;
-import javatoarm.javaast.expression.JavaName;
+import javatoarm.javaast.expression.JavaMember;
 import javatoarm.token.JavaLexer;
 import javatoarm.token.KeywordToken;
 
@@ -16,7 +16,7 @@ public class FileParser {
 
     public static JavaFile parseFile(JavaLexer lexer) throws JTAException {
         lexer.next(KeywordToken._package);
-        JavaName packageName = JavaParser.parseNamePath(lexer);
+        JavaMember packagePath = JavaParser.parseMemberPath(lexer);
         JavaParser.eatSemiColons(lexer);
 
         Set<JavaFile.Import> imports = getImports(lexer);
@@ -28,7 +28,7 @@ public class FileParser {
             JavaParser.eatSemiColons(lexer);
         }
 
-        return new JavaFile(packageName, imports, classes);
+        return new JavaFile(packagePath, imports, classes);
     }
 
     private static Set<JavaFile.Import> getImports(JavaLexer lexer) throws JTAException {
@@ -40,7 +40,7 @@ public class FileParser {
                 if (lexer.nextIf(KeywordToken._static)) {
                     isStatic = true;
                 }
-                imports.add(new JavaFile.Import(JavaParser.parseNamePath(lexer), isStatic));
+                imports.add(new JavaFile.Import(JavaParser.parseMemberPath(lexer), isStatic));
                 JavaParser.eatSemiColons(lexer);
             } else {
                 break;

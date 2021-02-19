@@ -22,7 +22,7 @@ public class FieldParser {
         Set<JavaProperty> properties =
                 JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
         JavaType type = TypeParser.parseType(lexer, true);
-        String name = JavaParser.parseSimpleName(lexer);
+        String name = JavaParser.parseName(lexer);
 
         /* Parse initial value */
         JavaRightValue initialValue = null;

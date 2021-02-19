@@ -17,8 +17,8 @@ public class JavaFunctionCall implements JavaExpression, JavaStatement {
     String name;
     List<JavaRightValue> arguments;
 
-    public JavaFunctionCall(String name, List<JavaRightValue> arguments) {
-        this.name = name;
+    public JavaFunctionCall(String functionPath, List<JavaRightValue> arguments) {
+        this.name = functionPath;
         this.arguments = arguments;
     }
 

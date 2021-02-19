@@ -6,7 +6,7 @@ import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.control.*;
 import javatoarm.javaast.expression.ImmediateExpression;
 import javatoarm.javaast.expression.JavaExpression;
-import javatoarm.javaast.expression.JavaName;
+import javatoarm.javaast.expression.JavaMember;
 import javatoarm.javaast.statement.JavaStatement;
 import javatoarm.javaast.statement.JavaVariableDeclare;
 import javatoarm.javaast.type.JavaType;
@@ -58,7 +58,7 @@ public class ControlParser {
                         lock = ExpressionParser.parse(lexer);
                         lexer.next(BracketToken.ROUND_R);
                     } else {
-                        lock = new JavaName("this");
+                        lock = new JavaMember("this");
                     }
                     JavaBlock bodySynchronized = CodeParser.parseBlock(lexer);
                     return new JavaSynchronized(lock, bodySynchronized);
@@ -112,7 +112,7 @@ public class ControlParser {
             /* for (Element e : list) */
             lexer.next(BracketToken.ROUND_L);
             JavaType elementType = TypeParser.parseType(lexer, false);
-            String elementName = JavaParser.parseSimpleName(lexer);
+            String elementName = JavaParser.parseName(lexer);
             lexer.next(QuestColon.COLON);
             JavaExpression collection = ExpressionParser.parse(lexer);
             lexer.next(BracketToken.ROUND_R);
