@@ -5,6 +5,7 @@ import javatoarm.javaast.expression.JavaMember;
 import javatoarm.token.KeywordToken;
 
 // TODO enum?
+// user defined type?
 public class JavaSimpleType extends JavaType {
     public static JavaSimpleType STRING = new JavaSimpleType("String");
     public static JavaSimpleType NULL = new JavaSimpleType("null");

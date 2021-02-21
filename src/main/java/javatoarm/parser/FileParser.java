@@ -14,6 +14,13 @@ import java.util.Set;
 
 public class FileParser {
 
+    /**
+     * Parse all tokens in the Java file
+     *
+     * @param lexer the lexer
+     * @return a Java AST representing the file
+     * @throws JTAException if an error occurs
+     */
     public static JavaFile parseFile(JavaLexer lexer) throws JTAException {
         lexer.next(KeywordToken._package);
         JavaMember packagePath = JavaParser.parseMemberPath(lexer);
@@ -31,20 +38,20 @@ public class FileParser {
         return new JavaFile(packagePath, imports, classes);
     }
 
+    /**
+     * Parse imports of the file.
+     *
+     * @param lexer the lexer
+     * @return a set of imports
+     * @throws JTAException if an error occurs
+     */
     private static Set<JavaFile.Import> getImports(JavaLexer lexer) throws JTAException {
         Set<JavaFile.Import> imports = new HashSet<>();
 
-        while (lexer.hasNext()) {
-            if (lexer.nextIf(KeywordToken._import)) {
-                boolean isStatic = false;
-                if (lexer.nextIf(KeywordToken._static)) {
-                    isStatic = true;
-                }
-                imports.add(new JavaFile.Import(JavaParser.parseMemberPath(lexer), isStatic));
-                JavaParser.eatSemiColons(lexer);
-            } else {
-                break;
-            }
+        while (lexer.nextIf(KeywordToken._import)) {
+            boolean isStatic = lexer.nextIf(KeywordToken._static);
+            imports.add(new JavaFile.Import(JavaParser.parseMemberPath(lexer), isStatic));
+            JavaParser.eatSemiColons(lexer);
         }
 
         return imports;

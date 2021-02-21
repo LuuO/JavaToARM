@@ -3,7 +3,7 @@ package javatoarm.token;
 /**
  * Represents a comma, a semi-colon, a dot, or @
  */
-public enum CharToken implements Token {
+public enum SymbolToken implements Token {
     COMMA, SEMI_COLON, DOT, AT;
 
     /**
@@ -13,7 +13,7 @@ public enum CharToken implements Token {
      * @return if the provided character is a valid CharToken, returns the corresponding token.
      * Otherwise returns null.
      */
-    public static CharToken get(char c) {
+    public static SymbolToken get(char c) {
         return switch (c) {
             case ';' -> SEMI_COLON;
             case ',' -> COMMA;

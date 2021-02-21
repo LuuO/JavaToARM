@@ -28,7 +28,7 @@ public class LambdaParser {
                 lexer.returnToLastCheckPoint();
                 return true;
             } else if (!token.equals(BracketToken.ROUND_L) && !token.equals(BracketToken.ROUND_R)
-                    && !token.equals(CharToken.COMMA) && !(token instanceof NameToken)) {
+                    && !token.equals(SymbolToken.COMMA) && !(token instanceof NameToken)) {
                 /* contains something that cannot be a part of lambda declaration */
                 lexer.returnToLastCheckPoint();
                 return false;
@@ -51,7 +51,7 @@ public class LambdaParser {
             /* multiple parameters */
             do {
                 parameters.add(lexer.next(NameToken.class).toString());
-            } while (lexer.nextIf(CharToken.COMMA));
+            } while (lexer.nextIf(SymbolToken.COMMA));
         } else {
             /* one parameter */
             parameters.add(lexer.next(NameToken.class).toString());
@@ -59,14 +59,12 @@ public class LambdaParser {
 
         lexer.next(ArrowToken.INSTANCE);
 
-        if (lexer.peek().equals(BracketToken.CURLY_L)) {
+        if (lexer.peek(BracketToken.CURLY_L)) {
             /* block */
-            JavaBlock body = CodeParser.parseBlock(lexer);
-            return new JavaLambda(parameters, body);
+            return new JavaLambda(parameters, CodeParser.parseBlock(lexer));
         } else {
             /* expression */
-            JavaExpression body = ExpressionParser.parse(lexer);
-            return new JavaLambda(parameters, body);
+            return new JavaLambda(parameters,  ExpressionParser.parse(lexer));
         }
     }
 

@@ -34,7 +34,7 @@ public class TypeParser {
             JavaMember typePath = JavaParser.parseMemberPath(lexer);
 
             /* check type parameter */
-            if (lexer.peek().equals(AngleToken.LEFT)) {
+            if (lexer.peek(AngleToken.LEFT)) {
                 type = new JavaParametrizedType(typePath, parseTypeParameters(lexer));
             } else {
                 type = JavaSimpleType.get(typePath);
@@ -45,9 +45,9 @@ public class TypeParser {
         }
 
         /* check varargs */
-        if (lexer.nextIf(CharToken.DOT)) {
-            lexer.next(CharToken.DOT);
-            lexer.next(CharToken.DOT);
+        if (lexer.nextIf(SymbolToken.DOT)) {
+            lexer.next(SymbolToken.DOT);
+            lexer.next(SymbolToken.DOT);
             type = new JavaArrayType(type);
         } else {
             while (acceptArray && lexer.nextIf(BracketToken.SQUARE_L)) {
@@ -92,7 +92,7 @@ public class TypeParser {
             } else {
                 typeParameters.add(parseType(lexer, false));
             }
-        } while (lexer.nextIf(CharToken.COMMA));
+        } while (lexer.nextIf(SymbolToken.COMMA));
         lexer.next(AngleToken.RIGHT);
 
         return typeParameters;

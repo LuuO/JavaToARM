@@ -33,7 +33,7 @@ public class StatementParser {
             throws JTAException {
         // TODO: Support int a, b, c; int a[], b, c;
 
-        /* control statement */
+        /* branch statement */
         Token next = lexer.peek();
         if (next instanceof KeywordToken) {
             KeywordToken keyword = (KeywordToken) next;
@@ -48,7 +48,7 @@ public class StatementParser {
                 }
                 case _return -> {
                     lexer.next();
-                    if (lexer.peek().equals(CharToken.SEMI_COLON)) {
+                    if (lexer.peek(SymbolToken.SEMI_COLON)) {
                         return new JavaStatement.Return();
                     } else {
                         return new JavaStatement.Return(ExpressionParser.parse(lexer));
@@ -64,7 +64,7 @@ public class StatementParser {
                 }
                 case _this -> {
                     lexer.next();
-                    if (lexer.peek().equals(BracketToken.ROUND_L)) {
+                    if (lexer.peek(BracketToken.ROUND_L)) {
                         List<JavaRightValue> arguments = FunctionParser.parseCallArguments(lexer);
                         return new JavaFunctionCall("this", arguments);
                     }
@@ -76,23 +76,20 @@ public class StatementParser {
         /* Not control statement */
         if (isObjectCreation(lexer)) {
             /* object creation */
-            Set<JavaProperty> properties;
-            if (lexer.nextIf(KeywordToken._final)) {
-                properties = Set.of(JavaProperty.FINAL);
-            } else {
-                properties = Collections.emptySet();
-            }
+            Set<JavaProperty> properties = lexer.nextIf(KeywordToken._final)
+                    ? Set.of(JavaProperty.FINAL) : Set.of();
 
             JavaType type = TypeParser.parseType(lexer, true);
             String name = JavaParser.parseName(lexer);
-            JavaRightValue initialValue = null;
+
             if (lexer.nextIf(BracketToken.SQUARE_L)) {
                 lexer.next(BracketToken.SQUARE_R);
                 type = new JavaArrayType(type);
             }
 
-            if (lexer.nextIf(AssignmentOperator.Simple.class)) {
-                if (lexer.peek().equals(KeywordToken._new)) {
+            JavaRightValue initialValue = null;
+            if (lexer.nextIf(AssignmentOperator.Simple.INSTANCE)) {
+                if (lexer.peek(KeywordToken._new)) {
                     initialValue = RightValueParser.parseNewInit(lexer);
                 } else {
                     initialValue = ExpressionParser.parse(lexer);
@@ -140,7 +137,7 @@ public class StatementParser {
                 lexer.returnToLastCheckPoint();
                 return true;
 
-            } else if (token.equals(CharToken.COMMA)) {
+            } else if (token.equals(SymbolToken.COMMA)) {
                 /* Commas only appear in variable declarations */
                 lexer.returnToLastCheckPoint();
                 return true;
@@ -155,7 +152,7 @@ public class StatementParser {
                 lexer.returnToLastCheckPoint();
                 return next.equals(BracketToken.SQUARE_R);
 
-            } else if (token.equals(CharToken.SEMI_COLON)) {
+            } else if (token.equals(SymbolToken.SEMI_COLON)) {
                 /* short statement: int a; */
                 return true;
 

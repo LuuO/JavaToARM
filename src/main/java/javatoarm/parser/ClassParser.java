@@ -1,67 +1,51 @@
 package javatoarm.parser;
 
 import javatoarm.JTAException;
-import javatoarm.javaast.JavaAnnotation;
-import javatoarm.javaast.JavaClass;
-import javatoarm.javaast.JavaClassMember;
-import javatoarm.javaast.JavaProperty;
+import javatoarm.javaast.*;
+import javatoarm.javaast.statement.JavaVariableDeclare;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.parser.expression.ExpressionParser;
 import javatoarm.token.*;
 import javatoarm.token.operator.AssignmentOperator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Methods for parsing a Java Class
  */
 public class ClassParser {
 
+    /**
+     * Parse a Java class
+     *
+     * @param lexer the lexer
+     * @return the Java class AST
+     * @throws JTAException if an error occurs
+     */
     public static JavaClass parse(JavaLexer lexer) throws JTAException {
-        Set<JavaProperty> properties = parseHeader(lexer);
+        Set<JavaProperty> properties =
+                JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS);
+
+        lexer.next(KeywordToken._class);
+
         String className = JavaParser.parseName(lexer);
 
-        Set<JavaType> superClass, superInterface;
-        if (lexer.nextIf(KeywordToken._extends)) {
-            superClass = parseTypes(lexer);
-        } else {
-            superClass = Collections.emptySet();
-        }
-        if (lexer.nextIf(KeywordToken._implements)) {
-            superInterface = parseTypes(lexer);
-        } else {
-            superInterface = Collections.emptySet();
-        }
-
+        Set<JavaType> superClass = lexer.nextIf(KeywordToken._extends) ? parseTypes(lexer) : Set.of();
+        Set<JavaType> superInterface = lexer.nextIf(KeywordToken._implements) ? parseTypes(lexer) : Set.of();
 
         lexer.next(BracketToken.CURLY_L);
         JavaParser.eatSemiColons(lexer);
 
         List<JavaClassMember> members = new ArrayList<>();
-
-        while (!lexer.peek().equals(BracketToken.CURLY_R)) {
+        while (!lexer.nextIf(BracketToken.CURLY_R)) {
             members.add(getMember(lexer, className));
             JavaParser.eatSemiColons(lexer);
-            if (!lexer.hasNext()) {
-                throw new JTAException.UnexpectedToken("'}'", "EOF");
-            }
         }
-        lexer.next(BracketToken.CURLY_R);
 
         return new JavaClass(properties, className, superClass, superInterface, members);
-    }
-
-    /**
-     * Parse the header of the class,
-     *
-     * @param lexer the JavaLexer
-     * @return properties of the class
-     */
-    private static Set<JavaProperty> parseHeader(JavaLexer lexer) throws JTAException {
-        Set<JavaProperty> properties =
-                JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS);
-
-        lexer.next(KeywordToken._class);
-        return properties;
     }
 
     /**
@@ -69,35 +53,43 @@ public class ClassParser {
      *
      * @param lexer the JavaLexer
      * @return a parsed class member
-     * @throws JTAException if errors occur
+     * @throws JTAException if an error occurs
      */
     private static JavaClassMember getMember(JavaLexer lexer, String className)
             throws JTAException {
-        List<JavaAnnotation> annotations;
-        if (lexer.peek().equals(CharToken.AT)) {
-            annotations = JavaParser.parseAnnotations(lexer);
-        } else {
-            annotations = Collections.emptyList();
-        }
-        switch (getNextMemberType(lexer)) {
-            case FIELD:
-                return FieldParser.parse(lexer, annotations);
-            case FUNCTION:
-                return FunctionParser.parse(lexer, className, annotations);
-            case CLASS:
-                return ClassParser.parse(lexer);
-            case INITIALIZER:
-                return new JavaClass.Initializer(CodeParser.parseBlock(lexer), false);
-            case STATIC_INITIALIZER:
-                lexer.next(KeywordToken._static);
-                return new JavaClass.Initializer(CodeParser.parseBlock(lexer), true);
-            default:
-                throw new AssertionError();
-        }
+        List<JavaAnnotation> annotations = lexer.peek(SymbolToken.AT)
+                ? JavaParser.parseAnnotations(lexer)
+                : List.of();
+
+        return switch (getNextMemberType(lexer)) {
+            case FIELD -> parseField(lexer, annotations);
+            case FUNCTION -> FunctionParser.parse(lexer, className, annotations);
+            case CLASS -> ClassParser.parse(lexer);
+            case INITIALIZER, STATIC_INITIALIZER -> parseInitializer(lexer);
+        };
     }
 
+    /**
+     * Parse a class initializer block.
+     *
+     * @param lexer the lexer
+     * @return the initializer
+     * @throws JTAException if an error occurs
+     */
+    private static JavaClass.Initializer parseInitializer(JavaLexer lexer) throws JTAException {
+        boolean isStatic = lexer.nextIf(KeywordToken._static);
+        return new JavaClass.Initializer(CodeParser.parseBlock(lexer), isStatic);
+    }
+
+    /**
+     * Check the member type of next member
+     *
+     * @param lexer the lexer
+     * @return the member type of next member
+     * @throws JTAException if an error occurs
+     */
     private static MemberType getNextMemberType(JavaLexer lexer) throws JTAException {
-        if (lexer.peek().equals(BracketToken.CURLY_L)) {
+        if (lexer.peek(BracketToken.CURLY_L)) {
             return MemberType.INITIALIZER;
         }
 
@@ -109,25 +101,18 @@ public class ClassParser {
         lexer.returnToLastCheckPoint();
 
         lexer.createCheckPoint();
-        while (lexer.hasNext() && !lexer.peek().equals(BracketToken.CURLY_R)) {
+        while (lexer.hasNext() && !lexer.peek(BracketToken.CURLY_R)) {
             Token next = lexer.next();
             if (next.equals(KeywordToken._class)) {
-
                 lexer.returnToLastCheckPoint();
                 return MemberType.CLASS;
-            } else if (next.equals(KeywordToken._native)) {
-                // TODO: Assuming all native members are functions
+
+            } else if (next.equals(KeywordToken._native) || next.equals(BracketToken.CURLY_L)) {
+                /* Assuming all native members are functions */
                 lexer.returnToLastCheckPoint();
                 return MemberType.FUNCTION;
-            } else if (next.equals(CharToken.SEMI_COLON)) {
-                lexer.returnToLastCheckPoint();
-                return MemberType.FIELD;
-            } else if (next.equals(BracketToken.CURLY_L)) {
-                // Because we found a '{' and did not encounter a '=', it is a function
-                // if we found '=', we know it is a field. e.g. int[] a = {1, 2};
-                lexer.returnToLastCheckPoint();
-                return MemberType.FUNCTION;
-            } else if (next instanceof AssignmentOperator.Simple) {
+
+            } else if (next.equals(SymbolToken.SEMI_COLON) || next instanceof AssignmentOperator.Simple) {
                 lexer.returnToLastCheckPoint();
                 return MemberType.FIELD;
             }
@@ -140,15 +125,50 @@ public class ClassParser {
         }
     }
 
+    /**
+     * Parse a set of types separated by commas.
+     *
+     * @param lexer the lexer
+     * @return a set of types
+     * @throws JTAException if an error occurs
+     */
     private static Set<JavaType> parseTypes(JavaLexer lexer) throws JTAException {
         Set<JavaType> types = new HashSet<>();
-        types.add(TypeParser.parseType(lexer, true));
-        while (lexer.nextIf(CharToken.COMMA)) {
+        do {
             types.add(TypeParser.parseType(lexer, true));
-        }
+        } while (lexer.nextIf(SymbolToken.COMMA));
         return types;
     }
 
+    /**
+     * Parse a field member declaration.
+     *
+     * @param lexer       the lexer
+     * @param annotations annotations of the field
+     * @return return the field declaration
+     * @throws JTAException if an error occurs
+     */
+    private static JavaVariableDeclare parseField(JavaLexer lexer, List<JavaAnnotation> annotations)
+            throws JTAException {
+        Set<JavaProperty> properties =
+                JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
+        JavaType type = TypeParser.parseType(lexer, true);
+        String name = JavaParser.parseName(lexer);
+
+        JavaRightValue initialValue = lexer.nextIf(AssignmentOperator.Simple.INSTANCE)
+                ? ExpressionParser.parse(lexer)
+                : null;
+
+        if (!lexer.nextIf(SymbolToken.SEMI_COLON)) {
+            throw new JTAException.UnexpectedToken("';' or '='", lexer.peek());
+        }
+
+        return new JavaVariableDeclare(annotations, properties, type, name, initialValue);
+    }
+
+    /**
+     * Representing the type of member
+     */
     private enum MemberType {
         FIELD, FUNCTION, CLASS, INITIALIZER, STATIC_INITIALIZER
     }

@@ -65,7 +65,7 @@ public class ExpressionParser {
                 JavaExpression array = ((Expression) elements.pop()).expression;
                 addElement(elements, new JavaArrayElement(array, index));
 
-            } else if (token.equals(CharToken.DOT)) {
+            } else if (token.equals(SymbolToken.DOT)) {
                 if (elements.isEmpty() || elements.peek().expression() == null) {
                     throw new JTAException.InvalidOperation("Invalid member access");
                 }

@@ -148,6 +148,16 @@ public class JavaLexer {
     }
 
     /**
+     * Check if next token equals to the expected token
+     *
+     * @return the expected token
+     * @throws JTAException if an error occurs
+     */
+    public boolean peek(Token expected) throws JTAException {
+        return getNextToken().equals(expected);
+    }
+
+    /**
      * Uneat tokens
      *
      * @param steps number of tokens to uneat

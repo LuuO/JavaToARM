@@ -65,6 +65,9 @@ public class JavaFunction implements JavaClassMember {
         subroutine.addEmptyLine();
         subroutine.addLabel(startLabel);
         subroutine.pushCalleeSave();
+        if (body == null) {
+            throw new JTAException.NotImplemented("function null body");
+        }
         body.compileCode(subroutine, scope);
         subroutine.addEmptyLine();
         subroutine.addLabel("function_" + name + "_end");

@@ -12,17 +12,30 @@ import java.util.List;
 
 public class CodeParser {
 
+    /**
+     * Parse a piece of Java code, which could be a statement, a block, or a flow-control statement.
+     *
+     * @param lexer the lexer
+     * @return the Java code
+     * @throws JTAException if an error occurs
+     */
     public static JavaCode parseCode(JavaLexer lexer) throws JTAException {
         Token next = lexer.peek();
         if (next.equals(BracketToken.CURLY_L)) {
             return parseBlock(lexer);
-        }
-        if (ControlParser.isControlToken(next)) {
+        } else if (ControlParser.isControlToken(next)) {
             return ControlParser.parse(lexer);
         }
         return StatementParser.parse(lexer);
     }
 
+    /**
+     * Parse a block of codes which is surrounded by curly brackets
+     *
+     * @param lexer the lexer
+     * @return the block of code
+     * @throws JTAException if an error occurs
+     */
     public static JavaBlock parseBlock(JavaLexer lexer) throws JTAException {
         lexer.next(BracketToken.CURLY_L);
 

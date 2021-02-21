@@ -21,7 +21,7 @@ public interface Token {
 
         if (word.length() == 1) {
             char c = word.charAt(0);
-            if ((token = CharToken.get(c)) != null) {
+            if ((token = SymbolToken.get(c)) != null) {
                 return token;
             }
             if ((token = BracketToken.get(c)) != null) {

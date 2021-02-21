@@ -32,9 +32,9 @@ public class RightValueParser {
                 /* unspecified size, has a predetermined list of values */
                 lexer.next(BracketToken.CURLY_L);
                 List<JavaExpression> values = new ArrayList<>();
-                if (!lexer.peek().equals(BracketToken.CURLY_R)) {
+                if (!lexer.peek(BracketToken.CURLY_R)) {
                     values.add(ExpressionParser.parse(lexer));
-                    while (lexer.peek().equals(CharToken.COMMA)) {
+                    while (lexer.peek(SymbolToken.COMMA)) {
                         values.add(ExpressionParser.parse(lexer));
                     }
                 }

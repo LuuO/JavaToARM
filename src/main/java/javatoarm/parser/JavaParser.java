@@ -37,7 +37,7 @@ public class JavaParser {
      */
     public static void eatSemiColons(JavaLexer lexer) throws JTAException {
         // noinspection StatementWithEmptyBody
-        while (lexer.hasNext() && lexer.nextIf(CharToken.SEMI_COLON)) ;
+        while (lexer.hasNext() && lexer.nextIf(SymbolToken.SEMI_COLON)) ;
     }
 
     /**
@@ -97,7 +97,7 @@ public class JavaParser {
 
         List<String> path = new ArrayList<>();
         path.add(token.toString());
-        while (lexer.nextIf(CharToken.DOT)) {
+        while (lexer.nextIf(SymbolToken.DOT)) {
             Token next = lexer.next();
             if (next instanceof NameToken) {
                 path.add(next.toString());
@@ -119,7 +119,7 @@ public class JavaParser {
      */
     public static List<JavaAnnotation> parseAnnotations(JavaLexer lexer) throws JTAException {
         ArrayList<JavaAnnotation> annotations = new ArrayList<>();
-        while (lexer.nextIf(CharToken.AT)) {
+        while (lexer.nextIf(SymbolToken.AT)) {
             JavaMember annotationType = parseMemberPath(lexer);
             if (lexer.nextIf(BracketToken.ROUND_L) && !lexer.nextIf(BracketToken.ROUND_R)) {
                 JavaExpression parameter = ExpressionParser.parse(lexer);

@@ -19,9 +19,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
- * Represents control codes such as if-else and loops.
+ * Parsers for control codes such as if-else and loops.
  */
 public class ControlParser {
+
+    /**
+     * Parse a control statement
+     *
+     * @param lexer the lexer
+     * @return an instance of JavaCode representing the control block.
+     * @throws JTAException if an error occurs
+     */
     public static JavaCode parse(JavaLexer lexer) throws JTAException {
         Token token = lexer.next();
         if (token instanceof KeywordToken) {
@@ -41,10 +49,9 @@ public class ControlParser {
                 case _if:
                     JavaExpression conditionIf = parseConditionInBrackets(lexer);
                     JavaCode bodyTrue = CodeParser.parseCode(lexer);
-                    JavaCode bodyFalse = null;
-                    if (lexer.nextIf(KeywordToken._else)) {
-                        bodyFalse = CodeParser.parseCode(lexer);
-                    }
+                    JavaCode bodyFalse = lexer.nextIf(KeywordToken._else)
+                            ? CodeParser.parseCode(lexer)
+                            : null;
                     return new JavaIfElse(conditionIf, bodyTrue, bodyFalse);
 
                 case _while:
@@ -74,6 +81,12 @@ public class ControlParser {
         throw new JTAException.UnexpectedToken("control token", token);
     }
 
+    /**
+     * Test if the token indicates a control statement.
+     *
+     * @param token the token
+     * @return true if the token indicates a control statement, false otherwise.
+     */
     public static boolean isControlToken(Token token) {
         if (token instanceof KeywordToken) {
             return switch ((KeywordToken) token) {
@@ -84,6 +97,13 @@ public class ControlParser {
         return false;
     }
 
+    /**
+     * Parse a conditional expression surrounded by round brackets.
+     *
+     * @param lexer the lexer
+     * @return the conditional expression
+     * @throws JTAException if an error occurs
+     */
     private static JavaExpression parseConditionInBrackets(JavaLexer lexer) throws JTAException {
         lexer.next(BracketToken.ROUND_L);
         JavaExpression condition = ExpressionParser.parse(lexer);
@@ -91,12 +111,20 @@ public class ControlParser {
         return condition;
     }
 
+    /**
+     * Test if the following is an enhanced for loop.
+     * Example of an enhanced for loop: for (Integer a : intList) {}
+     *
+     * @param lexer the lexer
+     * @return true if the following is an enhanced for loop, false otherwise.
+     * @throws JTAException if an error occurs
+     */
     private static boolean isEnhancedFor(JavaLexer lexer) throws JTAException {
         lexer.createCheckPoint();
         lexer.next(BracketToken.ROUND_L);
         while (lexer.hasNext()) {
             Token next = lexer.next();
-            if (next.equals(CharToken.SEMI_COLON)) {
+            if (next.equals(SymbolToken.SEMI_COLON)) {
                 lexer.returnToLastCheckPoint();
                 return false;
             } else if (next.equals(QuestColon.COLON)) {
@@ -107,6 +135,13 @@ public class ControlParser {
         throw new JTAException.UnexpectedToken("for loop", "EOF");
     }
 
+    /**
+     * Parse a for loop. This method starts from the token immediately after the "for" keyword token.
+     *
+     * @param lexer the lexer
+     * @return the for loop syntax tree, an instance of JavaEnhancedForLoop or JavaLoop
+     * @throws JTAException if an error occurs
+     */
     private static JavaCode parseForLoop(JavaLexer lexer) throws JTAException {
         if (isEnhancedFor(lexer)) {
             /* for (Element e : list) */
@@ -122,25 +157,29 @@ public class ControlParser {
         } else {
             /* for (int i = 0; i < max; i++) */
             lexer.next(BracketToken.ROUND_L);
-            JavaStatement initial = null, increment = null;
-            JavaExpression condition = null;
-            if (!lexer.peek().equals(CharToken.SEMI_COLON)) {
-                initial = StatementParser.parse(lexer);
-            }
-            lexer.next(CharToken.SEMI_COLON);
-            if (!lexer.peek().equals(CharToken.SEMI_COLON)) {
-                condition = ExpressionParser.parse(lexer);
-            }
-            lexer.next(CharToken.SEMI_COLON);
-            if (!lexer.peek().equals(CharToken.SEMI_COLON)) {
-                increment = StatementParser.parse(lexer);
-            }
+
+            JavaStatement initial = lexer.peek(SymbolToken.SEMI_COLON)
+                    ? null : StatementParser.parse(lexer);
+            lexer.next(SymbolToken.SEMI_COLON);
+            JavaExpression condition = lexer.peek(SymbolToken.SEMI_COLON)
+                    ? null : ExpressionParser.parse(lexer);
+            lexer.next(SymbolToken.SEMI_COLON);
+            JavaStatement increment = lexer.peek(BracketToken.ROUND_R)
+                    ? null : StatementParser.parse(lexer);
             lexer.next(BracketToken.ROUND_R);
+
             JavaCode body = CodeParser.parseCode(lexer);
             return JavaLoop.forLoop(body, initial, condition, increment);
         }
     }
 
+    /**
+     * Parse a switch statement. This method starts from the token immediately after the "switch" keyword token.
+     *
+     * @param lexer the lexer
+     * @return the switch syntax tree
+     * @throws JTAException if an error occurs
+     */
     private static JavaSwitch parseSwitch(JavaLexer lexer) throws JTAException {
         lexer.next(BracketToken.ROUND_L);
         JavaExpression condition = ExpressionParser.parse(lexer);
@@ -150,13 +189,14 @@ public class ControlParser {
         LinkedHashMap<List<ImmediateExpression>, List<JavaCode>> cases = new LinkedHashMap<>();
         List<JavaCode> defaultCase = null;
         while (!lexer.nextIf(BracketToken.CURLY_R)) {
+            /* case conditions */
             List<ImmediateExpression> caseConditions = new ArrayList<>();
             boolean isDefault;
             if (lexer.nextIf(KeywordToken._case)) {
                 do {
                     ImmediateToken immediate = (ImmediateToken) lexer.next(ImmediateToken.class);
                     caseConditions.add(new ImmediateExpression(immediate));
-                } while (lexer.nextIf(CharToken.COMMA));
+                } while (lexer.nextIf(SymbolToken.COMMA));
                 isDefault = false;
 
             } else if (lexer.nextIf(KeywordToken._default)) {
@@ -167,10 +207,11 @@ public class ControlParser {
             }
             lexer.next(QuestColon.COLON);
 
+            /* body */
             List<JavaCode> body = new ArrayList<>();
-            while (!lexer.peek().equals(KeywordToken._case)
-                    && !lexer.peek().equals(KeywordToken._default)
-                    && !lexer.peek().equals(BracketToken.CURLY_R)) {
+            while (!lexer.peek(KeywordToken._case)
+                    && !lexer.peek(KeywordToken._default)
+                    && !lexer.peek(BracketToken.CURLY_R)) {
 
                 body.add(CodeParser.parseCode(lexer));
                 JavaParser.eatSemiColons(lexer);
@@ -178,7 +219,7 @@ public class ControlParser {
 
             if (isDefault) {
                 if (defaultCase != null) {
-                    throw new JTAException("There can be only only default block");
+                    throw new JTAException("There can be only one default block");
                 }
                 defaultCase = body;
             } else {

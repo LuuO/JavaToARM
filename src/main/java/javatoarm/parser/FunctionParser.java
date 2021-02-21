@@ -15,108 +15,94 @@ import java.util.Set;
 
 public class FunctionParser {
 
+    /**
+     * Parse a function declaration.
+     *
+     * @param lexer       the lexer
+     * @param className   name of the class containing the function
+     * @param annotations annotations of the function
+     * @return the function
+     * @throws JTAException if an error occurs
+     */
     public static JavaFunction parse(JavaLexer lexer, String className,
                                      List<JavaAnnotation> annotations) throws JTAException {
         Set<JavaProperty> properties =
                 JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
-        List<JavaType> typeParameters = null;
-        if (lexer.peek().equals(AngleToken.LEFT)) {
-            typeParameters = TypeParser.parseTypeParameters(lexer);
-        }
+
+        List<JavaType> typeParameters = lexer.peek(AngleToken.LEFT)
+                ? TypeParser.parseTypeParameters(lexer)
+                : null;
         JavaType returnType = TypeParser.parseType(lexer, true);
 
-        String methodName;
-        if (lexer.peek().equals(BracketToken.ROUND_L) && returnType.name().equals(className)) {
-            /* constructor */
-            methodName = returnType.toString();
-        } else {
-            /* other functions */
-            methodName = JavaParser.parseName(lexer);
-        }
+        String methodName = lexer.peek(BracketToken.ROUND_L) && returnType.name().equals(className)
+                ? returnType.toString() /* constructor */
+                : JavaParser.parseName(lexer) /* other functions */;
 
         List<JavaVariableDeclare> arguments = parseArgumentDeclares(lexer);
+
         List<JavaType> exceptions = new ArrayList<>();
-
         if (lexer.nextIf(KeywordToken._throws)) {
-            for (; ; ) {
+            do {
                 exceptions.add(TypeParser.parseType(lexer, false));
-                if (lexer.peek().equals(BracketToken.CURLY_L)
-                        || lexer.peek().equals(CharToken.SEMI_COLON)) {
-                    break;
-                } else if (!lexer.nextIf(CharToken.COMMA)) {
-                    throw new JTAException.UnexpectedToken("Throwable", lexer.peek());
-                }
-            }
-
+            } while (lexer.nextIf(SymbolToken.COMMA));
         }
 
-        JavaBlock body;
-        if (lexer.nextIf(CharToken.SEMI_COLON)) {
-            body = null;
-        } else {
-            body = CodeParser.parseBlock(lexer);
-        }
+        JavaBlock body = lexer.nextIf(SymbolToken.SEMI_COLON) ? null : CodeParser.parseBlock(lexer);
 
         return new JavaFunction(annotations, properties, typeParameters,
                 returnType, methodName, arguments, exceptions, body);
     }
 
+    /**
+     * Parse the arguments of a function declaration. This method eats the left round bracket and the right round bracket
+     * surrounding the arguments. Example: (boolean arg1, int[] arg2, arg3[]) or ()
+     *
+     * @param lexer the lexer
+     * @return a list of argument declarations. If there is no argument, returns an empty list.
+     * @throws JTAException if an error occurs
+     */
     public static List<JavaVariableDeclare> parseArgumentDeclares(JavaLexer lexer)
             throws JTAException {
         List<JavaVariableDeclare> arguments = new ArrayList<>();
 
         lexer.next(BracketToken.ROUND_L);
         if (!lexer.nextIf(BracketToken.ROUND_R)) {
-            for (; ; ) {
+            do {
                 JavaType type = TypeParser.parseType(lexer, true);
                 String name = JavaParser.parseName(lexer);
-                Token next = lexer.next();
 
-                // check char value[]
-                if (next.equals(BracketToken.SQUARE_L)) {
+                /* check array - int arg[] */
+                if (lexer.nextIf(BracketToken.SQUARE_L)) {
                     lexer.next(BracketToken.SQUARE_R);
-                    next = lexer.next();
                     type = new JavaArrayType(type);
                 }
-
                 arguments.add(new JavaVariableDeclare(
                         Collections.emptySet(), type, name, null));
-                if (next.equals(BracketToken.ROUND_R)) {
-                    break;
-                } else if (!next.equals(CharToken.COMMA)) {
-                    throw new JTAException.UnexpectedToken("',' or ')'", next);
-                }
-            }
+
+            } while (lexer.nextIf(SymbolToken.COMMA));
+            lexer.next(BracketToken.ROUND_R);
         }
 
         return arguments;
     }
 
     /**
-     * (arg1, arg2)
+     * Parse the arguments of a function call. This method eats the left round bracket and the right round bracket
+     * surrounding the arguments. Example: (arg1, arg2, arg3) or ()
      *
-     * @param lexer
-     * @return
-     * @throws JTAException
+     * @param lexer the lexer
+     * @return a list of arguments. If there is no argument, returns an empty list.
+     * @throws JTAException if an error occurs
      */
-    public static List<JavaRightValue> parseCallArguments(JavaLexer lexer)
-            throws JTAException {
+    public static List<JavaRightValue> parseCallArguments(JavaLexer lexer) throws JTAException {
         List<JavaRightValue> arguments = new ArrayList<>();
         lexer.next(BracketToken.ROUND_L);
-        if (!lexer.peek().equals(BracketToken.ROUND_R)) {
-            for (; ; ) {
+        if (!lexer.nextIf(BracketToken.ROUND_R)) {
+            do {
                 arguments.add(ExpressionParser.parse(lexer));
-                Token next = lexer.peek();
-                if (next.equals(BracketToken.ROUND_R)) {
-                    break;
-                } else if (next.equals(CharToken.COMMA)) {
-                    lexer.next();
-                } else {
-                    throw new JTAException.UnexpectedToken("',' or ')'", next);
-                }
-            }
+            } while (lexer.nextIf(SymbolToken.COMMA));
+            lexer.next(BracketToken.ROUND_R);
         }
-        lexer.next(BracketToken.ROUND_R);
         return arguments;
     }
 }
