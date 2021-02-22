@@ -15,11 +15,19 @@ import javatoarm.parser.TypeParser;
 import javatoarm.token.*;
 import javatoarm.token.operator.*;
 
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
+import java.util.ListIterator;
 
 public class ExpressionParser {
 
+    /**
+     * Parse an expression
+     *
+     * @param lexer the lexer
+     * @return an expression
+     * @throws JTAException if an error occurs
+     */
     public static JavaExpression parse(JavaLexer lexer) throws JTAException {
         if (LambdaParser.isLambda(lexer)) {
             return LambdaParser.parse(lexer);
@@ -50,44 +58,54 @@ public class ExpressionParser {
         return result.expression();
     }
 
+    /**
+     * Collect all expression elements
+     *
+     * @param lexer the lexer
+     * @return a list of expression elements
+     * @throws JTAException if an error occurs
+     */
     private static List<ExpressionElement> parseElementList(JavaLexer lexer) throws JTAException {
-        Stack<ExpressionElement> elements = new Stack<>();
+        LinkedList<ExpressionElement> elements = new LinkedList<>();
 
         while (true) {
-            Token token = lexer.next();
+            Token next = lexer.next();
 
-            if (token.equals(BracketToken.SQUARE_L)) {
+            if (next.equals(BracketToken.SQUARE_L)) {
+                /* access array element */
+                if (elements.isEmpty() || elements.peekLast().expression() == null) {
+                    throw new JTAException.InvalidOperation("Missing array");
+                }
                 JavaExpression index = parse(lexer);
                 lexer.next(BracketToken.SQUARE_R);
-                if (elements.isEmpty() || elements.peek().expression() == null) {
-                    throw new JTAException.InvalidOperation("Invalid array access");
-                }
-                JavaExpression array = ((Expression) elements.pop()).expression;
+
+                JavaExpression array = elements.removeLast().expression();
                 addElement(elements, new JavaArrayElement(array, index));
 
-            } else if (token.equals(SymbolToken.DOT)) {
-                if (elements.isEmpty() || elements.peek().expression() == null) {
+            } else if (next.equals(SymbolToken.DOT)) {
+                if (elements.isEmpty() || elements.peekLast().expression() == null) {
                     throw new JTAException.InvalidOperation("Invalid member access");
                 }
-                JavaExpression left = elements.pop().expression();
+                JavaExpression left = elements.removeLast().expression();
                 JavaMember right = JavaParser.parseMemberPath(lexer);
                 addElement(elements, new MemberAccessExpression(left, right));
 
-            } else if (token.equals(BracketToken.ROUND_L)) {
-                if (!elements.isEmpty() && elements.peek().expression() instanceof JavaMember) {
+            } else if (next.equals(BracketToken.ROUND_L)) {
+                if (!elements.isEmpty() && elements.peekLast().expression() instanceof JavaMember) {
                     /* Function call */
                     lexer.rewind();
-                    String functionPath = elements.pop().expression().toString();
+                    String functionPath = elements.removeLast().expression().toString();
                     List<JavaRightValue> arguments = FunctionParser.parseCallArguments(lexer);
                     addElement(elements, new JavaFunctionCall(functionPath, arguments));
 
                 } else {
                     /* type casting or sub expression */
                     lexer.createCheckPoint();
-                    JavaType type = null;
+                    JavaType type;
                     try {
                         type = TypeParser.parseType(lexer, true);
                     } catch (JTAException ignored) {
+                        type = null;
                     }
 
                     if (lexer.nextIf(BracketToken.ROUND_R) && type != null) {
@@ -102,24 +120,25 @@ public class ExpressionParser {
                         addElement(elements, expression);
                     }
                 }
-            } else if (token.equals(KeywordToken._new)) {
+
+            } else if (next.equals(KeywordToken._new)) {
                 lexer.rewind();
                 JavaExpression rightValue = RightValueParser.parseNewInit(lexer);
                 addElement(elements, rightValue);
 
-            } else if (token instanceof OperatorToken) {
-                addElement(elements, (OperatorToken) token);
+            } else if (next instanceof OperatorToken) {
+                addElement(elements, (OperatorToken) next);
 
-            } else if (token instanceof ImmediateToken) {
-                ImmediateExpression constant = new ImmediateExpression(((ImmediateToken) token));
+            } else if (next instanceof ImmediateToken) {
+                ImmediateExpression constant = new ImmediateExpression(((ImmediateToken) next));
                 addElement(elements, constant);
 
-            } else if (token instanceof NameToken || token.equals(KeywordToken._this)) {
+            } else if (next instanceof NameToken || next.equals(KeywordToken._this)) {
                 lexer.rewind();
                 JavaMember member = JavaParser.parseMemberPath(lexer);
                 addElement(elements, member);
 
-            } else if (token.equals(KeywordToken._instanceof)) {
+            } else if (next.equals(KeywordToken._instanceof)) {
                 elements.add(new InstanceOf());
                 elements.add(new Type(TypeParser.parseType(lexer, true)));
 
@@ -139,72 +158,78 @@ public class ExpressionParser {
         list.add(new Operator(operator));
     }
 
-    private static void setElement(List<ExpressionElement> list, int index,
-                                   JavaExpression expression) {
-        if (index > list.size()) {
-            throw new AssertionError();
-        } else if (index == list.size()) {
-            list.add(new Expression(expression));
-        } else {
-            list.set(index, new Expression(expression));
-        }
-    }
-
     private static void parseIncrementDecrement(List<ExpressionElement> elements)
             throws JTAException {
 
-        for (int i = 0; i < elements.size(); i++) {
-            OperatorToken operator = elements.get(i).operator();
+        ListIterator<ExpressionElement> iterator = elements.listIterator();
+        while (iterator.hasNext()) {
+            OperatorToken operator = iterator.next().operator();
             if (operator instanceof IncrementDecrement) {
-                elements.remove(i);
+                boolean increment = operator == IncrementDecrement.INCREMENT;
+                iterator.remove();
 
-                // TODO: check index, is member
-                boolean post;
-                if (i > 0 && elements.get(i - 1).expression() instanceof JavaMember) {
-                    i--;
-                    post = true;
-                } else if (i < elements.size() && elements.get(i).expression() instanceof JavaMember) {
-                    post = false;
-                } else {
-                    throw new JTAException.InvalidOperation(operator.toString());
+                if (iterator.hasPrevious()) {
+                    JavaExpression previous = iterator.previous().expression();
+                    if (previous instanceof JavaMember) {
+                        JavaExpression expression =
+                                new JavaIncrementDecrement((JavaMember) previous, true, increment);
+                        iterator.set(new Expression(expression));
+                        continue;
+                    }
                 }
 
-                JavaMember member = (JavaMember) elements.get(i).expression();
-                JavaExpression expression = new JavaIncrementDecrement(
-                        member, post, operator == IncrementDecrement.INCREMENT);
-                setElement(elements, i, expression);
+                if (iterator.hasNext()) {
+                    JavaExpression next = iterator.next().expression();
+                    if (next instanceof JavaMember) {
+                        JavaExpression expression =
+                                new JavaIncrementDecrement((JavaMember) next, false, increment);
+                        iterator.set(new Expression(expression));
+                        continue;
+                    }
+                }
+
+                throw new JTAException.InvalidOperation(operator.toString());
             }
         }
+
     }
 
-    private static void parseUnaryOperations(List<ExpressionElement> elements) {
-        for (int i = 0; i < elements.size(); i++) {
-            OperatorToken operator = elements.get(i).operator();
+    private static void parseUnaryOperations(List<ExpressionElement> elements) throws JTAException {
+        ListIterator<ExpressionElement> iterator = elements.listIterator();
+        while (iterator.hasNext()) {
+            OperatorToken operator = iterator.next().operator();
             if (operator instanceof OperatorToken.Unary) {
                 OperatorToken.Unary unaryOperator = (OperatorToken.Unary) operator;
 
-                if (unaryOperator instanceof PlusMinus && i != 0
-                        && elements.get(i - 1).expression() != null) {
-                    continue;
+                /* if it is +/-, check whether it is unary or binary */
+                if (unaryOperator instanceof PlusMinus && iterator.previousIndex() > 0) {
+                    iterator.previous();
+                    ExpressionElement elementBeforeSign = iterator.previous();
+                    iterator.next();
+                    iterator.next();
+                    if (elementBeforeSign.expression() != null) {
+                        continue;
+                    }
                 }
 
-                // TODO: check index, condition
-                JavaExpression operand = elements.remove(i + 1).expression();
-                setElement(elements, i, new UnaryExpression(unaryOperator, operand));
+                iterator.remove();
+                JavaExpression operand = getNextOperandExpression(iterator);
+                iterator.set(new Expression(new UnaryExpression(unaryOperator, operand)));
             }
         }
     }
 
-    private static void parseTypeCasting(List<ExpressionElement> elements) {
-        for (int i = elements.size() - 1; i >= 0; i--) {
-            ExpressionElement element = elements.get(i);
-            if (element instanceof TypeCasting) {
-                JavaType toType = ((TypeCasting) element).toType;
-                elements.remove(i);
+    private static void parseTypeCasting(List<ExpressionElement> elements) throws JTAException {
+        ListIterator<ExpressionElement> iterator = elements.listIterator();
+        while (iterator.hasNext()) {
+            ExpressionElement current = iterator.next();
+            if (current instanceof TypeCasting) {
+                JavaType toType = ((TypeCasting) current).toType;
+                iterator.remove();
 
-                // TODO: check index, condition
-                JavaExpression operand = elements.get(i).expression();
-                setElement(elements, i, new TypeCastingExpression(toType, operand));
+                JavaExpression operand = getNextOperandExpression(iterator);
+
+                iterator.set(new Expression(new TypeCastingExpression(toType, operand)));
             }
         }
     }
@@ -215,84 +240,121 @@ public class ExpressionParser {
      *
      * @param elements elements of in the expression
      */
-    private static void parseBinaryExpression(List<ExpressionElement> elements) {
+    private static void parseBinaryExpression(List<ExpressionElement> elements) throws JTAException {
         for (int level = 12; level >= 3; level--) {
-            for (int i = 0; i < elements.size(); i++) {
-                ExpressionElement current = elements.get(i);
+            ListIterator<ExpressionElement> iterator = elements.listIterator();
+            while (iterator.hasNext()) {
+                ExpressionElement current = iterator.next();
 
-                if (current.operator() instanceof OperatorToken.Binary) {
-                    OperatorToken.Binary operator = (OperatorToken.Binary) current.operator();
+                if (level == 9 && current instanceof InstanceOf) {
+                    iterator.remove();
+                    JavaExpression memberPath = getPreviousOperandExpression(iterator);
+                    iterator.remove();
+                    JavaType targetType = iterator.next().type();
+                    if (targetType == null) {
+                        throw new JTAException.InvalidOperation("Invalid right operand");
+                    }
+                    iterator.set(new Expression(new InstanceOfExpression(memberPath, targetType)));
 
-                    if (operator.getPrecedenceLevel() == level) {
-                        // TODO: check index
-                        i--;
-                        // TODO: check condition
-                        JavaExpression operandLeft = elements.remove(i).expression();
-                        elements.remove(i);
-                        JavaExpression operandRight = elements.get(i).expression();
+                } else if (current.operator() instanceof OperatorToken.Binary) {
+                    OperatorToken.Binary binaryOperator = (OperatorToken.Binary) current.operator();
+
+                    if (binaryOperator.getPrecedenceLevel() == level) {
+                        iterator.remove();
+                        JavaExpression operandLeft = getPreviousOperandExpression(iterator);
+                        iterator.remove();
+                        JavaExpression operandRight = getNextOperandExpression(iterator);
                         JavaExpression combined =
-                                JavaExpression.newBinary(operator, operandLeft, operandRight);
-                        setElement(elements, i, combined);
+                                JavaExpression.newBinary(binaryOperator, operandLeft, operandRight);
+                        iterator.set(new Expression(combined));
 
-                    } else if (operator.getPrecedenceLevel() > level) {
+                    } else if (binaryOperator.getPrecedenceLevel() > level) {
                         throw new AssertionError();
                     }
-                } else if (current instanceof InstanceOf && level == 9) {
-                    i--;
-                    JavaMember memberPath = (JavaMember) elements.remove(i).expression();
-                    elements.remove(i);
-                    JavaType targetType = elements.remove(i).type();
-                    addElement(elements, (new InstanceOfExpression(memberPath, targetType)));
+
                 }
             }
         }
     }
 
     private static void parseTernaryToken(List<ExpressionElement> elements) throws JTAException {
-        for (int i = elements.size() - 1; i >= 0; i--) {
-            if (QuestColon.COLON.equals(elements.get(i).operator())) {
-                i -= 3;
-                if (i < 0) {
-                    throw new JTAException.InvalidOperation("missing left value");
+        ListIterator<ExpressionElement> iterator = elements.listIterator(elements.size());
+        while (iterator.hasPrevious()) {
+            if (QuestColon.COLON.equals(iterator.previous().operator())) {
+                iterator.remove();
+                JavaExpression falseExpression = getNextOperandExpression(iterator);
+                iterator.remove();
+                JavaExpression trueExpression = getPreviousOperandExpression(iterator);
+                iterator.remove();
+                if (!iterator.hasPrevious() || !QuestColon.QUESTION.equals(iterator.previous().operator())) {
+                    throw new JTAException.InvalidOperation("Incomplete ternary expression");
                 }
-                JavaExpression condition = elements.remove(i).expression(); //TODO: check expression
-                elements.remove(i); // ? sign
-                JavaExpression trueExpression = elements.remove(i).expression();
-                elements.remove(i); // : sign //TODO: check index
-                JavaExpression falseExpression = elements.remove(i).expression();
-                setElement(elements, i,
-                        new TernaryExpression(condition, trueExpression, falseExpression));
+                iterator.remove();
+
+                JavaExpression condition = getPreviousOperandExpression(iterator);
+                iterator.set(new Expression(new TernaryExpression(condition, trueExpression, falseExpression)));
             }
         }
     }
 
     private static void parseAssignment(List<ExpressionElement> elements) throws JTAException {
-        for (int i = elements.size() - 1; i >= 0; i--) {
-            OperatorToken operator = elements.get(i).operator();
+        ListIterator<ExpressionElement> iterator = elements.listIterator(elements.size());
+        while (iterator.hasPrevious()) {
+            OperatorToken operator = iterator.previous().operator();
             if (operator instanceof AssignmentOperator) {
                 AssignmentOperator assignment = (AssignmentOperator) operator;
-                i--;
-                if (i < 0) {
-                    throw new JTAException.InvalidOperation("missing left value");
-                }
-                JavaExpression leftExpression = elements.remove(i).expression();
+                iterator.remove();
+
+                JavaExpression leftExpression = getPreviousOperandExpression(iterator);
+                iterator.remove();
+
                 if (!(leftExpression instanceof JavaLeftValue)) {
-                    throw new JTAException.InvalidOperation("not a left value");
+                    throw new JTAException.InvalidOperation("Not a valid left value");
                 }
                 JavaLeftValue leftValue = (JavaLeftValue) leftExpression;
-                elements.remove(i);
-                //TODO: check index
-                JavaExpression value = elements.get(i).expression();
+
+                JavaExpression rightValue = getNextOperandExpression(iterator);
 
                 if (assignment instanceof AssignmentOperator.Compound) {
                     OperatorToken.Binary implicit =
                             ((AssignmentOperator.Compound) assignment).implicitOperator;
-                    value = new NumericExpression(implicit, leftExpression, value);
+                    rightValue = new NumericExpression(implicit, leftExpression, rightValue);
                 }
 
-                setElement(elements, i, new JavaAssignment(leftValue, value));
+                iterator.set(new Expression(new JavaAssignment(leftValue, rightValue)));
             }
         }
+
+    }
+
+    private static JavaExpression getPreviousOperandExpression(ListIterator<ExpressionElement> iterator)
+            throws JTAException {
+
+        if (!iterator.hasPrevious()) {
+            throw new JTAException.InvalidOperation("Operation missing left operand");
+        }
+
+        JavaExpression operandLeft = iterator.previous().expression();
+        if (operandLeft == null) {
+            throw new JTAException.InvalidOperation("Invalid left operand");
+        }
+
+        return operandLeft;
+    }
+
+    private static JavaExpression getNextOperandExpression(ListIterator<ExpressionElement> iterator)
+            throws JTAException {
+
+        if (!iterator.hasNext()) {
+            throw new JTAException.InvalidOperation("Operation missing right operand");
+        }
+
+        JavaExpression operandRight = iterator.next().expression();
+        if (operandRight == null) {
+            throw new JTAException.InvalidOperation("Invalid right operand");
+        }
+
+        return operandRight;
     }
 
 }
