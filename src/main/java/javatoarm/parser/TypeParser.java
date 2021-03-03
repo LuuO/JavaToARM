@@ -24,7 +24,7 @@ public class TypeParser {
         JavaType type;
         Token token = lexer.next();
         if (token instanceof KeywordToken) {
-            type = JavaSimpleType.get((KeywordToken) token);
+            type = PrimitiveType.get((KeywordToken) token);
             if (type == null) {
                 throw new JTAException.UnexpectedToken("data type", token);
             }
@@ -35,9 +35,9 @@ public class TypeParser {
 
             /* check type parameter */
             if (lexer.peek(AngleToken.LEFT)) {
-                type = new JavaParametrizedType(typePath, parseTypeParameters(lexer));
+                type = new ParametrizedType(typePath, parseTypeParameters(lexer));
             } else {
-                type = JavaSimpleType.get(typePath);
+                type = UserDefinedType.get(typePath);
             }
 
         } else {
@@ -48,11 +48,11 @@ public class TypeParser {
         if (lexer.nextIf(SymbolToken.DOT)) {
             lexer.next(SymbolToken.DOT);
             lexer.next(SymbolToken.DOT);
-            type = new JavaArrayType(type);
+            type = new ArrayType(type);
         } else {
             while (acceptArray && lexer.nextIf(BracketToken.SQUARE_L)) {
                 lexer.next(BracketToken.SQUARE_R);
-                type = new JavaArrayType(type);
+                type = new ArrayType(type);
             }
         }
         return type;
@@ -76,19 +76,19 @@ public class TypeParser {
 
         do {
             if (lexer.nextIf(QuestColon.QUESTION)) {
-                JavaTypeWildcard.Bound bound;
+                TypeWildcard.Bound bound;
                 JavaType wildcardType;
                 if (lexer.nextIf(KeywordToken._extends)) {
-                    bound = JavaTypeWildcard.Bound.EXTEND;
+                    bound = TypeWildcard.Bound.EXTEND;
                     wildcardType = parseType(lexer, false);
                 } else if (lexer.nextIf(KeywordToken._super)) {
-                    bound = JavaTypeWildcard.Bound.SUPER;
+                    bound = TypeWildcard.Bound.SUPER;
                     wildcardType = parseType(lexer, false);
                 } else {
-                    bound = JavaTypeWildcard.Bound.UNBOUNDED;
+                    bound = TypeWildcard.Bound.UNBOUNDED;
                     wildcardType = null;
                 }
-                typeParameters.add(new JavaTypeWildcard(bound, wildcardType));
+                typeParameters.add(new TypeWildcard(bound, wildcardType));
             } else {
                 typeParameters.add(parseType(lexer, false));
             }

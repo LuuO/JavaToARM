@@ -1,10 +1,24 @@
 package javatoarm.javaast.type;
 
-public class JavaTypeWildcard extends JavaType {
+import javatoarm.JTAException;
+
+/**
+ * Represents a type wildcard.
+ * <p>
+ * Examples: ?, ? extends T
+ * </p>
+ */
+public class TypeWildcard extends JavaType.Impl {
     public final Bound bound;
     public final JavaType parameterType;
 
-    public JavaTypeWildcard(Bound bound, JavaType parameterType) {
+    /**
+     * Constructs an instance to represent a type wildcard
+     *
+     * @param bound         relation with the parameter type
+     * @param parameterType the parameter type
+     */
+    public TypeWildcard(Bound bound, JavaType parameterType) {
         this.bound = bound;
         this.parameterType = parameterType;
     }
@@ -18,6 +32,14 @@ public class JavaTypeWildcard extends JavaType {
         }
     }
 
+    @Override
+    public int size() throws JTAException {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Represents types of relation with the parameter type
+     */
     public enum Bound {
         EXTEND, UNBOUNDED, SUPER;
 

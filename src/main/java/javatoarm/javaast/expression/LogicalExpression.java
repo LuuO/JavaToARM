@@ -3,7 +3,7 @@ package javatoarm.javaast.expression;
 import javatoarm.JTAException;
 import javatoarm.assembly.Condition;
 import javatoarm.assembly.Subroutine;
-import javatoarm.javaast.type.JavaSimpleType;
+import javatoarm.javaast.type.PrimitiveType;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
@@ -42,7 +42,7 @@ public class LogicalExpression implements BooleanExpression {
 
         Variable left = operandLeft.compileExpression(subroutine, parent);
         Variable right = operandRight.compileExpression(subroutine, parent);
-        TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, JavaSimpleType.BOOL);
+        TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, PrimitiveType.BOOLEAN);
         subroutine.addLogic(saveResult, operator == Logical.AND, left, right, result);
         return result;
     }

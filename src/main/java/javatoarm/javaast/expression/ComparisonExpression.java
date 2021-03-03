@@ -3,7 +3,7 @@ package javatoarm.javaast.expression;
 import javatoarm.JTAException;
 import javatoarm.assembly.Condition;
 import javatoarm.assembly.Subroutine;
-import javatoarm.javaast.type.JavaSimpleType;
+import javatoarm.javaast.type.PrimitiveType;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
@@ -35,7 +35,7 @@ public class ComparisonExpression implements BooleanExpression {
     @Override
     public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
         compileToConditionCode(subroutine, parent);
-        TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, JavaSimpleType.BOOL);
+        TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, PrimitiveType.BOOLEAN);
         subroutine.saveBooleanResult(condition, result);
         return result;
     }

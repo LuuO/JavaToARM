@@ -9,9 +9,9 @@ import javatoarm.javaast.statement.JavaFunctionCall;
 import javatoarm.javaast.statement.JavaStatement;
 import javatoarm.javaast.statement.JavaVariableDeclare;
 import javatoarm.javaast.statement.ThrowStatement;
-import javatoarm.javaast.type.JavaArrayType;
-import javatoarm.javaast.type.JavaSimpleType;
+import javatoarm.javaast.type.ArrayType;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.javaast.type.PrimitiveType;
 import javatoarm.parser.expression.ExpressionParser;
 import javatoarm.token.*;
 import javatoarm.token.operator.AssignmentOperator;
@@ -83,7 +83,7 @@ public class StatementParser {
 
             if (lexer.nextIf(BracketToken.SQUARE_L)) {
                 lexer.next(BracketToken.SQUARE_R);
-                type = new JavaArrayType(type);
+                type = new ArrayType(type);
             }
 
             JavaRightValue initialValue = null;
@@ -121,7 +121,7 @@ public class StatementParser {
             if (peek.equals(KeywordToken._final)) {
                 return true;
             }
-            return JavaSimpleType.get((KeywordToken) peek) != null;
+            return PrimitiveType.get((KeywordToken) peek) != null;
         }
 
         lexer.createCheckPoint();

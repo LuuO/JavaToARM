@@ -3,7 +3,7 @@ package javatoarm.parser;
 import javatoarm.JTAException;
 import javatoarm.javaast.*;
 import javatoarm.javaast.statement.JavaVariableDeclare;
-import javatoarm.javaast.type.JavaArrayType;
+import javatoarm.javaast.type.ArrayType;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.parser.expression.ExpressionParser;
 import javatoarm.token.*;
@@ -74,7 +74,7 @@ public class FunctionParser {
                 /* check array - int arg[] */
                 if (lexer.nextIf(BracketToken.SQUARE_L)) {
                     lexer.next(BracketToken.SQUARE_R);
-                    type = new JavaArrayType(type);
+                    type = new ArrayType(type);
                 }
                 arguments.add(new JavaVariableDeclare(
                         Collections.emptySet(), type, name, null));

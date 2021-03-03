@@ -7,6 +7,9 @@ import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.Variable;
 
+/**
+ * Represents an assignment expression in Java
+ */
 public class JavaAssignment implements JavaExpression, JavaStatement {
     public final JavaLeftValue leftValue;
     public final JavaExpression value;

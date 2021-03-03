@@ -1,8 +1,9 @@
 package javatoarm.token;
 
 import javatoarm.JTAException;
-import javatoarm.javaast.type.JavaSimpleType;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.javaast.type.PrimitiveType;
+import javatoarm.javaast.type.UserDefinedType;
 
 /**
  * Tokens that represent an immediate value.
@@ -73,7 +74,7 @@ public interface ImmediateToken extends Token {
 
         @Override
         public JavaType getType() {
-            return JavaSimpleType.STRING;
+            return UserDefinedType.STRING;
         }
 
         @Override
@@ -88,7 +89,7 @@ public interface ImmediateToken extends Token {
     class Null implements ImmediateToken {
         @Override
         public JavaType getType() {
-            return JavaSimpleType.NULL;
+            return PrimitiveType.NULL;
         }
 
         @Override
@@ -109,7 +110,7 @@ public interface ImmediateToken extends Token {
 
         @Override
         public JavaType getType() {
-            return JavaSimpleType.BOOL;
+            return PrimitiveType.BOOLEAN;
         }
 
         @Override
@@ -155,26 +156,26 @@ public interface ImmediateToken extends Token {
         @Override
         public JavaType getType() {
             if (value > Integer.MAX_VALUE || -value > Integer.MAX_VALUE + 1L) {
-                return JavaSimpleType.LONG;
+                return PrimitiveType.LONG;
             } else if (value > Short.MAX_VALUE || -value > Short.MAX_VALUE + 1) {
-                return JavaSimpleType.INT;
+                return PrimitiveType.INT;
             } else if (value > Byte.MAX_VALUE || -value > Byte.MAX_VALUE + 1) {
-                return JavaSimpleType.SHORT;
+                return PrimitiveType.SHORT;
             } else {
-                return JavaSimpleType.BYTE;
+                return PrimitiveType.BYTE;
             }
         }
 
         @Override
         public Object getValue() throws JTAException {
             JavaType type = getType();
-            if (JavaSimpleType.LONG.equals(type)) {
+            if (PrimitiveType.LONG.equals(type)) {
                 return value;
-            } else if (JavaSimpleType.INT.equals(type)) {
+            } else if (PrimitiveType.INT.equals(type)) {
                 return (int) value;
-            } else if (JavaSimpleType.SHORT.equals(type)) {
+            } else if (PrimitiveType.SHORT.equals(type)) {
                 return (short) value;
-            } else if (JavaSimpleType.BYTE.equals(type)) {
+            } else if (PrimitiveType.BYTE.equals(type)) {
                 return (byte) value;
             }
             throw new JTAException.NotImplemented(getType().toString());
@@ -201,7 +202,7 @@ public interface ImmediateToken extends Token {
 
         @Override
         public JavaType getType() {
-            return JavaSimpleType.DOUBLE;
+            return PrimitiveType.DOUBLE;
         }
 
         @Override
@@ -222,7 +223,7 @@ public interface ImmediateToken extends Token {
 
         @Override
         public JavaType getType() {
-            return JavaSimpleType.CHAR;
+            return PrimitiveType.CHAR;
         }
 
         @Override
