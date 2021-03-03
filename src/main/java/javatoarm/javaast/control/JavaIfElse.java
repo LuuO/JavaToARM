@@ -6,19 +6,34 @@ import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.expression.BooleanExpression;
 import javatoarm.javaast.expression.JavaExpression;
+import javatoarm.javaast.type.PrimitiveType;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.Variable;
 
+/**
+ * Represents if-else branch statements
+ */
 public class JavaIfElse implements JavaCode {
-    JavaExpression condition;
-    JavaCode bodyTrue, bodyFalse;
-    String elseLabel = "ifelse_" + JavaCode.getUniqueID(this) + "_else";
-    String endLabel = "ifelse_" + JavaCode.getUniqueID(this) + "_end";
+    private final JavaExpression condition;
+    private final JavaCode bodyTrue, bodyFalse;
+    private final String elseLabel;
+    private final String endLabel;
 
+    /**
+     * Constructs an if-else statement
+     *
+     * @param condition the condition to evaluate
+     * @param bodyTrue  code to execute if the condition evaluates to true
+     * @param bodyFalse code to execute if the condition evaluates to false
+     */
     public JavaIfElse(JavaExpression condition, JavaCode bodyTrue, JavaCode bodyFalse) {
         this.condition = condition;
         this.bodyTrue = bodyTrue;
         this.bodyFalse = bodyFalse;
+
+        String uid = String.valueOf(JavaCode.getUniqueID(this));
+        elseLabel = "ifelse_" + uid + "_else";
+        endLabel = "ifelse_" + uid + "_end";
     }
 
     @Override
@@ -29,8 +44,11 @@ public class JavaIfElse implements JavaCode {
             comparison.compileToConditionCode(subroutine, parent);
             opposite = comparison.getCondition().opposite();
         } else {
-            Variable condition = this.condition.compileExpression(subroutine, parent);
-            subroutine.checkCondition(condition);
+            Variable conditionResult = condition.compileExpression(subroutine, parent);
+            if (conditionResult.getType() != PrimitiveType.BOOLEAN) {
+                throw new JTAException.InvalidOperation(condition + "does not produce a boolean value");
+            }
+            subroutine.checkCondition(conditionResult);
             opposite = Condition.EQUAL; // Zero -> false
         }
 

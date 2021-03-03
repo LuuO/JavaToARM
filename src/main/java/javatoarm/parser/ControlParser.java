@@ -40,26 +40,26 @@ public class ControlParser {
                 case _switch:
                     return parseSwitch(lexer);
 
-                case _do:
-                    JavaCode bodyDo = CodeParser.parseCode(lexer);
+                case _do: {
+                    JavaCode body = CodeParser.parseCode(lexer);
                     lexer.next(KeywordToken._while);
-                    JavaExpression conditionDo = parseConditionInBrackets(lexer);
-                    return JavaLoop.doWhileLoop(bodyDo, conditionDo);
-
-                case _if:
+                    JavaExpression condition = parseConditionInBrackets(lexer);
+                    return new JavaLoop.DoWhile(condition, body);
+                }
+                case _if: {
                     JavaExpression conditionIf = parseConditionInBrackets(lexer);
                     JavaCode bodyTrue = CodeParser.parseCode(lexer);
                     JavaCode bodyFalse = lexer.nextIf(KeywordToken._else)
                             ? CodeParser.parseCode(lexer)
                             : null;
                     return new JavaIfElse(conditionIf, bodyTrue, bodyFalse);
-
-                case _while:
-                    JavaExpression conditionWhile = parseConditionInBrackets(lexer);
-                    JavaCode bodyWhile = CodeParser.parseCode(lexer);
-                    return JavaLoop.whileLoop(bodyWhile, conditionWhile);
-
-                case _synchronized:
+                }
+                case _while: {
+                    JavaExpression condition = parseConditionInBrackets(lexer);
+                    JavaCode body = CodeParser.parseCode(lexer);
+                    return new JavaLoop.While(condition, body);
+                }
+                case _synchronized: {
                     JavaExpression lock;
                     if (lexer.nextIf(BracketToken.ROUND_L)) {
                         lock = ExpressionParser.parse(lexer);
@@ -69,13 +69,14 @@ public class ControlParser {
                     }
                     JavaBlock bodySynchronized = CodeParser.parseBlock(lexer);
                     return new JavaSynchronized(lock, bodySynchronized);
-
-                case _try:
+                }
+                case _try: {
                     JavaBlock tryBlock = CodeParser.parseBlock(lexer);
                     lexer.next(KeywordToken._catch);
                     List<VariableDeclareStatement> exceptions = FunctionParser.parseArgumentDeclares(lexer);
                     JavaBlock catchBlock = CodeParser.parseBlock(lexer);
                     return new JavaTryBlock(tryBlock, exceptions, catchBlock);
+                }
             }
         }
         throw new JTAException.UnexpectedToken("control token", token);
@@ -169,7 +170,7 @@ public class ControlParser {
             lexer.next(BracketToken.ROUND_R);
 
             JavaCode body = CodeParser.parseCode(lexer);
-            return JavaLoop.forLoop(body, initial, condition, increment);
+            return new JavaLoop.For(initial, condition, increment, body);
         }
     }
 

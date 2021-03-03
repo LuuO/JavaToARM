@@ -9,13 +9,23 @@ import javatoarm.staticanalysis.JavaScope;
 
 import java.util.List;
 
+/**
+ * Represents a try-catch block.
+ */
 public class JavaTryBlock implements JavaCode {
     public final JavaBlock tryBlock;
     public final List<VariableDeclareStatement> exceptions;
     public final JavaBlock catchBlock;
 
-    public JavaTryBlock(JavaBlock tryBlock,
-                        List<VariableDeclareStatement> exceptions, JavaBlock catchBlock) {
+    /**
+     * Create an instance of JavaTryBlock
+     *
+     * @param tryBlock   the try block
+     * @param exceptions exceptions to catch
+     * @param catchBlock block to execute after an exception is caught
+     */
+    public JavaTryBlock(JavaBlock tryBlock, List<VariableDeclareStatement> exceptions,
+                        JavaBlock catchBlock) {
         this.tryBlock = tryBlock;
         this.exceptions = exceptions;
         this.catchBlock = catchBlock;
@@ -23,6 +33,6 @@ public class JavaTryBlock implements JavaCode {
 
     @Override
     public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
-        throw new UnsupportedOperationException();
+        throw new JTAException.NotImplemented("JavaTryBlock");
     }
 }

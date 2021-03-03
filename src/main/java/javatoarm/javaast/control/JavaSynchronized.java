@@ -7,10 +7,19 @@ import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.staticanalysis.JavaScope;
 
+/**
+ * Represents a synchronized block
+ */
 public class JavaSynchronized implements JavaCode {
     public final JavaExpression lock;
     public final JavaBlock body;
 
+    /**
+     * Create an instance of synchronized block
+     *
+     * @param lock the lock
+     * @param body the body
+     */
     public JavaSynchronized(JavaExpression lock, JavaBlock body) {
         this.lock = lock;
         this.body = body;
@@ -18,6 +27,6 @@ public class JavaSynchronized implements JavaCode {
 
     @Override
     public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
-        throw new UnsupportedOperationException();
+        throw new JTAException.NotImplemented("JavaSynchronized");
     }
 }
