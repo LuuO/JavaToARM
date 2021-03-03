@@ -115,6 +115,7 @@ public class JTAException extends Exception {
         }
     }
 
+    // TODO: make this a runtime exception and replace UnsupportedOperationException
     public static class NotImplemented extends JTAException {
         public NotImplemented(String message) {
             super(message);

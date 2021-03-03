@@ -7,10 +7,20 @@ import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.OperatorToken;
 
+/**
+ * Represents an unary expression.
+ * Examples: -i, !true
+ */
 public class UnaryExpression implements JavaExpression {
     OperatorToken.Unary operator;
     JavaExpression operand;
 
+    /**
+     * Constructs a new UnaryExpression
+     *
+     * @param token   the unary operator token
+     * @param operand the operand
+     */
     public UnaryExpression(OperatorToken.Unary token, JavaExpression operand) {
         this.operator = token;
         this.operand = operand;

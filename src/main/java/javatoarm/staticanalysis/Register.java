@@ -23,7 +23,8 @@ public class Register {
         if (isa == InstructionSet.ARMv7 && index > 16) {
             throw new IllegalArgumentException();
         } else if (isa == InstructionSet.X86_64) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("X86_64 not implemented");
+            // throw new JTAException.NotImplemented("X86_64");
         }
     }
 

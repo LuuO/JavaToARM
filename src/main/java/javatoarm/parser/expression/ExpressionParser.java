@@ -88,7 +88,7 @@ public class ExpressionParser {
                 }
                 JavaExpression left = elements.removeLast().expression();
                 JavaMember right = JavaParser.parseMemberPath(lexer);
-                addElement(elements, new MemberAccessExpression(left, right));
+                addElement(elements, new JavaMemberAccess(left, right));
 
             } else if (next.equals(BracketToken.ROUND_L)) {
                 if (!elements.isEmpty() && elements.peekLast().expression() instanceof JavaMember) {

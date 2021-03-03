@@ -6,10 +6,20 @@ import javatoarm.javaast.type.JavaType;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.Variable;
 
+/**
+ * Represents an type casting expression.
+ * Example: (List) object
+ */
 public class TypeCastingExpression implements JavaExpression {
     public final JavaType targetType;
     public final JavaExpression expression;
 
+    /**
+     * Constructs a new TypeCastingExpression
+     *
+     * @param castTo     target type
+     * @param expression the expression to be casted
+     */
     public TypeCastingExpression(JavaType castTo, JavaExpression expression) {
         this.targetType = castTo;
         this.expression = expression;
@@ -17,6 +27,6 @@ public class TypeCastingExpression implements JavaExpression {
 
     @Override
     public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
-        throw new UnsupportedOperationException();
+        throw new JTAException.NotImplemented("TypeCastingExpression");
     }
 }

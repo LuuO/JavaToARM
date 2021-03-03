@@ -10,10 +10,22 @@ import javatoarm.token.operator.Comparison;
 import javatoarm.token.operator.Logical;
 import javatoarm.token.operator.OperatorToken;
 
+/**
+ * Represents a numeric expression.
+ * A numeric expression accepts two operands and gives a numeric result.
+ * Examples: 1 + 1, 1 << 5
+ */
 public class NumericExpression implements JavaExpression {
     OperatorToken.Binary operator;
     JavaExpression operandLeft, operandRight;
 
+    /**
+     * Constructs a new NumericExpression
+     *
+     * @param operator     the operator
+     * @param operandLeft  the left operand
+     * @param operandRight the right operand
+     */
     public NumericExpression(OperatorToken.Binary operator, JavaExpression operandLeft,
                              JavaExpression operandRight) {
         this.operator = operator;

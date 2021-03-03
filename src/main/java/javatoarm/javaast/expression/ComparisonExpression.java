@@ -9,10 +9,23 @@ import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.Comparison;
 
+/**
+ * Represents a comparison expression in Java.
+ * <p>
+ * Examples: 1 == 2, 2 &lt 4
+ * </p>
+ */
 public class ComparisonExpression implements BooleanExpression {
-    Condition condition;
-    JavaExpression operandLeft, operandRight;
+    private final Condition condition;
+    private final JavaExpression operandLeft, operandRight;
 
+    /**
+     * Constructs a new ComparisonExpression
+     *
+     * @param operator     the operator
+     * @param operandLeft  left operand
+     * @param operandRight right operand
+     */
     public ComparisonExpression(Comparison operator, JavaExpression operandLeft,
                                 JavaExpression operandRight) {
         this.condition = operator.getCondition();
@@ -26,10 +39,10 @@ public class ComparisonExpression implements BooleanExpression {
     }
 
     @Override
-    public void compileToConditionCode(Subroutine parent, JavaScope scope) throws JTAException {
-        Variable left = operandLeft.compileExpression(parent, scope);
-        Variable right = operandRight.compileExpression(parent, scope);
-        parent.addCompare(left, right);
+    public void compileToConditionCode(Subroutine subroutine, JavaScope parent) throws JTAException {
+        Variable left = operandLeft.compileExpression(subroutine, parent);
+        Variable right = operandRight.compileExpression(subroutine, parent);
+        subroutine.addCompare(left, right);
     }
 
     @Override

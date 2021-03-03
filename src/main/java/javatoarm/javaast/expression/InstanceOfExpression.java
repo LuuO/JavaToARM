@@ -7,24 +7,36 @@ import javatoarm.javaast.type.JavaType;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.Variable;
 
+/**
+ * Represents an instanceof expression.
+ * An instanceof expression checks the type of some value.
+ * <p>
+ * Examples: "1" instanceof String, e instanceof Expression
+ * </p>
+ */
 public class InstanceOfExpression implements BooleanExpression {
-
     public final JavaExpression left;
     public final JavaType type;
 
+    /**
+     * Constructs a new InstanceOfExpression
+     *
+     * @param left the value to check
+     * @param type the type to check against with
+     */
     public InstanceOfExpression(JavaExpression left, JavaType type) {
         this.left = left;
         this.type = type;
     }
 
     @Override
-    public void compileToConditionCode(Subroutine parent, JavaScope scope) {
-        throw new UnsupportedOperationException();
+    public void compileToConditionCode(Subroutine subroutine, JavaScope parent) throws JTAException {
+        throw new JTAException.NotImplemented("InstanceOfExpression");
     }
 
     @Override
-    public Condition getCondition() {
-        throw new UnsupportedOperationException();
+    public Condition getCondition() throws JTAException {
+        throw new JTAException.NotImplemented("InstanceOfExpression");
     }
 
     @Override

@@ -5,24 +5,29 @@ import javatoarm.assembly.Subroutine;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.LocalVariable;
 
-public class MemberAccessExpression extends JavaMember {
+/**
+ * Represents a member access expression.
+ * Examples: this.value, new String().length()
+ */
+public class JavaMemberAccess extends JavaMember {
     public final JavaExpression left;
     public final JavaMember right;
 
-    public MemberAccessExpression(JavaExpression left, JavaMember right) {
+    /**
+     * Initialize an instance of MemberAccessExpression
+     *
+     * @param left  expression to get member from
+     * @param right member of the expression
+     */
+    public JavaMemberAccess(JavaExpression left, JavaMember right) {
         super(right.path);
         this.left = left;
         this.right = right;
     }
 
-    /**
-     * TODO: implement
-     *
-     * @return a String representation of the expression
-     */
     @Override
     public String toString() {
-        return left.toString() + right.toString();
+        return "%s.%s".formatted(left, right);
     }
 
     @Override
@@ -32,6 +37,6 @@ public class MemberAccessExpression extends JavaMember {
 
     @Override
     public LocalVariable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
-        throw new UnsupportedOperationException();
+        throw new JTAException.NotImplemented("MemberAccessExpression");
     }
 }

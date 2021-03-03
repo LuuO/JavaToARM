@@ -3,7 +3,7 @@ package javatoarm.parser;
 import javatoarm.JTAException;
 import javatoarm.javaast.JavaRightValue;
 import javatoarm.javaast.expression.JavaExpression;
-import javatoarm.javaast.expression.JavaNewArray;
+import javatoarm.javaast.expression.NewArrayExpression;
 import javatoarm.javaast.expression.NewObjectExpression;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.parser.expression.ExpressionParser;
@@ -39,12 +39,12 @@ public class RightValueParser {
                     }
                 }
                 lexer.next(BracketToken.CURLY_R);
-                return new JavaNewArray(type, values);
+                return new NewArrayExpression(type, values);
             } else {
                 /* specified size */
                 JavaExpression size = ExpressionParser.parse(lexer);
                 lexer.next(BracketToken.SQUARE_R);
-                return new JavaNewArray(type, size);
+                return new NewArrayExpression(type, size);
             }
 
         } else if (next.equals(BracketToken.ROUND_L)) {

@@ -9,10 +9,21 @@ import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.Logical;
 
+/**
+ * Represents a logical expression.
+ * Examples: true && false, false || true
+ */
 public class LogicalExpression implements BooleanExpression {
     Logical operator;
     JavaExpression operandLeft, operandRight;
 
+    /**
+     * Constructs an instance of logical expression
+     *
+     * @param operator     the logical operator
+     * @param operandLeft  left operand
+     * @param operandRight right operand
+     */
     public LogicalExpression(Logical operator, JavaExpression operandLeft,
                              JavaExpression operandRight) {
         this.operator = operator;
@@ -26,9 +37,7 @@ public class LogicalExpression implements BooleanExpression {
     }
 
     @Override
-    public void compileToConditionCode(Subroutine subroutine, JavaScope parent)
-            throws JTAException {
-
+    public void compileToConditionCode(Subroutine subroutine, JavaScope parent) throws JTAException {
         compile(subroutine, parent, false);
     }
 
@@ -37,9 +46,21 @@ public class LogicalExpression implements BooleanExpression {
         return compile(subroutine, parent, true);
     }
 
+    /**
+     * Compiles this logical expression. Result of the operation can be saved
+     * to a temporary variable or to the condition code.
+     *
+     * @param subroutine the subroutine which this expression belongs to
+     * @param parent     the parent scope of this expression
+     * @param saveResult true to save the result to a variable and return the variable, false to
+     *                   modify only the condition code. Note that when saveResult is true, the
+     *                   effect on the condition code is undetermined.
+     * @return if saveResult is true, returns the temporary variable that stores the result.
+     * Otherwise, the behavior of the returned variable is undefined.
+     * @throws JTAException if an error occurs
+     */
     private Variable compile(Subroutine subroutine, JavaScope parent, boolean saveResult)
             throws JTAException {
-
         Variable left = operandLeft.compileExpression(subroutine, parent);
         Variable right = operandRight.compileExpression(subroutine, parent);
         TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, PrimitiveType.BOOLEAN);

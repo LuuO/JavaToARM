@@ -7,7 +7,6 @@ import javatoarm.javaast.JavaClassMember;
 import javatoarm.javaast.JavaProperty;
 import javatoarm.javaast.JavaRightValue;
 import javatoarm.javaast.expression.JavaExpression;
-import javatoarm.javaast.expression.JavaNewArray;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.LocalVariable;
@@ -109,13 +108,7 @@ public class VariableDeclareStatement implements JavaClassMember, JavaStatement 
     public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
         LocalVariable variable = parent.declareVariable(type, name);
         if (initialValue != null) {
-            if (initialValue instanceof JavaNewArray) {
-                JavaExpression sizeExpression =
-                        ((JavaNewArray) initialValue).memorySize();
-                Variable size = sizeExpression.compileExpression(subroutine, parent);
-                subroutine.malloc(size, variable.getRegister());
-                size.deleteIfIsTemp();
-            } else if (initialValue instanceof JavaExpression) {
+            if (initialValue instanceof JavaExpression) {
                 Variable initial =
                         ((JavaExpression) initialValue).compileExpression(subroutine, parent);
                 subroutine.addAssignment(variable, initial);
