@@ -49,6 +49,10 @@ public enum PrimitiveType implements JavaType {
 
     @Override
     public boolean compatibleTo(JavaType that) {
+        if (this == that) {
+            return true;
+        }
+
         if ((that instanceof PrimitiveType)
                 && (this == BYTE || this == INT || this == LONG || this == SHORT)) {
 

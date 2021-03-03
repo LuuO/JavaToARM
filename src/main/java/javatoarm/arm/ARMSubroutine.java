@@ -201,8 +201,8 @@ public class ARMSubroutine implements Subroutine {
     }
 
     @Override
-    public void addLogic(boolean saveResult, boolean isAnd, Variable left, Variable right,
-                         Variable result) throws JTAException {
+    public void addLogicOp(boolean saveResult, boolean isAnd, Variable left, Variable right,
+                           Variable result) throws JTAException {
         ARMInstruction.instruction(text, isAnd ? OP.AND : OP.ORR, !saveResult,
                 prepareStore(result), use(left), use(right));
         if (!saveResult) {

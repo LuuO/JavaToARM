@@ -2,6 +2,7 @@ package javatoarm.javaast;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
+import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.staticanalysis.JavaScope;
 
 /**
@@ -21,7 +22,9 @@ public interface JavaCode {
     }
 
     /**
-     * Compiles this code
+     * Compiles this code. If an object implements both {@link JavaCode}
+     * and {@link JavaExpression}, only one of this method and
+     * {@link JavaExpression#compileExpression(Subroutine, JavaScope)} should be called.
      *
      * @param subroutine the subroutine which this code belongs to
      * @param parent     the parent scope of this code

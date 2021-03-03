@@ -3,7 +3,7 @@ package javatoarm.javaast;
 import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
 import javatoarm.assembly.Subroutine;
-import javatoarm.javaast.statement.JavaVariableDeclare;
+import javatoarm.javaast.statement.VariableDeclareStatement;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.staticanalysis.JavaScope;
 
@@ -21,7 +21,7 @@ public class JavaFunction implements JavaClassMember {
 
     private final JavaType returnType;
     private final JavaBlock body;
-    private final List<JavaVariableDeclare> arguments;
+    private final List<VariableDeclareStatement> arguments;
     private final Set<JavaProperty> properties;
     private final List<JavaAnnotation> annotations;
     private final List<JavaType> typeParameters;
@@ -40,7 +40,7 @@ public class JavaFunction implements JavaClassMember {
      * @param exceptions     checked exceptions that the function could throw
      * @throws JTAException if an error occurs
      */
-    public JavaFunction(JavaType returnType, String name, JavaBlock body, List<JavaVariableDeclare> arguments,
+    public JavaFunction(JavaType returnType, String name, JavaBlock body, List<VariableDeclareStatement> arguments,
                         Set<JavaProperty> properties, List<JavaType> typeParameters, List<JavaAnnotation> annotations,
                         List<JavaType> exceptions) throws JTAException {
 
@@ -58,7 +58,7 @@ public class JavaFunction implements JavaClassMember {
         epilogueLabel = startLabel + "_end";
 
         isPublic = properties.contains(JavaProperty.PUBLIC);
-        for (JavaVariableDeclare arg : arguments) {
+        for (VariableDeclareStatement arg : arguments) {
             if (arg.hasInitialValue()) {
                 throw new JTAException.InvalidOperation("Arguments cannot have initial values.");
             }
@@ -117,7 +117,7 @@ public class JavaFunction implements JavaClassMember {
      */
     public Signature getSignature() {
         return new Signature(name, arguments.stream()
-                .map(JavaVariableDeclare::type).collect(Collectors.toList()));
+                .map(VariableDeclareStatement::type).collect(Collectors.toList()));
     }
 
     /**

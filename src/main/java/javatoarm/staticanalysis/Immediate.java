@@ -116,15 +116,19 @@ public class Immediate implements Variable {
     }
 
     private long valueToLong() throws JTAException {
-        if (type.equals(PrimitiveType.INT)) {
-            return (Integer) value;
-        } else if (type.equals(PrimitiveType.LONG)) {
-            return (Long) value;
-        } else if (type.equals(PrimitiveType.SHORT)) {
-            return (Short) value;
-        } else {
-            // TODO: support other types
-            throw new JTAException.NotImplemented("valueToLong");
+        if (type instanceof PrimitiveType) {
+            switch ((PrimitiveType) type) {
+                case BYTE:
+                    return (Byte) value;
+                case SHORT:
+                    return (Short) value;
+                case INT:
+                    return (Integer) value;
+                case LONG:
+                    return (Long) value;
+            }
         }
+        // TODO: support other types
+        throw new JTAException.NotImplemented("valueToLong: " + type);
     }
 }

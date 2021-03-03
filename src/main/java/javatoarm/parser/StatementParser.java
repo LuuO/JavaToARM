@@ -7,8 +7,8 @@ import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.expression.NewObjectExpression;
 import javatoarm.javaast.statement.JavaFunctionCall;
 import javatoarm.javaast.statement.JavaStatement;
-import javatoarm.javaast.statement.JavaVariableDeclare;
 import javatoarm.javaast.statement.ThrowStatement;
+import javatoarm.javaast.statement.VariableDeclareStatement;
 import javatoarm.javaast.type.ArrayType;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.javaast.type.PrimitiveType;
@@ -94,7 +94,7 @@ public class StatementParser {
                     initialValue = ExpressionParser.parse(lexer);
                 }
             }
-            return new JavaVariableDeclare(properties, type, name, initialValue);
+            return new VariableDeclareStatement(type, name, initialValue, properties);
 
         } else {
             /* expression */

@@ -2,7 +2,7 @@ package javatoarm.parser;
 
 import javatoarm.JTAException;
 import javatoarm.javaast.*;
-import javatoarm.javaast.statement.JavaVariableDeclare;
+import javatoarm.javaast.statement.VariableDeclareStatement;
 import javatoarm.javaast.type.ArrayType;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.parser.expression.ExpressionParser;
@@ -38,7 +38,7 @@ public class FunctionParser {
                 ? returnType.toString() /* constructor */
                 : JavaParser.parseName(lexer) /* other functions */;
 
-        List<JavaVariableDeclare> arguments = parseArgumentDeclares(lexer);
+        List<VariableDeclareStatement> arguments = parseArgumentDeclares(lexer);
 
         List<JavaType> exceptions = new ArrayList<>();
         if (lexer.nextIf(KeywordToken._throws)) {
@@ -61,9 +61,9 @@ public class FunctionParser {
      * @return a list of argument declarations. If there is no argument, returns an empty list.
      * @throws JTAException if an error occurs
      */
-    public static List<JavaVariableDeclare> parseArgumentDeclares(JavaLexer lexer)
+    public static List<VariableDeclareStatement> parseArgumentDeclares(JavaLexer lexer)
             throws JTAException {
-        List<JavaVariableDeclare> arguments = new ArrayList<>();
+        List<VariableDeclareStatement> arguments = new ArrayList<>();
 
         lexer.next(BracketToken.ROUND_L);
         if (!lexer.nextIf(BracketToken.ROUND_R)) {
@@ -76,8 +76,8 @@ public class FunctionParser {
                     lexer.next(BracketToken.SQUARE_R);
                     type = new ArrayType(type);
                 }
-                arguments.add(new JavaVariableDeclare(
-                        Collections.emptySet(), type, name, null));
+                arguments.add(new VariableDeclareStatement(
+                        type, name, null, Collections.emptySet()));
 
             } while (lexer.nextIf(SymbolToken.COMMA));
             lexer.next(BracketToken.ROUND_R);

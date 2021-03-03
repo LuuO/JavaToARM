@@ -4,7 +4,7 @@ import javatoarm.JTAException;
 import javatoarm.javaast.JavaClass;
 import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.JavaFunction;
-import javatoarm.javaast.statement.JavaVariableDeclare;
+import javatoarm.javaast.statement.VariableDeclareStatement;
 import javatoarm.javaast.type.JavaType;
 
 import java.util.HashMap;
@@ -86,7 +86,7 @@ public class JavaScope {
      * @throws JTAException if error occurs
      */
     public static JavaScope newFunctionScope(JavaScope classScope, JavaFunction function,
-                                             List<JavaVariableDeclare> arguments)
+                                             List<VariableDeclareStatement> arguments)
             throws JTAException {
 
         JavaScope functionScope =
@@ -179,8 +179,8 @@ public class JavaScope {
     /**
      * Declares function arguments
      */
-    private void declareArguments(List<JavaVariableDeclare> argumentDeclares) throws JTAException {
-        for (JavaVariableDeclare declare : argumentDeclares) {
+    private void declareArguments(List<VariableDeclareStatement> argumentDeclares) throws JTAException {
+        for (VariableDeclareStatement declare : argumentDeclares) {
             String name = declare.name();
             Argument argument =
                     new Argument(this, registerAssigner, declare.type(), name);

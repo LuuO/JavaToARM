@@ -2,7 +2,7 @@ package javatoarm.parser;
 
 import javatoarm.JTAException;
 import javatoarm.javaast.*;
-import javatoarm.javaast.statement.JavaVariableDeclare;
+import javatoarm.javaast.statement.VariableDeclareStatement;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.parser.expression.ExpressionParser;
 import javatoarm.token.*;
@@ -150,7 +150,7 @@ public class ClassParser {
      * @return return the field declaration
      * @throws JTAException if an error occurs
      */
-    private static JavaVariableDeclare parseField(JavaLexer lexer, List<JavaAnnotation> annotations)
+    private static VariableDeclareStatement parseField(JavaLexer lexer, List<JavaAnnotation> annotations)
             throws JTAException {
         Set<JavaProperty> properties =
                 JavaParser.parseProperties(lexer, JavaProperty.Validator.CLASS_MEMBER);
@@ -165,7 +165,7 @@ public class ClassParser {
             throw new JTAException.UnexpectedToken("';' or '='", lexer.peek());
         }
 
-        return new JavaVariableDeclare(annotations, properties, type, name, initialValue);
+        return new VariableDeclareStatement(type, name, initialValue, properties, annotations);
     }
 
     /**

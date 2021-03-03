@@ -8,7 +8,7 @@ import javatoarm.javaast.expression.ImmediateExpression;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.expression.JavaMember;
 import javatoarm.javaast.statement.JavaStatement;
-import javatoarm.javaast.statement.JavaVariableDeclare;
+import javatoarm.javaast.statement.VariableDeclareStatement;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.parser.expression.ExpressionParser;
 import javatoarm.token.*;
@@ -73,7 +73,7 @@ public class ControlParser {
                 case _try:
                     JavaBlock tryBlock = CodeParser.parseBlock(lexer);
                     lexer.next(KeywordToken._catch);
-                    List<JavaVariableDeclare> exceptions = FunctionParser.parseArgumentDeclares(lexer);
+                    List<VariableDeclareStatement> exceptions = FunctionParser.parseArgumentDeclares(lexer);
                     JavaBlock catchBlock = CodeParser.parseBlock(lexer);
                     return new JavaTryBlock(tryBlock, exceptions, catchBlock);
             }

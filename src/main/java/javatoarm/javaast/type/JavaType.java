@@ -24,7 +24,7 @@ public interface JavaType {
      * @return if they are compatible
      */
     default boolean compatibleTo(JavaType that) {
-        return false;
+        return equals(that);
     }
 
     /**

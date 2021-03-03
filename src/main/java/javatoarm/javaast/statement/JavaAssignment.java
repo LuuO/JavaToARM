@@ -14,26 +14,24 @@ public class JavaAssignment implements JavaExpression, JavaStatement {
     public final JavaLeftValue leftValue;
     public final JavaExpression value;
 
+    /**
+     * Constructs a new instance of JavaAssignment
+     *
+     * @param leftValue a left value to be assigned a new value
+     * @param value     the new value
+     */
     public JavaAssignment(JavaLeftValue leftValue, JavaExpression value) {
         this.leftValue = leftValue;
         this.value = value;
     }
 
-    /**
-     * Only one of compileExpression and compileStatement will be called.
-     *
-     * @param subroutine
-     * @param parent
-     * @return
-     * @throws JTAException
-     */
     @Override
     public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
         Variable left;
         if (leftValue instanceof JavaExpression) {
             left = ((JavaExpression) leftValue).compileExpression(subroutine, parent);
         } else {
-            throw new UnsupportedOperationException();
+            throw new JTAException.NotImplemented(leftValue.toString());
         }
         Variable right = value.compileExpression(subroutine, parent);
         subroutine.addAssignment(left, right);

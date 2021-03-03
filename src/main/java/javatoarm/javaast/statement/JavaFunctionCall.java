@@ -13,10 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a function call expression
+ */
 public class JavaFunctionCall implements JavaExpression, JavaStatement {
     String name;
     List<JavaRightValue> arguments;
 
+    /**
+     * Constructs a new JavaFunctionCall
+     *
+     * @param functionPath path to the function
+     * @param arguments    arguments
+     */
     public JavaFunctionCall(String functionPath, List<JavaRightValue> arguments) {
         this.name = functionPath;
         this.arguments = arguments;
@@ -29,7 +38,7 @@ public class JavaFunctionCall implements JavaExpression, JavaStatement {
             if (argument instanceof JavaExpression) {
                 arguments.add(((JavaExpression) argument).compileExpression(subroutine, parent));
             } else {
-                throw new UnsupportedOperationException();
+                throw new JTAException.NotImplemented(argument.toString());
             }
         }
 

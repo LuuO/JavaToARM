@@ -5,15 +5,24 @@ import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.expression.NewObjectExpression;
 import javatoarm.staticanalysis.JavaScope;
 
+/**
+ * A throw statement.
+ * Example: throw new UnsupportedOperationException();
+ */
 public class ThrowStatement implements JavaStatement {
     public final NewObjectExpression toThrow;
 
+    /**
+     * Constructs an instance of ThrowStatement
+     *
+     * @param toThrow the expression to throw
+     */
     public ThrowStatement(NewObjectExpression toThrow) {
         this.toThrow = toThrow;
     }
 
     @Override
     public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
-        throw new UnsupportedOperationException();
+        throw new JTAException.NotImplemented(toString());
     }
 }

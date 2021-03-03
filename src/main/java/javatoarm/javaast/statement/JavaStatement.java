@@ -9,12 +9,15 @@ import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.Variable;
 
+/**
+ * Represents a Java statement
+ */
 public interface JavaStatement extends JavaCode {
 
-    void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException;
-
+    /**
+     * A return statement
+     */
     class Return implements JavaStatement {
-        // private final JavaFunction functionToReturn;
         private final JavaExpression returnValue;
 
         public Return(JavaExpression returnValue) {
@@ -35,35 +38,33 @@ public interface JavaStatement extends JavaCode {
         }
     }
 
+    /**
+     * A break statement
+     */
     class Break implements JavaStatement {
 
         @Override
         public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
-            JavaScope current = parent;
             // TODO support switch break
-            while (!(current.breakable instanceof JavaLoop)) {
-                current = current.parent;
-                if (current == null) {
-                    throw new JTAException.NotInALoop("");
-                }
+            if (!(parent.breakable instanceof JavaLoop)) {
+                throw new JTAException.NotInALoop("break is not in a loop");
             }
-            JavaLoop loop = (JavaLoop) current.breakable;
+            JavaLoop loop = (JavaLoop) parent.breakable;
             loop.addBreak(subroutine);
         }
     }
 
+    /**
+     * A continue statement
+     */
     class Continue implements JavaStatement {
 
         @Override
         public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
-            JavaScope current = parent;
-            while (!(current.breakable instanceof JavaLoop)) {
-                current = current.parent;
-                if (current == null) {
-                    throw new JTAException.NotInALoop("");
-                }
+            if (!(parent.breakable instanceof JavaLoop)) {
+                throw new JTAException.NotInALoop("continue is not in a loop");
             }
-            JavaLoop loop = (JavaLoop) current.breakable;
+            JavaLoop loop = (JavaLoop) parent.breakable;
             loop.addContinue(subroutine);
         }
     }

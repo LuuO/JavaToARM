@@ -45,7 +45,7 @@ public class JavaFile {
      */
     public void compileTo(Compiler compiler) throws JTAException {
         JavaClass firstClass = classes.get(0);
-        for (int i = 1; i < classes.size(); i++) {
+        for (int i = 0; i < classes.size(); i++) {
             if (classes.get(i).isPublic()) {
                 firstClass = classes.remove(i);
                 break;

@@ -4,7 +4,6 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.javaast.type.PrimitiveType;
-import javatoarm.javaast.type.UserDefinedType;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.ArithmeticOperator;
@@ -30,7 +29,7 @@ public class JavaNewArray implements JavaExpression {
     }
 
     public JavaExpression memorySize() throws JTAException {
-        if (!(type instanceof UserDefinedType)) {
+        if (!(type instanceof PrimitiveType)) {
             throw new UnsupportedOperationException();
         }
         ImmediateExpression size = new ImmediateExpression(PrimitiveType.INT, type.size());

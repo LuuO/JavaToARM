@@ -2,7 +2,7 @@ package javatoarm.javaast;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
-import javatoarm.javaast.statement.JavaVariableDeclare;
+import javatoarm.javaast.statement.VariableDeclareStatement;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.RegisterAssigner;
@@ -20,7 +20,7 @@ public class JavaClass implements JavaClassMember {
     private final Set<JavaProperty> properties;
     private final List<Initializer> initializers;
 
-    private final List<JavaVariableDeclare> fields;
+    private final List<VariableDeclareStatement> fields;
     private final LinkedList<JavaFunction> functions;
     private final List<JavaClass> subclasses;
     private final Map<JavaFunction.Signature, JavaType> functionInterfaces;
@@ -51,8 +51,8 @@ public class JavaClass implements JavaClassMember {
         this.functionInterfaces = new HashMap<>();
 
         for (JavaClassMember m : members) {
-            if (m instanceof JavaVariableDeclare) {
-                fields.add((JavaVariableDeclare) m);
+            if (m instanceof VariableDeclareStatement) {
+                fields.add((VariableDeclareStatement) m);
             } else if (m instanceof Initializer) {
                 initializers.add((Initializer) m);
             } else if (m instanceof JavaFunction) {

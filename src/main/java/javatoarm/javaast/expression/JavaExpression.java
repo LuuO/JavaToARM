@@ -2,6 +2,7 @@ package javatoarm.javaast.expression;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
+import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.JavaRightValue;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.Variable;
@@ -23,6 +24,16 @@ public interface JavaExpression extends JavaRightValue {
     }
     // TODO JavaExpression analyze type
 
+    /**
+     * Compiles this expression. If an object implements both {@link JavaExpression}
+     * and {@link JavaCode}, only one of this method and
+     * {@link JavaCode#compileCode(Subroutine, JavaScope)} should be called.
+     *
+     * @param subroutine
+     * @param parent
+     * @return
+     * @throws JTAException
+     */
     Variable compileExpression(Subroutine subroutine, JavaScope parent)
             throws JTAException;
 }

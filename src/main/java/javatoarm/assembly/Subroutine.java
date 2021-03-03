@@ -34,9 +34,9 @@ public interface Subroutine {
      * the user still needs provided a temporary variable, since AND and OR operations on some
      * ISAs must have a destination register.
      *
-     * @param saveResult if saveResult is 1, the result of logical operation
+     * @param saveResult if saveResult is true, the result of logical operation
      *                   will be saved to the result variable, and the condition
-     *                   code will not be changed. if saveResult is 0, the result
+     *                   code will not be changed. if saveResult is false, the result
      *                   of logical operation will not be saved to the result
      *                   variable, and the condition code will be changed.
      * @param isAnd      true for AND operations, false for ORR operations
@@ -45,8 +45,8 @@ public interface Subroutine {
      * @param result     result variable. if saveResult is false,
      *                   result.deleteIfIsTemp() will be invoked.
      */
-    void addLogic(boolean saveResult, boolean isAnd, Variable left, Variable right,
-                  Variable result) throws JTAException;
+    void addLogicOp(boolean saveResult, boolean isAnd, Variable left, Variable right,
+                    Variable result) throws JTAException;
 
     void addIncrementDecrement(Variable variable, boolean increase) throws JTAException;
 
