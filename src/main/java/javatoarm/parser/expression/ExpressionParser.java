@@ -44,7 +44,7 @@ public class ExpressionParser {
         parseUnaryOperations(elements);
         parseTypeCasting(elements);
         parseBinaryExpression(elements);
-        parseTernaryToken(elements);
+        parseTernaryExpression(elements);
         parseAssignment(elements);
 
         if (elements.size() > 1) {
@@ -150,14 +150,13 @@ public class ExpressionParser {
         return elements;
     }
 
-    private static void addElement(List<ExpressionElement> list, JavaExpression expression) {
-        list.add(new Expression(expression));
-    }
-
-    private static void addElement(List<ExpressionElement> list, OperatorToken operator) {
-        list.add(new Operator(operator));
-    }
-
+    /**
+     * Parse all increment and decrement expressions in the list.
+     * Example: i++, --i
+     *
+     * @param elements the element list to modify
+     * @throws JTAException if an error occurs
+     */
     private static void parseIncrementDecrement(List<ExpressionElement> elements)
             throws JTAException {
 
@@ -194,6 +193,13 @@ public class ExpressionParser {
 
     }
 
+    /**
+     * Parse all unary operation expressions in the list except increment and decrement expressions.
+     * Example: +a, -2, !true
+     *
+     * @param elements the element list to modify
+     * @throws JTAException if an error occurs
+     */
     private static void parseUnaryOperations(List<ExpressionElement> elements) throws JTAException {
         ListIterator<ExpressionElement> iterator = elements.listIterator();
         while (iterator.hasNext()) {
@@ -219,6 +225,13 @@ public class ExpressionParser {
         }
     }
 
+    /**
+     * Parse all type casting expressions in the list.
+     * Example: (long) i, (Subtype) Object
+     *
+     * @param elements the element list to modify
+     * @throws JTAException if an error occurs
+     */
     private static void parseTypeCasting(List<ExpressionElement> elements) throws JTAException {
         ListIterator<ExpressionElement> iterator = elements.listIterator();
         while (iterator.hasNext()) {
@@ -235,10 +248,11 @@ public class ExpressionParser {
     }
 
     /**
-     * Analyzes binary operations in the expression and reduce them to binary expressions.
-     * Precedence level: 12 - 3
+     * Parse all binary operation expressions in the list.
+     * Example: 1 + 2, 3 << 5, 2 == 9, true || false
      *
-     * @param elements elements of in the expression
+     * @param elements the element list to modify
+     * @throws JTAException if an error occurs
      */
     private static void parseBinaryExpression(List<ExpressionElement> elements) throws JTAException {
         for (int level = 12; level >= 3; level--) {
@@ -277,7 +291,14 @@ public class ExpressionParser {
         }
     }
 
-    private static void parseTernaryToken(List<ExpressionElement> elements) throws JTAException {
+    /**
+     * Parse all ternary expressions in the list.
+     * Example: true ? 1 : false
+     *
+     * @param elements the element list to modify
+     * @throws JTAException if an error occurs
+     */
+    private static void parseTernaryExpression(List<ExpressionElement> elements) throws JTAException {
         ListIterator<ExpressionElement> iterator = elements.listIterator(elements.size());
         while (iterator.hasPrevious()) {
             if (QuestColon.COLON.equals(iterator.previous().operator())) {
@@ -297,6 +318,13 @@ public class ExpressionParser {
         }
     }
 
+    /**
+     * Parse all assignment expressions in the list.
+     * Example: i = 0, (i += 1)
+     *
+     * @param elements the element list to modify
+     * @throws JTAException if an error occurs
+     */
     private static void parseAssignment(List<ExpressionElement> elements) throws JTAException {
         ListIterator<ExpressionElement> iterator = elements.listIterator(elements.size());
         while (iterator.hasPrevious()) {
@@ -327,6 +355,36 @@ public class ExpressionParser {
 
     }
 
+    /**
+     * Add an expression to the element list
+     *
+     * @param list       the element list
+     * @param expression the expression
+     */
+    private static void addElement(List<ExpressionElement> list, JavaExpression expression) {
+        list.add(new Expression(expression));
+    }
+
+    /**
+     * Add an operator to the element list
+     *
+     * @param list     the element list
+     * @param operator the operator
+     */
+    private static void addElement(List<ExpressionElement> list, OperatorToken operator) {
+        list.add(new Operator(operator));
+    }
+
+    /**
+     * Get previous expression in the element list.
+     * <p>
+     * This method checks (1) if the iterator has previous element; (2) if previous element is an expression.
+     * </p>
+     *
+     * @param iterator the list iterator of the element list
+     * @return previous expression
+     * @throws JTAException an exception will be thrown when appropriate
+     */
     private static JavaExpression getPreviousOperandExpression(ListIterator<ExpressionElement> iterator)
             throws JTAException {
 
@@ -342,6 +400,16 @@ public class ExpressionParser {
         return operandLeft;
     }
 
+    /**
+     * Get next expression in the element list.
+     * <p>
+     * This method checks (1) if the iterator has next element; (2) if next element is an expression.
+     * </p>
+     *
+     * @param iterator the list iterator of the element list
+     * @return next expression
+     * @throws JTAException an exception will be thrown when appropriate
+     */
     private static JavaExpression getNextOperandExpression(ListIterator<ExpressionElement> iterator)
             throws JTAException {
 

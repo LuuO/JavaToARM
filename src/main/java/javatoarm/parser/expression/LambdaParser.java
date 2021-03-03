@@ -1,9 +1,7 @@
 package javatoarm.parser.expression;
 
 import javatoarm.JTAException;
-import javatoarm.javaast.JavaBlock;
 import javatoarm.javaast.JavaLambda;
-import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.parser.CodeParser;
 import javatoarm.token.*;
 
@@ -64,7 +62,7 @@ public class LambdaParser {
             return new JavaLambda(parameters, CodeParser.parseBlock(lexer));
         } else {
             /* expression */
-            return new JavaLambda(parameters,  ExpressionParser.parse(lexer));
+            return new JavaLambda(parameters, ExpressionParser.parse(lexer));
         }
     }
 

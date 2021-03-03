@@ -8,17 +8,32 @@ import javatoarm.staticanalysis.Variable;
 
 import java.util.List;
 
+/**
+ * Represents a lambda expression.
+ */
 public class JavaLambda implements JavaExpression {
     public final List<String> arguments;
     public final JavaBlock bodyBlock;
     public final JavaExpression bodyExpression;
 
+    /**
+     * Constructs a lambda expression which has a block of codes as its body
+     *
+     * @param arguments the arguments
+     * @param body      the body
+     */
     public JavaLambda(List<String> arguments, JavaBlock body) {
         this.arguments = arguments;
         this.bodyBlock = body;
         this.bodyExpression = null;
     }
 
+    /**
+     * Constructs a lambda expression which has an expression as its body
+     *
+     * @param arguments the arguments
+     * @param body      the body
+     */
     public JavaLambda(List<String> arguments, JavaExpression body) {
         this.arguments = arguments;
         this.bodyBlock = null;

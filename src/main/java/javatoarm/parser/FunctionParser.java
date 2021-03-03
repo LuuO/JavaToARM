@@ -49,8 +49,8 @@ public class FunctionParser {
 
         JavaBlock body = lexer.nextIf(SymbolToken.SEMI_COLON) ? null : CodeParser.parseBlock(lexer);
 
-        return new JavaFunction(annotations, properties, typeParameters,
-                returnType, methodName, arguments, exceptions, body);
+        return new JavaFunction(returnType, methodName, body, arguments, properties, typeParameters, annotations,
+                exceptions);
     }
 
     /**

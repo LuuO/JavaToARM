@@ -144,8 +144,8 @@ public class JavaScope {
     public final JavaType getFunctionReturnType(String name, List<JavaType> argumentTypes)
             throws JTAException {
 
-        JavaFunction.Interface functionInterface = new JavaFunction.Interface(name, argumentTypes);
-        return javaClass.getFunctionReturnType(functionInterface);
+        JavaFunction.Signature functionSignature = new JavaFunction.Signature(name, argumentTypes);
+        return javaClass.getFunctionReturnType(functionSignature);
     }
 
     /**

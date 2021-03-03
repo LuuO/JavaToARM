@@ -50,8 +50,7 @@ public class JavaParser {
      * @return a set of the properties. If no property token is found, returns an empty set.
      * @throws JTAException if an error occurs
      */
-    public static Set<JavaProperty> parseProperties(JavaLexer lexer,
-                                                    JavaProperty.Validator validator)
+    public static Set<JavaProperty> parseProperties(JavaLexer lexer, JavaProperty.Validator validator)
             throws JTAException {
 
         Set<JavaProperty> properties = new HashSet<>();

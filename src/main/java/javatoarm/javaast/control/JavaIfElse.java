@@ -12,8 +12,8 @@ import javatoarm.staticanalysis.Variable;
 public class JavaIfElse implements JavaCode {
     JavaExpression condition;
     JavaCode bodyTrue, bodyFalse;
-    String elseLabel = "ifelse_" + JavaCode.labelUID(this) + "_else";
-    String endLabel = "ifelse_" + JavaCode.labelUID(this) + "_end";
+    String elseLabel = "ifelse_" + JavaCode.getUniqueID(this) + "_else";
+    String endLabel = "ifelse_" + JavaCode.getUniqueID(this) + "_end";
 
     public JavaIfElse(JavaExpression condition, JavaCode bodyTrue, JavaCode bodyFalse) {
         this.condition = condition;

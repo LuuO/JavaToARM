@@ -33,7 +33,9 @@ public class ClassParser {
 
         String className = JavaParser.parseName(lexer);
 
-        Set<JavaType> superClass = lexer.nextIf(KeywordToken._extends) ? parseTypes(lexer) : Set.of();
+        JavaType superClass = lexer.nextIf(KeywordToken._extends)
+                ? TypeParser.parseType(lexer, false)
+                : null;
         Set<JavaType> superInterface = lexer.nextIf(KeywordToken._implements) ? parseTypes(lexer) : Set.of();
 
         lexer.next(BracketToken.CURLY_L);
@@ -45,7 +47,7 @@ public class ClassParser {
             JavaParser.eatSemiColons(lexer);
         }
 
-        return new JavaClass(properties, className, superClass, superInterface, members);
+        return new JavaClass(className, properties, superClass, superInterface, members);
     }
 
     /**

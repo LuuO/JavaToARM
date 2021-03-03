@@ -2,7 +2,6 @@ package javatoarm.javaast;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
-import javatoarm.assembly.InstructionSet;
 import javatoarm.javaast.statement.JavaVariableDeclare;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.staticanalysis.JavaScope;
@@ -10,29 +9,46 @@ import javatoarm.staticanalysis.RegisterAssigner;
 
 import java.util.*;
 
+/**
+ * Represents a Java class
+ */
 public class JavaClass implements JavaClassMember {
     public final String name;
-    public final Set<JavaType> superClass, superInterface;
-    private final Map<JavaFunction.Interface, JavaType> functionInterfaces;
-    private final Set<JavaProperty> properties; /* package-private or public*/
+
+    private final JavaType superClass;
+    private final Set<JavaType> superInterface;
+    private final Set<JavaProperty> properties;
+    private final List<Initializer> initializers;
+
     private final List<JavaVariableDeclare> fields;
     private final LinkedList<JavaFunction> functions;
     private final List<JavaClass> subclasses;
-    private final List<Initializer> initializers;
+    private final Map<JavaFunction.Signature, JavaType> functionInterfaces;
 
-    public JavaClass(Set<JavaProperty> properties, String name,
-                     Set<JavaType> superClass, Set<JavaType> superInterface,
+    /**
+     * Constructs a instance to represent a Java class
+     *
+     * @param name           name of the class
+     * @param properties     properties of the class
+     * @param superClass     the class that the class extends
+     * @param superInterface interfaces that the class implements
+     * @param members        members of the class
+     * @throws JTAException if an error occurs
+     */
+    public JavaClass(String name, Set<JavaProperty> properties,
+                     JavaType superClass, Set<JavaType> superInterface,
                      List<JavaClassMember> members) throws JTAException {
 
         this.properties = properties;
         this.name = name;
         this.superClass = superClass;
-        this.superInterface = superInterface;
+        this.superInterface = Set.copyOf(superInterface);
+
+        this.initializers = new ArrayList<>();
         this.fields = new ArrayList<>();
         this.functions = new LinkedList<>();
         this.subclasses = new ArrayList<>();
         this.functionInterfaces = new HashMap<>();
-        this.initializers = new ArrayList<>();
 
         for (JavaClassMember m : members) {
             if (m instanceof JavaVariableDeclare) {
@@ -49,28 +65,36 @@ public class JavaClass implements JavaClassMember {
             } else if (m instanceof JavaClass) {
                 subclasses.add((JavaClass) m);
             } else {
-                throw new UnsupportedOperationException();
+                throw new JTAException.NotImplemented(m.toString());
             }
         }
+
         for (JavaFunction function : functions) {
-            JavaFunction.Interface functionInterface = function.getInterface();
+            JavaFunction.Signature functionSignature = function.getSignature();
             JavaType returnType = function.returnType();
-            if (functionInterfaces.put(functionInterface, returnType) != null) {
-                throw new JTAException.FunctionAlreadyDeclared(functionInterface.name);
+            if (functionInterfaces.put(functionSignature, returnType) != null) {
+                throw new JTAException.FunctionAlreadyDeclared(functionSignature.name);
             }
         }
     }
 
-    public JavaType getFunctionReturnType(JavaFunction.Interface functionInterface) throws JTAException {
+    /**
+     * Get the return type the function with the provide signatures
+     *
+     * @param functionSignature the signatures of the function
+     * @return the return type of the function
+     * @throws JTAException if an error occurs
+     */
+    public JavaType getFunctionReturnType(JavaFunction.Signature functionSignature) throws JTAException {
 
-        for (Map.Entry<JavaFunction.Interface, JavaType> entry : functionInterfaces.entrySet()) {
-            JavaFunction.Interface key = entry.getKey();
+        for (Map.Entry<JavaFunction.Signature, JavaType> entry : functionInterfaces.entrySet()) {
+            JavaFunction.Signature key = entry.getKey();
 
-            if (key.name.equals(functionInterface.name) &&
-                    key.arguments.size() == functionInterface.arguments.size()) {
+            if (key.name.equals(functionSignature.name) &&
+                    key.arguments.size() == functionSignature.arguments.size()) {
                 boolean match = true;
                 for (int i = 0; i < key.arguments.size(); i++) {
-                    if (!(key.arguments.get(i).compatibleTo(functionInterface.arguments.get(i)))) {
+                    if (!(key.arguments.get(i).compatibleTo(functionSignature.arguments.get(i)))) {
                         match = false;
                         break;
                     }
@@ -81,19 +105,26 @@ public class JavaClass implements JavaClassMember {
             }
         }
 
-        throw new JTAException.UnknownFunction(functionInterface.name);
+        throw new JTAException.UnknownFunction(functionSignature.name);
     }
 
-    public void compileTo(Compiler compiler, InstructionSet is) throws JTAException {
-        JavaScope scope = JavaScope.newClassScope(this, new RegisterAssigner(is));
+    /**
+     * Compiles this class
+     *
+     * @param compiler the compiler object
+     * @throws JTAException if an error occurs
+     */
+    public void compileTo(Compiler compiler) throws JTAException {
+        JavaScope scope = JavaScope.newClassScope(this,
+                new RegisterAssigner(compiler.instructionSet()));
 
         compiler.addLabel("class_" + name);
         if (fields.size() != 0) {
-            throw new JTAException.Unsupported("class fields not supported yet");
+            throw new JTAException.NotImplemented("class fields not supported yet");
         }
         for (JavaFunction f : functions) {
             if (f.isPublic) {
-                compiler.addJumpLabel("function_" + f.name());
+                compiler.addJumpLabel("function_" + f.name);
             }
         }
         for (JavaFunction f : functions) {
@@ -101,14 +132,64 @@ public class JavaClass implements JavaClassMember {
         }
     }
 
+    /**
+     * Get if this class is public
+     *
+     * @return if this class is public
+     */
     public boolean isPublic() {
         return properties.contains(JavaProperty.PUBLIC);
     }
 
+    /**
+     * Get the super class
+     *
+     * @return the super class
+     */
+    public JavaType getSuperClass() {
+        return superClass;
+    }
+
+    /**
+     * Get interfaces that this class implements
+     *
+     * @return the interfaces, unmodifiable
+     */
+    public Set<JavaType> getSuperInterface() {
+        return superInterface;
+    }
+
+    /**
+     * Get class initializers
+     *
+     * @return class initializers, unmodifiable
+     */
+    public List<Initializer> getInitializer() {
+        return Collections.unmodifiableList(initializers);
+    }
+
+    /**
+     * Get subclasses
+     *
+     * @return subclasses, unmodifiable
+     */
+    public List<JavaClass> getSubclasses() {
+        return Collections.unmodifiableList(subclasses);
+    }
+
+    /**
+     * Represents class initializers
+     */
     public static class Initializer implements JavaClassMember {
         public final boolean isStatic;
         public final JavaBlock block;
 
+        /**
+         * Constructs a new instance of class initializer
+         *
+         * @param block    the block in the initializer
+         * @param isStatic is static
+         */
         public Initializer(JavaBlock block, boolean isStatic) {
             this.isStatic = isStatic;
             this.block = block;

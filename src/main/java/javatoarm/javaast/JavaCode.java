@@ -5,14 +5,27 @@ import javatoarm.assembly.Subroutine;
 import javatoarm.staticanalysis.JavaScope;
 
 /**
- * Super type of all Java execution code.
+ * Super type of all Java execution codes.
  */
 public interface JavaCode {
 
-    static String labelUID(Object obj) {
-        String string = obj.toString();
-        return string.substring(string.indexOf('@') + 1);
+    /**
+     * Get an unique identification code for an object
+     * TODO: This method is not reliable as hash codes are not unique
+     *
+     * @param obj the object
+     * @return the unique identification code
+     */
+    static int getUniqueID(Object obj) {
+        return obj.hashCode();
     }
 
+    /**
+     * Compiles this code
+     *
+     * @param subroutine the subroutine which this code belongs to
+     * @param parent     the parent scope of this code
+     * @throws JTAException if an error occurs
+     */
     void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException;
 }

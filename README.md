@@ -1,4 +1,5 @@
 # JavaToARM
+
 Welcome!
 
 This project is a compiler that converts Java programs to ARMv7 instructions.
@@ -7,14 +8,16 @@ Requires Java 15 and Gradle
 
 ### How to Use:
 
-Step 1. cd to the project directory
+Step 1. clone this repository
 
-Step 2. Build
+Step 2. cd to the project directory
+
+Step 3. Build
 ```
 gradle build
 ```
 
-Step 3. Run the program to compile your .java file
+Step 4. Run the program to compile your .java file
 ```
 java -cp build/classes/java/main/ javatoarm.JavaToARM "path/to/the_file_to_compile.java" [Memory Size (in MB) (Optional)]
 ```
@@ -36,6 +39,7 @@ Some sample test files included under ``resources/``:
 ####Back-end:
 
 * Supported data types: ``int``, ``boolean``, and arrays
+* Support most procedure pro
 * Mini malloc
 * 
 * 

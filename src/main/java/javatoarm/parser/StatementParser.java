@@ -16,7 +16,6 @@ import javatoarm.parser.expression.ExpressionParser;
 import javatoarm.token.*;
 import javatoarm.token.operator.AssignmentOperator;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 

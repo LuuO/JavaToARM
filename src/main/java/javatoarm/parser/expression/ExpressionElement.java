@@ -4,20 +4,41 @@ import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.token.operator.OperatorToken;
 
+/**
+ * Containers for expression elements
+ */
 interface ExpressionElement {
+    /**
+     * Get the expression
+     *
+     * @return if this element is an expression, returns the expression, otherwise returns null.
+     */
     default JavaExpression expression() {
         return null;
     }
 
+    /**
+     * Get the operator
+     *
+     * @return if this element is an operator, returns the operator, otherwise returns null.
+     */
     default OperatorToken operator() {
         return null;
     }
 
+    /**
+     * Get the type
+     *
+     * @return if this element is a type, returns the type, otherwise returns null.
+     */
     default JavaType type() {
         return null;
     }
 }
 
+/**
+ * An expression
+ */
 class Expression implements ExpressionElement {
     public final JavaExpression expression;
 
@@ -31,6 +52,9 @@ class Expression implements ExpressionElement {
     }
 }
 
+/**
+ * An operator
+ */
 class Operator implements ExpressionElement {
     public final OperatorToken operator;
 
@@ -44,11 +68,17 @@ class Operator implements ExpressionElement {
     }
 }
 
+/**
+ * An instanceof operator
+ */
 class InstanceOf implements ExpressionElement {
     public InstanceOf() {
     }
 }
 
+/**
+ * A Java type
+ */
 class Type implements ExpressionElement {
     public final JavaType type;
 
@@ -62,6 +92,9 @@ class Type implements ExpressionElement {
     }
 }
 
+/**
+ * A type casting operator
+ */
 class TypeCasting implements ExpressionElement {
     public final JavaType toType;
 

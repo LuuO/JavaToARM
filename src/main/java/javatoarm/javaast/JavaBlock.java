@@ -7,9 +7,17 @@ import javatoarm.staticanalysis.JavaScope;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Represents a block of codes enclosed by { }
+ */
 public class JavaBlock implements JavaCode {
     public final List<JavaCode> codes;
 
+    /**
+     * Constructs a new block
+     *
+     * @param body list of codes within the block
+     */
     public JavaBlock(List<JavaCode> body) {
         this.codes = Collections.unmodifiableList(body);
     }
