@@ -42,7 +42,7 @@ public class ImmediateExpression implements JavaRightValue, JavaExpression {
 
     @Override
     public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
-        return new Immediate(type, value, parent.registerAssigner);
+        return new Immediate(type, value);
     }
 
 }

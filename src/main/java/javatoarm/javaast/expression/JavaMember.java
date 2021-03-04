@@ -6,6 +6,7 @@ import javatoarm.javaast.JavaLeftValue;
 import javatoarm.javaast.JavaRightValue;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.LocalVariable;
+import javatoarm.staticanalysis.Variable;
 
 import java.util.List;
 
@@ -63,7 +64,7 @@ public class JavaMember implements JavaRightValue, JavaLeftValue, JavaExpression
     }
 
     @Override
-    public LocalVariable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
+    public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
         if (path.size() > 1) {
             throw new JTAException.Unsupported("Member access is not supported yet");
         }

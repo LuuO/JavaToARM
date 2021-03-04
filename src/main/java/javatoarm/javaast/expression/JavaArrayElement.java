@@ -34,6 +34,6 @@ public class JavaArrayElement implements JavaLeftValue, JavaExpression {
     public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
         Variable array = this.array.compileExpression(subroutine, parent);
         Variable index = this.index.compileExpression(subroutine, parent);
-        return new MemoryOffset(array, index, 2, parent.registerAssigner);
+        return new MemoryOffset(array, index, 2);
     }
 }

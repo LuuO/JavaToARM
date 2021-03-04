@@ -2,10 +2,12 @@ package javatoarm.javaast;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Compiler;
+import javatoarm.assembly.RegisterAssigner;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.statement.VariableDeclareStatement;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.staticanalysis.JavaScope;
+import javatoarm.staticanalysis.LocalVariable;
 
 import java.util.List;
 import java.util.Set;
@@ -128,8 +130,16 @@ public class JavaFunction implements JavaClassMember {
      * @throws JTAException if an error occurs
      */
     public void compileTo(Compiler compiler, JavaScope classScope) throws JTAException {
-        JavaScope scope = JavaScope.newFunctionScope(classScope, this, arguments);
         Subroutine subroutine = compiler.newSubroutine();
+        RegisterAssigner assigner = subroutine.getRegisterAssigner();
+        JavaScope functionScope = JavaScope.newFunctionScope(classScope, this);
+
+        /* Declare arguments */
+        for (VariableDeclareStatement declare : arguments) {
+            LocalVariable argument = new LocalVariable(
+                    declare.type(), declare.name(), assigner.requestArgumentRegister());
+            functionScope.declareVariable(argument);
+        }
 
         subroutine.addEmptyLine();
         subroutine.addEmptyLine();
@@ -138,12 +148,14 @@ public class JavaFunction implements JavaClassMember {
         if (body == null) {
             throw new JTAException.NotImplemented("function null body");
         }
-        body.compileCode(subroutine, scope);
+        body.compileCode(subroutine, functionScope);
+
+        /* epilogue */
         subroutine.addEmptyLine();
-        subroutine.addLabel("function_" + name + "_end");
+        subroutine.addLabel(epilogueLabel);
         subroutine.addReturn();
 
-        scope.outOfScope();
+        functionScope.outOfScope();
         compiler.commitSubroutine(subroutine);
     }
 

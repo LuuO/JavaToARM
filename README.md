@@ -46,5 +46,7 @@ Some sample test files included under ``resources/``:
 
 ## TODOs
 
+* class fields
+* class initialization
 * GC
 

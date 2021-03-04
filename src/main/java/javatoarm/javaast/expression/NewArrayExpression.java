@@ -58,8 +58,8 @@ public class NewArrayExpression implements JavaExpression {
     @Override
     public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
         Variable size = memorySize().compileExpression(subroutine, parent);
-        TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, type);
-        subroutine.malloc(size, result.getRegister());
+        TemporaryVariable result = subroutine.getTemporary(type);
+        subroutine.malloc(size, result.getRegister(null));
         size.deleteIfIsTemp();
         return result;
     }

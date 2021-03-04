@@ -4,7 +4,6 @@ import javatoarm.JTAException;
 import javatoarm.javaast.JavaClass;
 import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.JavaFunction;
-import javatoarm.javaast.statement.VariableDeclareStatement;
 import javatoarm.javaast.type.JavaType;
 
 import java.util.HashMap;
@@ -19,61 +18,47 @@ import java.util.Map;
 public class JavaScope {
     public final JavaScope parent;
     public final JavaCode breakable;
-    public final RegisterAssigner registerAssigner;
-    private final Map<String, LocalVariable> variables;
+    private final Map<String, Variable> variables;
     private final JavaClass javaClass;
     private final JavaFunction function;
 
-    private JavaScope(JavaScope parent, JavaCode breakable, JavaClass javaClass, JavaFunction function,
-                      RegisterAssigner registerAssigner) {
+    private JavaScope(JavaScope parent, JavaCode breakable, JavaClass javaClass, JavaFunction function) {
         this.variables = new HashMap<>();
         this.parent = parent;
         this.breakable = breakable;
         this.javaClass = javaClass;
         this.function = function;
-        this.registerAssigner = registerAssigner;
-    }
-
-    private JavaScope(JavaScope parent, JavaCode breakable) {
-        this.variables = new HashMap<>();
-        this.parent = parent;
-        this.breakable = breakable;
-        this.javaClass = parent.javaClass;
-        this.function = parent.function;
-        this.registerAssigner = parent.registerAssigner;
     }
 
     /**
-     * Create a child scope of some other scope
+     * Create a new child scope of some other scope
      *
      * @param parent the parent scope
      * @return the created scope
      */
     public static JavaScope newChildScope(JavaScope parent) {
-        return new JavaScope(parent, parent.breakable);
+        return new JavaScope(parent, parent.breakable, parent.javaClass, parent.function);
     }
 
     /**
-     * Create a breakable child scope (loop or switch) of some other scope.
+     * Create a new breakable child scope (loop or switch) of some other scope.
      *
      * @param parent    the parent scope
      * @param breakable the breakable loop or switch
      * @return the created scope
      */
-    public static JavaScope newChildScope(JavaScope parent, JavaCode breakable) {
-        return new JavaScope(parent, breakable);
+    public static JavaScope newBreakableScope(JavaScope parent, JavaCode breakable) {
+        return new JavaScope(parent, breakable, parent.javaClass, parent.function);
     }
 
     /**
      * Create a new scope representing a class.
      *
      * @param javaClass        the parent scope
-     * @param registerAssigner the registerAssigner
      * @return the created class scope
      */
-    public static JavaScope newClassScope(JavaClass javaClass, RegisterAssigner registerAssigner) {
-        return new JavaScope(null, null,
-                javaClass, null, registerAssigner);
+    public static JavaScope newClassScope(JavaClass javaClass) {
+        return new JavaScope(null, null, javaClass, null);
     }
 
     /**
@@ -81,19 +66,10 @@ public class JavaScope {
      *
      * @param classScope the scope of the class that contains the function
      * @param function   the function
-     * @param arguments  arguments of the function
      * @return the created scope
-     * @throws JTAException if error occurs
      */
-    public static JavaScope newFunctionScope(JavaScope classScope, JavaFunction function,
-                                             List<VariableDeclareStatement> arguments)
-            throws JTAException {
-
-        JavaScope functionScope =
-                new JavaScope(classScope, null, classScope.javaClass,
-                        function, classScope.registerAssigner);
-        functionScope.declareArguments(arguments);
-        return functionScope;
+    public static JavaScope newFunctionScope(JavaScope classScope, JavaFunction function) {
+        return new JavaScope(classScope, null, classScope.javaClass, function);
     }
 
     /**
@@ -111,8 +87,8 @@ public class JavaScope {
      * @return the variable found
      * @throws JTAException.InvalidName if the variable is not found.
      */
-    public final LocalVariable getVariable(String name) throws JTAException.InvalidName {
-        LocalVariable variable = tryGetVariable(name);
+    public final Variable getVariable(String name) throws JTAException.InvalidName {
+        Variable variable = tryGetVariable(name);
         if (variable == null) {
             throw new JTAException.InvalidName("Unknown variable name " + name);
         }
@@ -125,8 +101,8 @@ public class JavaScope {
      * @param name the name of the variable
      * @return if the variable is reachable, returns the variable. Otherwise, returns null.
      */
-    private LocalVariable tryGetVariable(String name) {
-        LocalVariable var = variables.get(name);
+    private Variable tryGetVariable(String name) {
+        Variable var = variables.get(name);
         if (var == null && parent != null) {
             return parent.tryGetVariable(name);
         }
@@ -158,33 +134,21 @@ public class JavaScope {
     }
 
     /**
-     * Declare a new variable in this scope
+     * Declare a new local variable in this scope
      *
-     * @param type the type of the new variable
-     * @param name the name of the new variable
-     * @return a newly created LocalVariable representing the variable
+     * @param variable the local variable
      * @throws JTAException if some other non-class variable with the same name is already declared or an error occurs
      */
-    public final LocalVariable declareVariable(JavaType type, String name) throws JTAException {
-        LocalVariable existed = tryGetVariable(name);
-        if (existed != null && existed.holder.javaClass != null) {
+    public final void declareVariable(LocalVariable variable) throws JTAException {
+        String name = variable.name;
+        Variable existed = tryGetVariable(name);
+        if (existed != null && !(existed instanceof Field)) {
             throw new JTAException.VariableAlreadyDeclared(name);
         }
 
-        LocalVariable var = new LocalVariable(this, registerAssigner, type, name);
-        variables.put(name, var);
-        return var;
+        variables.put(name, variable);
     }
 
-    /**
-     * Declares function arguments
-     */
-    private void declareArguments(List<VariableDeclareStatement> argumentDeclares) throws JTAException {
-        for (VariableDeclareStatement declare : argumentDeclares) {
-            String name = declare.name();
-            Argument argument =
-                    new Argument(this, registerAssigner, declare.type(), name);
-            variables.put(name, argument);
-        }
-    }
+    // TODO:Support declaring class fields
+
 }

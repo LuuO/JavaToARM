@@ -1,63 +1,38 @@
 package javatoarm.staticanalysis;
 
 import javatoarm.JTAException;
+import javatoarm.assembly.Register;
+import javatoarm.assembly.RegisterAssigner;
 import javatoarm.javaast.type.JavaType;
 
 /**
  * Represent a local variable in a function body.
  */
 public class LocalVariable implements Variable {
-    public final JavaType condition;
+    public final JavaType type;
     public final String name;
-    public final JavaScope holder;
-    private final RegisterAssigner registerAssigner;
     private final Register register;
     private boolean isDeleted = false;
 
     /**
-     * Initiate a local variable which does not come from function declaration
+     * Initiate a local variable in a function and
+     * set the new local variable as the holder of the register.
      *
-     * @param holder           the holder scope of the new variable
-     * @param registerAssigner the register assigner
-     * @param type             the type
-     * @param name             the name
+     * @param type     the type
+     * @param name     the name
+     * @param register the associated register
      */
-    public LocalVariable(JavaScope holder, RegisterAssigner registerAssigner,
-                         JavaType type, String name) throws JTAException {
-        this(holder, registerAssigner, type, name, false);
-    }
-
-    protected LocalVariable(JavaScope holder, RegisterAssigner registerAssigner, JavaType condition,
-                            String name, boolean isArgument)
-            throws JTAException {
-        this.registerAssigner = registerAssigner;
-        this.holder = holder;
-        this.condition = condition;
+    public LocalVariable(JavaType type, String name, Register register) {
+        this.type = type;
         this.name = name;
-
-        if (isArgument) {
-            this.register = registerAssigner.requestArgumentRegister((Argument) this);
-        } else {
-            this.register = registerAssigner.request(this);
-        }
-    }
-
-    /**
-     * Get the register held by this variable
-     *
-     * @return the register held by this variable
-     */
-    public Register getRegister() {
-        if (isDeleted) {
-            throw new UnsupportedOperationException("LocalVariable is already deleted.");
-        }
-        return register;
+        this.register = register;
+        register.assign(this);
     }
 
     @Override
     public void delete() {
         if (!isDeleted) {
-            registerAssigner.release(register);
+            register.release();
             isDeleted = true;
         }
     }
@@ -69,6 +44,14 @@ public class LocalVariable implements Variable {
 
     @Override
     public JavaType getType() {
-        return condition;
+        return type;
+    }
+
+    @Override
+    public Register getRegister(RegisterAssigner registerAssigner) {
+        if (isDeleted) {
+            throw new UnsupportedOperationException("LocalVariable is already deleted.");
+        }
+        return register;
     }
 }

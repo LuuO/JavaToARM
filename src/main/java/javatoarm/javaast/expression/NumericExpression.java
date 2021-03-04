@@ -3,6 +3,7 @@ package javatoarm.javaast.expression;
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.javaast.type.PrimitiveType;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
@@ -41,8 +42,10 @@ public class NumericExpression implements JavaExpression {
         Variable left = operandLeft.compileExpression(subroutine, parent);
         Variable right = operandRight.compileExpression(subroutine, parent);
         JavaType resultType = left.getType();
-        TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, resultType);
+        TemporaryVariable result = subroutine.getTemporary(resultType);
         subroutine.addALU(operator, left, right, result);
+        left.deleteIfIsTemp();
+        right.deleteIfIsTemp();
         return result;
     }
 

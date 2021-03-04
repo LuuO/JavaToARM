@@ -1,7 +1,7 @@
-package javatoarm.staticanalysis;
+package javatoarm.assembly;
 
 import javatoarm.JTAException;
-import javatoarm.assembly.InstructionSet;
+import javatoarm.staticanalysis.Variable;
 
 /**
  * Represents a CPU register
@@ -9,6 +9,7 @@ import javatoarm.assembly.InstructionSet;
 public class Register {
     public final int index;
     private final InstructionSet isa;
+    private Variable holder;
 
     /**
      * Create a representation of a register
@@ -34,11 +35,30 @@ public class Register {
      * @return true if the register has a special purpose, false otherwise
      * @throws JTAException if an error occurs
      */
-    public boolean hasSpecialPurpose() throws JTAException {
+    @Deprecated
+    private boolean hasSpecialPurpose() throws JTAException {
         return switch (isa) {
             case ARMv7 -> index >= 13;
             case X86_64 -> throw new JTAException.NotImplemented("x86");
         };
+    }
+
+    public void release() {
+        if (holder == null) {
+            throw new IllegalArgumentException("Register is not assigned");
+        }
+        holder = null;
+    }
+
+    public void assign(Variable variable) {
+        if (holder != null) {
+            throw new IllegalArgumentException("Register is already assigned");
+        }
+        holder = variable;
+    }
+
+    public boolean isFree() {
+        return holder == null;
     }
 
     @Override

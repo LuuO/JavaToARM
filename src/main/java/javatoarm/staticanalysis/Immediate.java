@@ -1,6 +1,8 @@
 package javatoarm.staticanalysis;
 
 import javatoarm.JTAException;
+import javatoarm.assembly.Register;
+import javatoarm.assembly.RegisterAssigner;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.javaast.type.PrimitiveType;
 
@@ -8,35 +10,19 @@ import javatoarm.javaast.type.PrimitiveType;
  * Represents an immediate value in Java code
  */
 public class Immediate implements Variable {
-    public final JavaType type;
-    public final Object value;
-    public final RegisterAssigner registerAssigner;
-    private TemporaryVariable temp = null;
+    private final JavaType type;
+    private final Object value;
+    private Register temp = null;
 
     /**
      * Construct an instance of Immediate to represent an immediate value
      *
      * @param type             type of the value
      * @param immediateValue   the value
-     * @param registerAssigner the register assigner
      */
-    public Immediate(JavaType type, Object immediateValue, RegisterAssigner registerAssigner) {
+    public Immediate(JavaType type, Object immediateValue) {
         this.type = type;
         this.value = immediateValue;
-        this.registerAssigner = registerAssigner;
-    }
-
-    /**
-     * Get a temporary variable
-     *
-     * @return a temporary variable
-     * @throws JTAException if error occurs
-     */
-    public TemporaryVariable getTemporary() throws JTAException {
-        if (temp == null) {
-            temp = new TemporaryVariable(registerAssigner, type);
-        }
-        return temp;
     }
 
     /**
@@ -70,7 +56,7 @@ public class Immediate implements Variable {
      *
      * @return number representation of the value in binary
      */
-    public int toNumberRep() {
+    public int toNumberRep() throws JTAException {
         if (type.equals(PrimitiveType.NULL)) {
             return 0;
         } else if (type.equals(PrimitiveType.BOOLEAN)) {
@@ -90,7 +76,7 @@ public class Immediate implements Variable {
         } else if (type.equals(PrimitiveType.VOID)) {
             throw new IllegalArgumentException();
         } else {
-            throw new UnsupportedOperationException();
+            throw new JTAException.NotImplemented(type.toString());
         }
     }
 
@@ -100,9 +86,18 @@ public class Immediate implements Variable {
     }
 
     @Override
+    public Register getRegister(RegisterAssigner registerAssigner) throws JTAException {
+        if (temp == null) {
+            temp = registerAssigner.requestRegister();
+            temp.assign(this);
+        }
+        return temp;
+    }
+
+    @Override
     public void delete() {
         if (temp != null) {
-            temp.delete();
+            temp.release();
             temp = null;
         }
     }
@@ -110,11 +105,16 @@ public class Immediate implements Variable {
     @Override
     public void deleteIfIsTemp() {
         if (temp != null) {
-            temp.deleteIfIsTemp();
+            temp.release();
             temp = null;
         }
     }
 
+    /**
+     * Return the value in long
+     * @return the value, in long
+     * @throws JTAException if an error occurs
+     */
     private long valueToLong() throws JTAException {
         if (type instanceof PrimitiveType) {
             switch ((PrimitiveType) type) {

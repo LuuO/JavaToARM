@@ -5,6 +5,7 @@ import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaRightValue;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.type.JavaType;
+import javatoarm.javaast.type.PrimitiveType;
 import javatoarm.staticanalysis.JavaScope;
 import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
@@ -44,10 +45,10 @@ public class JavaFunctionCall implements JavaExpression, JavaStatement {
 
         JavaType returnType = parent.getFunctionReturnType(name,
                 arguments.stream().map(Variable::getType).collect(Collectors.toList()));
-        TemporaryVariable returnValue = new TemporaryVariable(parent.registerAssigner, returnType);
+        TemporaryVariable returnValue = subroutine.getTemporary(returnType);
         subroutine.addEmptyLine();
         subroutine.addComment("calling " + name);
-        subroutine.addFunctionCall("function_" + name, returnValue.getRegister(), arguments);
+        subroutine.addFunctionCall("function_" + name, returnValue.getRegister(null), arguments);
         subroutine.addEmptyLine();
 
         arguments.forEach(Variable::deleteIfIsTemp);

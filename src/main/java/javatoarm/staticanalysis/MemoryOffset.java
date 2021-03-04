@@ -1,6 +1,8 @@
 package javatoarm.staticanalysis;
 
 import javatoarm.JTAException;
+import javatoarm.assembly.Register;
+import javatoarm.assembly.RegisterAssigner;
 import javatoarm.javaast.type.JavaType;
 
 /**
@@ -10,9 +12,9 @@ import javatoarm.javaast.type.JavaType;
 public class MemoryOffset implements Variable {
     public final JavaType type;
     public final Variable base, offset;
-    public final RegisterAssigner registerAssigner;
     public final int leftShift;
-    private TemporaryVariable temp = null;
+    private Register temp;
+    private boolean isDeleted;
 
     /**
      * Construct an MemoryOffset variable.
@@ -21,44 +23,37 @@ public class MemoryOffset implements Variable {
      * @param base             the base variable
      * @param offset           the offset variable
      * @param leftShift        amount of left shift during address calculation
-     * @param registerAssigner the register assigner
      */
-    public MemoryOffset(Variable base, Variable offset, int leftShift,
-                        RegisterAssigner registerAssigner) {
+    public MemoryOffset(Variable base, Variable offset, int leftShift) {
         this.base = base;
         this.offset = offset;
-        this.registerAssigner = registerAssigner;
         this.type = base.getType(); // TODO: get the correct type
         this.leftShift = leftShift;
-    }
-
-    /**
-     * Get a temporary variable
-     *
-     * @return a temporary variable
-     * @throws JTAException if error occurs
-     */
-    public TemporaryVariable getTemporary() throws JTAException {
-        if (temp == null) {
-            temp = new TemporaryVariable(registerAssigner, type);
-        }
-        return temp;
+        this.temp = null;
+        this.isDeleted = false;
     }
 
     @Override
     public void delete() {
+        if (isDeleted) {
+            throw new IllegalArgumentException("Already deleted");
+        }
         if (temp != null) {
-            temp.delete();
+            temp.release();
             temp = null;
         }
         base.delete();
         offset.delete();
+        isDeleted = true;
     }
 
     @Override
     public void deleteIfIsTemp() {
+        if (isDeleted) {
+            throw new IllegalArgumentException("Already deleted");
+        }
         if (temp != null) {
-            temp.delete();
+            temp.release();
             temp = null;
         }
         base.deleteIfIsTemp();
@@ -68,5 +63,14 @@ public class MemoryOffset implements Variable {
     @Override
     public JavaType getType() {
         return type;
+    }
+
+    @Override
+    public Register getRegister(RegisterAssigner registerAssigner) throws JTAException {
+        if (temp == null) {
+            temp = registerAssigner.requestRegister();
+            temp.assign(this);
+        }
+        return temp;
     }
 }

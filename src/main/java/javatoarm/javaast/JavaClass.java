@@ -5,7 +5,6 @@ import javatoarm.assembly.Compiler;
 import javatoarm.javaast.statement.VariableDeclareStatement;
 import javatoarm.javaast.type.JavaType;
 import javatoarm.staticanalysis.JavaScope;
-import javatoarm.staticanalysis.RegisterAssigner;
 
 import java.util.*;
 
@@ -115,8 +114,7 @@ public class JavaClass implements JavaClassMember {
      * @throws JTAException if an error occurs
      */
     public void compileTo(Compiler compiler) throws JTAException {
-        JavaScope scope = JavaScope.newClassScope(this,
-                new RegisterAssigner(compiler.instructionSet()));
+        JavaScope scope = JavaScope.newClassScope(this);
 
         compiler.addLabel("class_" + name);
         if (fields.size() != 0) {

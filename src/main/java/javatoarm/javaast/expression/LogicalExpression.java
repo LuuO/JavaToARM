@@ -63,8 +63,10 @@ public class LogicalExpression implements BooleanExpression {
             throws JTAException {
         Variable left = operandLeft.compileExpression(subroutine, parent);
         Variable right = operandRight.compileExpression(subroutine, parent);
-        TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, PrimitiveType.BOOLEAN);
+        TemporaryVariable result = subroutine.getTemporary(PrimitiveType.BOOLEAN);
         subroutine.addLogicalOperation(saveResult, operator == Logical.AND, left, right, result);
+        left.deleteIfIsTemp();
+        right.deleteIfIsTemp();
         return result;
     }
 }

@@ -1,7 +1,8 @@
 package javatoarm.assembly;
 
 import javatoarm.JTAException;
-import javatoarm.staticanalysis.Register;
+import javatoarm.javaast.type.JavaType;
+import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.OperatorToken;
 
@@ -54,7 +55,7 @@ public interface Subroutine {
             throws JTAException;
 
     /**
-     * Add instructions for a unary ALU operation
+     * Add instructions for a unary ALU operation. This method
      * <p>TODO: use enum to replace OperatorToken</p>
      *
      * @param operator the operator
@@ -151,4 +152,16 @@ public interface Subroutine {
      * @throws JTAException if an error occurs
      */
     void malloc(Variable size, Register result) throws JTAException;
+
+    RegisterAssigner getRegisterAssigner();
+
+    /**
+     *
+     * @param type
+     * @return
+     * @throws JTAException
+     */
+    default TemporaryVariable getTemporary(JavaType type) throws JTAException {
+        return new TemporaryVariable(type, getRegisterAssigner().requestRegister());
+    }
 }

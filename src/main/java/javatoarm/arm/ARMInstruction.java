@@ -1,7 +1,7 @@
 package javatoarm.arm;
 
 import javatoarm.assembly.Condition;
-import javatoarm.staticanalysis.Register;
+import javatoarm.assembly.Register;
 
 import java.util.List;
 

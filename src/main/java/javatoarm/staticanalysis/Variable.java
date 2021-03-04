@@ -1,5 +1,8 @@
 package javatoarm.staticanalysis;
 
+import javatoarm.JTAException;
+import javatoarm.assembly.Register;
+import javatoarm.assembly.RegisterAssigner;
 import javatoarm.javaast.type.JavaType;
 
 /**
@@ -28,4 +31,18 @@ public interface Variable {
      * @return the type of the variable
      */
     JavaType getType();
+
+    /**
+     * Get the register associated with the variable, request one if necessary.
+     * Note that the returned register does not necessary contains the value of
+     * the variable. TODO: improve this
+     *
+     * @param registerAssigner if the variable currently does not hold a register,
+     *                        it will request a register from this register assigner.
+     *                        If the variable already holds a register,
+     *                        this register assigner will be ignored.
+     * @return the register associated with the variable
+     * @throws JTAException if an error occurs
+     */
+    Register getRegister(RegisterAssigner registerAssigner) throws JTAException;
 }

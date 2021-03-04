@@ -49,6 +49,7 @@ public class JavaIfElse implements JavaCode {
                 throw new JTAException.InvalidOperation(condition + "does not produce a boolean value");
             }
             subroutine.checkCondition(conditionResult);
+            conditionResult.deleteIfIsTemp();
             opposite = Condition.EQUAL; // Zero -> false
         }
 

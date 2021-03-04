@@ -1,6 +1,8 @@
 package javatoarm.staticanalysis;
 
 import javatoarm.JTAException;
+import javatoarm.assembly.Register;
+import javatoarm.assembly.RegisterAssigner;
 import javatoarm.javaast.type.JavaType;
 
 /**
@@ -9,34 +11,21 @@ import javatoarm.javaast.type.JavaType;
  */
 public class TemporaryVariable implements Variable {
     public final JavaType type;
-    private final RegisterAssigner registerAssigner;
     private final Register register;
     private boolean isDeleted = false;
 
     /**
-     * Create a new temporary variable
+     * Create a new temporary variable and set the new temporary
+     * variable as the holder of the register.
      *
-     * @param registerAssigner the register assigner to get register from
-     * @param type             type of variable
+     * @param type     type of variable
+     * @param register the associated register
      * @throws JTAException if an error occurs
      */
-    public TemporaryVariable(RegisterAssigner registerAssigner, JavaType type) throws JTAException {
-        this.registerAssigner = registerAssigner;
+    public TemporaryVariable(JavaType type, Register register) throws JTAException {
         this.type = type;
-
-        register = registerAssigner.request(this);
-    }
-
-    /**
-     * Get the register held by this variable
-     *
-     * @return the register
-     */
-    public Register getRegister() {
-        if (isDeleted) {
-            throw new UnsupportedOperationException("LocalVariable is already deleted.");
-        }
-        return register;
+        this.register = register;
+        register.assign(this);
     }
 
     @Override
@@ -50,9 +39,19 @@ public class TemporaryVariable implements Variable {
     }
 
     @Override
+    public Register getRegister(RegisterAssigner ignored) {
+        if (isDeleted) {
+            throw new UnsupportedOperationException("LocalVariable is already deleted.");
+        }
+        return register;
+    }
+
+    @Override
     public void delete() {
-        if (!isDeleted) {
-            registerAssigner.release(register);
+        if (isDeleted) {
+            throw new UnsupportedOperationException("LocalVariable is already deleted.");
+        } else {
+            register.release();
             isDeleted = true;
         }
     }

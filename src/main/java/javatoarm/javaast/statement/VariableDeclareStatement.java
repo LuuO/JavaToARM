@@ -1,6 +1,7 @@
 package javatoarm.javaast.statement;
 
 import javatoarm.JTAException;
+import javatoarm.assembly.RegisterAssigner;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaAnnotation;
 import javatoarm.javaast.JavaClassMember;
@@ -106,12 +107,16 @@ public class VariableDeclareStatement implements JavaClassMember, JavaStatement 
 
     @Override
     public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
-        LocalVariable variable = parent.declareVariable(type, name);
+        LocalVariable variable = new LocalVariable(type, name,
+                subroutine.getRegisterAssigner().requestRegister());
+        parent.declareVariable(variable);
+
         if (initialValue != null) {
             if (initialValue instanceof JavaExpression) {
                 Variable initial =
                         ((JavaExpression) initialValue).compileExpression(subroutine, parent);
                 subroutine.addAssignment(variable, initial);
+                initial.deleteIfIsTemp();
             } else {
                 throw new JTAException.NotImplemented(initialValue.toString());
             }

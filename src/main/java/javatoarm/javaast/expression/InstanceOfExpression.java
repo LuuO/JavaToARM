@@ -41,6 +41,6 @@ public class InstanceOfExpression implements BooleanExpression {
 
     @Override
     public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
-        throw new UnsupportedOperationException();
+        throw new JTAException.NotImplemented("InstanceOfExpression");
     }
 }

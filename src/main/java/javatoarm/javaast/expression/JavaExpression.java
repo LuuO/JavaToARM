@@ -4,7 +4,9 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.JavaRightValue;
+import javatoarm.javaast.type.JavaType;
 import javatoarm.staticanalysis.JavaScope;
+import javatoarm.staticanalysis.TemporaryVariable;
 import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.Comparison;
 import javatoarm.token.operator.Logical;
@@ -49,4 +51,5 @@ public interface JavaExpression extends JavaRightValue {
      * @throws JTAException if an error occurs
      */
     Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException;
+
 }

@@ -1,7 +1,7 @@
 package javatoarm.arm;
 
 import javatoarm.assembly.InstructionSet;
-import javatoarm.staticanalysis.Register;
+import javatoarm.assembly.Register;
 
 import java.util.List;
 import java.util.stream.IntStream;

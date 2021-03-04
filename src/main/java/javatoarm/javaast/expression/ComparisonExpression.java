@@ -43,12 +43,14 @@ public class ComparisonExpression implements BooleanExpression {
         Variable left = operandLeft.compileExpression(subroutine, parent);
         Variable right = operandRight.compileExpression(subroutine, parent);
         subroutine.addCompare(left, right);
+        left.deleteIfIsTemp();
+        right.deleteIfIsTemp();
     }
 
     @Override
     public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
         compileToConditionCode(subroutine, parent);
-        TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, PrimitiveType.BOOLEAN);
+        TemporaryVariable result = subroutine.getTemporary(PrimitiveType.BOOLEAN);
         subroutine.saveBooleanResult(condition, result);
         return result;
     }

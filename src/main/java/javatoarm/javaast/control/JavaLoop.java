@@ -92,6 +92,7 @@ public abstract class JavaLoop implements JavaCode {
         } else {
             Variable condition = this.condition.compileExpression(subroutine, loopScope);
             subroutine.checkCondition(condition);
+            condition.deleteIfIsTemp();
             jumpCondition = Condition.UNEQUAL; // Non-Zero -> true
         }
 
@@ -122,7 +123,7 @@ public abstract class JavaLoop implements JavaCode {
 
         @Override
         public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
-            JavaScope loopScope = JavaScope.newChildScope(parent, this);
+            JavaScope loopScope = JavaScope.newBreakableScope(parent, this);
             compileStart(subroutine);
             if (initial != null) {
                 initial.compileCode(subroutine, loopScope);
@@ -153,7 +154,7 @@ public abstract class JavaLoop implements JavaCode {
 
         @Override
         public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
-            JavaScope loopScope = JavaScope.newChildScope(parent, this);
+            JavaScope loopScope = JavaScope.newBreakableScope(parent, this);
             compileStart(subroutine);
             subroutine.addJump(Condition.ALWAYS, conditionLabel);
             compileBody(subroutine, loopScope);
@@ -178,7 +179,7 @@ public abstract class JavaLoop implements JavaCode {
 
         @Override
         public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
-            JavaScope loopScope = JavaScope.newChildScope(parent, this);
+            JavaScope loopScope = JavaScope.newBreakableScope(parent, this);
             compileStart(subroutine);
             compileBody(subroutine, loopScope);
             compileEnd(subroutine, loopScope);

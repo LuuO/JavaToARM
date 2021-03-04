@@ -33,6 +33,7 @@ public interface JavaStatement extends JavaCode {
             if (returnValue != null) {
                 Variable returnVariable = returnValue.compileExpression(subroutine, parent);
                 subroutine.addReturn(returnVariable);
+                returnVariable.deleteIfIsTemp();
             }
             subroutine.addJump(Condition.ALWAYS, parent.getEpilogueLabel());
         }

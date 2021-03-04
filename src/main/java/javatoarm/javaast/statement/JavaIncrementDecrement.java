@@ -34,11 +34,11 @@ public class JavaIncrementDecrement implements JavaExpression, JavaStatement {
     public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
         Variable variable = this.member.compileExpression(subroutine, parent);
         if (post) {
-            TemporaryVariable temporaryVariable =
-                    new TemporaryVariable(parent.registerAssigner, variable.getType());
-            subroutine.addAssignment(temporaryVariable, variable);
+            TemporaryVariable temp = subroutine.getTemporary(variable.getType());
+            subroutine.addAssignment(temp, variable);
             subroutine.addIncrementDecrement(variable, increase);
-            return temporaryVariable;
+            variable.deleteIfIsTemp();
+            return temp;
         } else {
             subroutine.addIncrementDecrement(variable, increase);
             return variable;
@@ -49,5 +49,6 @@ public class JavaIncrementDecrement implements JavaExpression, JavaStatement {
     public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
         Variable variable = this.member.compileExpression(subroutine, parent);
         subroutine.addIncrementDecrement(variable, increase);
+        variable.deleteIfIsTemp();
     }
 }

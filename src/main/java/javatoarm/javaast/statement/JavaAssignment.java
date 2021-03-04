@@ -35,6 +35,7 @@ public class JavaAssignment implements JavaExpression, JavaStatement {
         }
         Variable right = value.compileExpression(subroutine, parent);
         subroutine.addAssignment(left, right);
+        right.deleteIfIsTemp();
         return left;
     }
 
