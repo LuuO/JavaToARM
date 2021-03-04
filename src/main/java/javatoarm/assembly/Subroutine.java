@@ -118,16 +118,30 @@ public interface Subroutine {
      */
     void addIncrementDecrement(Variable variable, boolean increase) throws JTAException;
 
-    void addFunctionCall(String targetLabel, Register result, List<Variable> arguments)
-            throws JTAException;
+    /**
+     * Add instructions to make a function call
+     *
+     * @param targetLabel label of the target function
+     * @param result      register to store the return value
+     * @param arguments   function call arguments
+     * @throws JTAException if an error occurs
+     */
+    void addFunctionCall(String targetLabel, Register result, List<Variable> arguments) throws JTAException;
 
+    /**
+     * Save the result of the previous comparison.
+     *
+     * @param condition the condition of the previous comparison
+     * @param result    variable to store the result
+     * @throws JTAException if an error occurs
+     */
     void saveBooleanResult(Condition condition, Variable result) throws JTAException;
 
     /**
-     * Check if the variable holds t
+     * Check if the value of the provided variable is 0, and change the condition code accordingly.
      *
-     * @param variable
-     * @throws JTAException
+     * @param variable the variable to be checked
+     * @throws JTAException if an error occurs
      */
     void checkCondition(Variable variable) throws JTAException;
 
@@ -157,12 +171,19 @@ public interface Subroutine {
      */
     void malloc(Variable size, Register result) throws JTAException;
 
+    /**
+     * Get the subroutine's register assigner
+     *
+     * @return the register assigner
+     */
     RegisterAssigner getRegisterAssigner();
 
     /**
-     * @param type
-     * @return
-     * @throws JTAException
+     * A helper method to create a temporary variables
+     *
+     * @param type data type of the variable
+     * @return a new temporary variables
+     * @throws JTAException if an error occurs
      */
     default TemporaryVariable getTemporary(JavaType type) throws JTAException {
         return new TemporaryVariable(type, getRegisterAssigner().requestRegister());

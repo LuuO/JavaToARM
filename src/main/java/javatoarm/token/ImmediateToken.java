@@ -48,9 +48,8 @@ public interface ImmediateToken extends Token {
      * Get the immediate value with corresponding type
      *
      * @return the immediate value of type {@link ImmediateToken#getType()}
-     * @throws JTAException if an error occurs
      */
-    Object getValue() throws JTAException;
+    Object getValue();
 
     /**
      * Represent an immediate string in Java
@@ -102,7 +101,7 @@ public interface ImmediateToken extends Token {
      * Represent a boolean value in Java
      */
     class Boolean implements ImmediateToken {
-        boolean value;
+        private final boolean value;
 
         private Boolean(boolean value) {
             this.value = value;
@@ -123,7 +122,7 @@ public interface ImmediateToken extends Token {
      * Represent integers (int, long, short, byte) in Java.
      */
     class IntegerToken implements ImmediateToken {
-        public final long value;
+        private final long value;
 
         private IntegerToken(long value) {
             this.value = value;
@@ -167,7 +166,7 @@ public interface ImmediateToken extends Token {
         }
 
         @Override
-        public Object getValue() throws JTAException {
+        public Object getValue() {
             JavaType type = getType();
             if (PrimitiveType.LONG.equals(type)) {
                 return value;
@@ -215,7 +214,7 @@ public interface ImmediateToken extends Token {
      * Represent a char value in Java
      */
     class CharToken implements ImmediateToken {
-        char value;
+        private final char value;
 
         private CharToken(char c) {
             this.value = c;

@@ -14,8 +14,8 @@ import javatoarm.variable.Variable;
  * Examples: true && false, false || true
  */
 public class LogicalExpression implements BooleanExpression {
-    Logical operator;
-    JavaExpression operandLeft, operandRight;
+    private final Logical operator;
+    private final JavaExpression operandLeft, operandRight;
 
     /**
      * Constructs an instance of logical expression

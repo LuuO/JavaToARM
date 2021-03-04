@@ -1,6 +1,5 @@
 package javatoarm.variable;
 
-import javatoarm.JTAException;
 import javatoarm.assembly.Register;
 import javatoarm.assembly.RegisterAssigner;
 import javatoarm.javaast.type.JavaType;
@@ -20,9 +19,8 @@ public class TemporaryVariable implements Variable {
      *
      * @param type     type of variable
      * @param register the associated register
-     * @throws JTAException if an error occurs
      */
-    public TemporaryVariable(JavaType type, Register register) throws JTAException {
+    public TemporaryVariable(JavaType type, Register register) {
         this.type = type;
         this.register = register;
         register.assign(this);

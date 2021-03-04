@@ -24,8 +24,7 @@ public class Register {
         if (isa == InstructionSet.ARMv7 && index > 16) {
             throw new IllegalArgumentException();
         } else if (isa == InstructionSet.X86_64) {
-            throw new UnsupportedOperationException("X86_64 not implemented");
-            // throw new JTAException.NotImplemented("X86_64");
+            throw new JTAException.NotImplemented("X86_64");
         }
     }
 
@@ -33,10 +32,9 @@ public class Register {
      * Check if the register has a special purpose
      *
      * @return true if the register has a special purpose, false otherwise
-     * @throws JTAException if an error occurs
      */
     @Deprecated
-    private boolean hasSpecialPurpose() throws JTAException {
+    private boolean hasSpecialPurpose() {
         return switch (isa) {
             case ARMv7 -> index >= 13;
             case X86_64 -> throw new JTAException.NotImplemented("x86");

@@ -29,7 +29,7 @@ public class ARMSubroutine implements Subroutine {
     private StringBuilder text;
     private String finalized;
 
-    public ARMSubroutine() throws JTAException {
+    public ARMSubroutine() {
         this.ra = new RegisterAssigner(InstructionSet.ARMv7);
         this.constants = new HashMap<>();
         this.text = new StringBuilder();
@@ -177,6 +177,7 @@ public class ARMSubroutine implements Subroutine {
     @Override
     public void addLogicalOperation(boolean saveResult, boolean isAnd, Variable left, Variable right,
                                     Variable result) throws JTAException {
+        // TODO: bug fix - AND op requires left and right have matching bits when they are both non-zero
         ARMInstruction.instruction(text, isAnd ? OP.AND : OP.ORR, !saveResult,
                 result.getRegister(ra), use(left), use(right));
         if (!saveResult) {

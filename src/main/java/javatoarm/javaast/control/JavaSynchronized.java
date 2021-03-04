@@ -26,7 +26,7 @@ public class JavaSynchronized implements JavaCode {
     }
 
     @Override
-    public void compileCode(Subroutine subroutine, JavaScope parent) throws JTAException {
+    public void compileCode(Subroutine subroutine, JavaScope parent) {
         throw new JTAException.NotImplemented("JavaSynchronized");
     }
 }

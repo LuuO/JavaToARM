@@ -24,5 +24,5 @@ public interface BooleanExpression extends JavaExpression {
      *
      * @return the condition required for a "true" result
      */
-    Condition getCondition() throws JTAException;
+    Condition getCondition();
 }

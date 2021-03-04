@@ -1,7 +1,5 @@
 package javatoarm.javaast.type;
 
-import javatoarm.JTAException;
-
 /**
  * Represents a type wildcard.
  * <p>
@@ -33,7 +31,7 @@ public class TypeWildcard extends JavaType.Impl {
     }
 
     @Override
-    public int size() throws JTAException {
+    public int size() {
         throw new UnsupportedOperationException();
     }
 

@@ -1,6 +1,5 @@
 package javatoarm.javaast.expression;
 
-import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaRightValue;
 import javatoarm.javaast.type.JavaType;
@@ -36,12 +35,12 @@ public class ImmediateExpression implements JavaRightValue, JavaExpression {
      *
      * @param token token representing the immediate value
      */
-    public ImmediateExpression(ImmediateToken token) throws JTAException {
+    public ImmediateExpression(ImmediateToken token) {
         this(token.getType(), token.getValue());
     }
 
     @Override
-    public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
+    public Variable compileExpression(Subroutine subroutine, JavaScope parent) {
         return new Immediate(type, value);
     }
 

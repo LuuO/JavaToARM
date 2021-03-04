@@ -16,8 +16,8 @@ import javatoarm.variable.Variable;
  * Examples: 1 + 1, 1 << 5
  */
 public class NumericExpression implements JavaExpression {
-    OperatorToken.Binary operator;
-    JavaExpression operandLeft, operandRight;
+    private final OperatorToken.Binary operator;
+    private final JavaExpression operandLeft, operandRight;
 
     /**
      * Constructs a new NumericExpression

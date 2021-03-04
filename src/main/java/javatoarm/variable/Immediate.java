@@ -30,7 +30,7 @@ public class Immediate implements Variable {
      *
      * @return true if representing the value requires less than the input number of bits.
      */
-    public boolean numberOfBitsLessThan(int bits) throws JTAException {
+    public boolean numberOfBitsLessThan(int bits) {
         if (type.equals(PrimitiveType.BOOLEAN) || type.equals(PrimitiveType.NULL)) {
             return bits >= 1;
         } else if (type.equals(PrimitiveType.INT) || type.equals(PrimitiveType.LONG)
@@ -56,7 +56,7 @@ public class Immediate implements Variable {
      *
      * @return number representation of the value in binary
      */
-    public int toNumberRep() throws JTAException {
+    public int toNumberRep() {
         if (type.equals(PrimitiveType.NULL)) {
             return 0;
         } else if (type.equals(PrimitiveType.BOOLEAN)) {
@@ -114,9 +114,8 @@ public class Immediate implements Variable {
      * Return the value in long
      *
      * @return the value, in long
-     * @throws JTAException if an error occurs
      */
-    private long valueToLong() throws JTAException {
+    private long valueToLong() {
         if (type instanceof PrimitiveType) {
             switch ((PrimitiveType) type) {
                 case BYTE:

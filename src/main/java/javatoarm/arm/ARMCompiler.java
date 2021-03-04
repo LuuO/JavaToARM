@@ -36,7 +36,7 @@ public class ARMCompiler implements Compiler {
     }
 
     @Override
-    public Subroutine newSubroutine() throws JTAException {
+    public Subroutine newSubroutine() {
         return new ARMSubroutine();
     }
 

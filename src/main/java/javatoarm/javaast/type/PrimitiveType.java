@@ -62,7 +62,7 @@ public enum PrimitiveType implements JavaType {
     }
 
     @Override
-    public int size() throws JTAException {
+    public int size() {
         if (equals(INT) || equals(FLOAT)) {
             return 4;
         }

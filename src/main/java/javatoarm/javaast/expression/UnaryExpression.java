@@ -12,8 +12,8 @@ import javatoarm.variable.Variable;
  * Examples: -i, !true
  */
 public class UnaryExpression implements JavaExpression {
-    OperatorToken.Unary operator;
-    JavaExpression operand;
+    private final OperatorToken.Unary operator;
+    private final JavaExpression operand;
 
     /**
      * Constructs a new UnaryExpression

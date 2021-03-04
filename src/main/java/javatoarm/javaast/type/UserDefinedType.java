@@ -7,7 +7,7 @@ import javatoarm.javaast.expression.JavaMember;
  * Examples: String, ArrayList
  */
 public class UserDefinedType extends JavaType.Impl {
-    public static UserDefinedType STRING = new UserDefinedType("String");
+    public final static UserDefinedType STRING = new UserDefinedType("String");
 
     public final String name;
 

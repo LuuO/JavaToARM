@@ -30,17 +30,17 @@ public class InstanceOfExpression implements BooleanExpression {
     }
 
     @Override
-    public void compileToConditionCode(Subroutine subroutine, JavaScope parent) throws JTAException {
+    public void compileToConditionCode(Subroutine subroutine, JavaScope parent) {
         throw new JTAException.NotImplemented("InstanceOfExpression");
     }
 
     @Override
-    public Condition getCondition() throws JTAException {
+    public Condition getCondition() {
         throw new JTAException.NotImplemented("InstanceOfExpression");
     }
 
     @Override
-    public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
+    public Variable compileExpression(Subroutine subroutine, JavaScope parent) {
         throw new JTAException.NotImplemented("InstanceOfExpression");
     }
 }

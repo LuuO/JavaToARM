@@ -19,7 +19,7 @@ public interface Compiler {
 
     void addLabel(String label);
 
-    Subroutine newSubroutine() throws JTAException;
+    Subroutine newSubroutine();
 
     /**
      * Add all instructions in the subroutine to this compiler

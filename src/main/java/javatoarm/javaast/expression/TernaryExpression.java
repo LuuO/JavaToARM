@@ -29,7 +29,7 @@ public class TernaryExpression implements JavaExpression {
     }
 
     @Override
-    public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
+    public Variable compileExpression(Subroutine subroutine, JavaScope parent) {
         throw new JTAException.NotImplemented("TernaryExpression");
     }
 }

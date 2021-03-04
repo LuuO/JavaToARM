@@ -15,9 +15,8 @@ public class RegisterAssigner {
      * Construct a new Register Assigner with the specified Instruction Set
      *
      * @param isa the instruction set
-     * @throws JTAException if an error occurs
      */
-    public RegisterAssigner(InstructionSet isa) throws JTAException {
+    public RegisterAssigner(InstructionSet isa) {
         int numberOfRegisters = switch (isa) {
             case ARMv7 -> 16;
             case X86_64 -> throw new JTAException.NotImplemented("X86");
@@ -45,25 +44,14 @@ public class RegisterAssigner {
         throw new JTAException.OutOfRegister();
     }
 
-//    /**
-//     * Release the register. This method should be invoked when the variable holding the register
-//     * goes out of scope.
-//     *
-//     * @param register the holder
-//     */
-//    public void release(Register register) {
-//        holders[register.index] = null;
-//    }
-
     /**
      * Request a register to store function argument,
      * following the calling convention in the instruction set.
      *
      * @param argument the holder argument of the register
      * @return the register assigned
-     * @throws JTAException if an error occurs
      */
-    public Register requestArgumentRegister() throws JTAException {
+    public Register requestArgumentRegister() {
         switch (isa) {
             case ARMv7 -> {
                 for (int i = 0; i < 4; i++) {
@@ -72,7 +60,7 @@ public class RegisterAssigner {
                         return register;
                     }
                 }
-                throw new JTAException.Unsupported("too many arguments");
+                throw new JTAException.NotImplemented("too many arguments");
             }
             case X86_64 -> throw new JTAException.NotImplemented("x86");
             default -> throw new IllegalArgumentException();

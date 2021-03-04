@@ -26,7 +26,7 @@ public class TypeCastingExpression implements JavaExpression {
     }
 
     @Override
-    public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
+    public Variable compileExpression(Subroutine subroutine, JavaScope parent) {
         throw new JTAException.NotImplemented("TypeCastingExpression");
     }
 }

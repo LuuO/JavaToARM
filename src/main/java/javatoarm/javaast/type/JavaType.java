@@ -32,7 +32,7 @@ public interface JavaType {
      *
      * @return number of bytes that one element of the type will occupy.
      */
-    int size() throws JTAException;
+    int size();
 
     /**
      * Default implementation
@@ -44,7 +44,7 @@ public interface JavaType {
         }
 
         @Override
-        public int size() throws JTAException {
+        public int size() {
             throw new JTAException.NotImplemented("Data type size");
         }
 

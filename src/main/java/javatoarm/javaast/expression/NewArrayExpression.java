@@ -47,7 +47,7 @@ public class NewArrayExpression implements JavaExpression {
     /**
      * Get an expression which computes the memory size required to store the array, in bytes.
      */
-    public JavaExpression memorySize() throws JTAException {
+    public JavaExpression memorySize() {
         if (!(type instanceof PrimitiveType)) {
             throw new JTAException.NotImplemented("memorySize for " + type);
         }

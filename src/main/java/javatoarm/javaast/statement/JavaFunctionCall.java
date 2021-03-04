@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
  * Represents a function call expression
  */
 public class JavaFunctionCall implements JavaExpression, JavaStatement {
-    String name;
-    List<JavaRightValue> arguments;
+    private final String name;
+    private final List<JavaRightValue> arguments;
 
     /**
      * Constructs a new JavaFunctionCall

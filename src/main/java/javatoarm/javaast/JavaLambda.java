@@ -1,6 +1,5 @@
 package javatoarm.javaast;
 
-import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.variable.JavaScope;
@@ -41,7 +40,7 @@ public class JavaLambda implements JavaExpression {
     }
 
     @Override
-    public Variable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
+    public Variable compileExpression(Subroutine subroutine, JavaScope parent) {
         throw new UnsupportedOperationException();
     }
 }

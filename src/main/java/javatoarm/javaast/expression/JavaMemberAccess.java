@@ -36,7 +36,7 @@ public class JavaMemberAccess extends JavaMember {
     }
 
     @Override
-    public LocalVariable compileExpression(Subroutine subroutine, JavaScope parent) throws JTAException {
+    public LocalVariable compileExpression(Subroutine subroutine, JavaScope parent) {
         throw new JTAException.NotImplemented("MemberAccessExpression");
     }
 }
