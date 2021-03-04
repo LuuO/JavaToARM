@@ -6,6 +6,7 @@ This project is a compiler that converts Java programs to ARMv7 instructions.
 
 Requires Java 15 and Gradle
 
+
 ## How to Use
 
 Step 1. clone this repository
@@ -24,11 +25,13 @@ java -cp build/classes/java/main/ javatoarm.JavaToARM "path/to/the_file_to_compi
 
 Suggested ARMv7 Simulator: <https://cpulator.01xz.net/?sys=arm>
 
+
 ## Samples
 
 Some sample test files included under ``resources/``:
 * ``Test1.java``
 * ``String.java`` from Java Standard Library
+
 
 ## Features
 
@@ -48,12 +51,13 @@ Some sample test files included under ``resources/``:
 * Complex expression
 * Mini malloc
 
+
 ## TODOs
 
 * Floating-point numbers
 * Class fields
 * Switch statement
-* Class initialization
+* Class instances
 * String
 * Improve JavaCode.getUniqueID
 * Static type checking
