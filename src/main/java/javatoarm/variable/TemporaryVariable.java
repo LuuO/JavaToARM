@@ -1,4 +1,4 @@
-package javatoarm.staticanalysis;
+package javatoarm.variable;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Register;

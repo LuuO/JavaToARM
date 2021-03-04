@@ -2,11 +2,10 @@ package javatoarm.javaast.expression;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
-import javatoarm.javaast.type.PrimitiveType;
-import javatoarm.staticanalysis.JavaScope;
-import javatoarm.staticanalysis.TemporaryVariable;
-import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.OperatorToken;
+import javatoarm.variable.JavaScope;
+import javatoarm.variable.TemporaryVariable;
+import javatoarm.variable.Variable;
 
 /**
  * Represents an unary expression.

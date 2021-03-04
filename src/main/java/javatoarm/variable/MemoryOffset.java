@@ -1,4 +1,4 @@
-package javatoarm.staticanalysis;
+package javatoarm.variable;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Register;
@@ -20,9 +20,9 @@ public class MemoryOffset implements Variable {
      * Construct an MemoryOffset variable.
      * The address of the variable will be (base + (offset << leftShift)).
      *
-     * @param base             the base variable
-     * @param offset           the offset variable
-     * @param leftShift        amount of left shift during address calculation
+     * @param base      the base variable
+     * @param offset    the offset variable
+     * @param leftShift amount of left shift during address calculation
      */
     public MemoryOffset(Variable base, Variable offset, int leftShift) {
         this.base = base;

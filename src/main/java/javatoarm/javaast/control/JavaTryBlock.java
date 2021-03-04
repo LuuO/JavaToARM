@@ -5,7 +5,7 @@ import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaBlock;
 import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.statement.VariableDeclareStatement;
-import javatoarm.staticanalysis.JavaScope;
+import javatoarm.variable.JavaScope;
 
 import java.util.List;
 

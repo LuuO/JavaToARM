@@ -4,13 +4,11 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.JavaRightValue;
-import javatoarm.javaast.type.JavaType;
-import javatoarm.staticanalysis.JavaScope;
-import javatoarm.staticanalysis.TemporaryVariable;
-import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.Comparison;
 import javatoarm.token.operator.Logical;
 import javatoarm.token.operator.OperatorToken;
+import javatoarm.variable.JavaScope;
+import javatoarm.variable.Variable;
 
 /**
  * Represents a Java expression. An expression is anything that evaluates to one value.

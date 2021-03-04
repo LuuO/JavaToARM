@@ -3,9 +3,9 @@ package javatoarm.javaast.expression;
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaLeftValue;
-import javatoarm.staticanalysis.JavaScope;
-import javatoarm.staticanalysis.MemoryOffset;
-import javatoarm.staticanalysis.Variable;
+import javatoarm.variable.JavaScope;
+import javatoarm.variable.MemoryOffset;
+import javatoarm.variable.Variable;
 
 /**
  * Represents an array element.

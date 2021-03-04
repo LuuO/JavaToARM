@@ -2,9 +2,9 @@ package javatoarm.assembly;
 
 import javatoarm.JTAException;
 import javatoarm.javaast.type.JavaType;
-import javatoarm.staticanalysis.TemporaryVariable;
-import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.OperatorToken;
+import javatoarm.variable.TemporaryVariable;
+import javatoarm.variable.Variable;
 
 import java.util.List;
 
@@ -43,7 +43,9 @@ public interface Subroutine {
 
     /**
      * Add instructions for a binary ALU operation
-     * <p>TODO: use enum to replace OperatorToken</p>
+     * <p>
+     * TODO: use enum to replace OperatorToken
+     * </p>
      *
      * @param operator the operator
      * @param left     left operand
@@ -56,7 +58,9 @@ public interface Subroutine {
 
     /**
      * Add instructions for a unary ALU operation. This method
-     * <p>TODO: use enum to replace OperatorToken</p>
+     * <p>
+     * TODO: use enum to replace OperatorToken
+     * </p>
      *
      * @param operator the operator
      * @param operand  the operand
@@ -147,7 +151,7 @@ public interface Subroutine {
     /**
      * Allocate a block of memory in heap and store the starting address of the heap in a register
      *
-     * @param size the size of the memory block
+     * @param size   the size of the memory block
      * @param result register to store the starting address of the allocated memory
      * @throws JTAException if an error occurs
      */
@@ -156,7 +160,6 @@ public interface Subroutine {
     RegisterAssigner getRegisterAssigner();
 
     /**
-     *
      * @param type
      * @return
      * @throws JTAException

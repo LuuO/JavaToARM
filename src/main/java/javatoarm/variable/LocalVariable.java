@@ -1,6 +1,5 @@
-package javatoarm.staticanalysis;
+package javatoarm.variable;
 
-import javatoarm.JTAException;
 import javatoarm.assembly.Register;
 import javatoarm.assembly.RegisterAssigner;
 import javatoarm.javaast.type.JavaType;

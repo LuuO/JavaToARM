@@ -1,7 +1,6 @@
 package javatoarm.javaast.statement;
 
 import javatoarm.JTAException;
-import javatoarm.assembly.RegisterAssigner;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaAnnotation;
 import javatoarm.javaast.JavaClassMember;
@@ -9,9 +8,9 @@ import javatoarm.javaast.JavaProperty;
 import javatoarm.javaast.JavaRightValue;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.type.JavaType;
-import javatoarm.staticanalysis.JavaScope;
-import javatoarm.staticanalysis.LocalVariable;
-import javatoarm.staticanalysis.Variable;
+import javatoarm.variable.JavaScope;
+import javatoarm.variable.LocalVariable;
+import javatoarm.variable.Variable;
 
 import java.util.List;
 import java.util.Set;

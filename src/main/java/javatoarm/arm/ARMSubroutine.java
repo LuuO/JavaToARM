@@ -2,11 +2,11 @@ package javatoarm.arm;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.*;
-import javatoarm.staticanalysis.*;
 import javatoarm.token.operator.ArithmeticOperator;
 import javatoarm.token.operator.LogicalNot;
 import javatoarm.token.operator.OperatorToken;
 import javatoarm.token.operator.PlusMinus;
+import javatoarm.variable.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;

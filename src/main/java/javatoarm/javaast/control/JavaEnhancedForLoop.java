@@ -5,7 +5,7 @@ import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.type.JavaType;
-import javatoarm.staticanalysis.JavaScope;
+import javatoarm.variable.JavaScope;
 
 /**
  * Represents an enhanced for-loop in Java.

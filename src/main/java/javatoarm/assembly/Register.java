@@ -1,7 +1,7 @@
 package javatoarm.assembly;
 
 import javatoarm.JTAException;
-import javatoarm.staticanalysis.Variable;
+import javatoarm.variable.Variable;
 
 /**
  * Represents a CPU register

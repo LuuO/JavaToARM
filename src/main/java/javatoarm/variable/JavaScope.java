@@ -1,4 +1,4 @@
-package javatoarm.staticanalysis;
+package javatoarm.variable;
 
 import javatoarm.JTAException;
 import javatoarm.javaast.JavaClass;
@@ -54,7 +54,7 @@ public class JavaScope {
     /**
      * Create a new scope representing a class.
      *
-     * @param javaClass        the parent scope
+     * @param javaClass the parent scope
      * @return the created class scope
      */
     public static JavaScope newClassScope(JavaClass javaClass) {

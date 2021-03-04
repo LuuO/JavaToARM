@@ -4,10 +4,10 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Condition;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.type.PrimitiveType;
-import javatoarm.staticanalysis.JavaScope;
-import javatoarm.staticanalysis.TemporaryVariable;
-import javatoarm.staticanalysis.Variable;
 import javatoarm.token.operator.Logical;
+import javatoarm.variable.JavaScope;
+import javatoarm.variable.TemporaryVariable;
+import javatoarm.variable.Variable;
 
 /**
  * Represents a logical expression.

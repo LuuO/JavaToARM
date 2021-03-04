@@ -30,6 +30,4 @@ public interface Compiler {
 
     String toCompleteProgram(String starterClass, int stackPosition) throws JTAException;
 
-    InstructionSet instructionSet();
-
 }

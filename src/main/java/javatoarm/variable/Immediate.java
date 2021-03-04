@@ -1,4 +1,4 @@
-package javatoarm.staticanalysis;
+package javatoarm.variable;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Register;
@@ -17,8 +17,8 @@ public class Immediate implements Variable {
     /**
      * Construct an instance of Immediate to represent an immediate value
      *
-     * @param type             type of the value
-     * @param immediateValue   the value
+     * @param type           type of the value
+     * @param immediateValue the value
      */
     public Immediate(JavaType type, Object immediateValue) {
         this.type = type;
@@ -112,6 +112,7 @@ public class Immediate implements Variable {
 
     /**
      * Return the value in long
+     *
      * @return the value, in long
      * @throws JTAException if an error occurs
      */

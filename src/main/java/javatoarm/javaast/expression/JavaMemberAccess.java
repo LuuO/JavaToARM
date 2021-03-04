@@ -2,8 +2,8 @@ package javatoarm.javaast.expression;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
-import javatoarm.staticanalysis.JavaScope;
-import javatoarm.staticanalysis.LocalVariable;
+import javatoarm.variable.JavaScope;
+import javatoarm.variable.LocalVariable;
 
 /**
  * Represents a member access expression.

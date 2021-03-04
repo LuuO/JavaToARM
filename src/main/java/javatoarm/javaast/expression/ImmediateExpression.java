@@ -4,10 +4,10 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaRightValue;
 import javatoarm.javaast.type.JavaType;
-import javatoarm.staticanalysis.Immediate;
-import javatoarm.staticanalysis.JavaScope;
-import javatoarm.staticanalysis.Variable;
 import javatoarm.token.ImmediateToken;
+import javatoarm.variable.Immediate;
+import javatoarm.variable.JavaScope;
+import javatoarm.variable.Variable;
 
 /**
  * Represents an immediate value in Java.

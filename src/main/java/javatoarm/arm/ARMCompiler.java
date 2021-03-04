@@ -1,8 +1,9 @@
 package javatoarm.arm;
 
 import javatoarm.JTAException;
-import javatoarm.assembly.*;
 import javatoarm.assembly.Compiler;
+import javatoarm.assembly.Condition;
+import javatoarm.assembly.Subroutine;
 
 import java.util.List;
 import java.util.Scanner;
@@ -17,11 +18,6 @@ public class ARMCompiler implements Compiler {
     @Override
     public String toString() {
         return text.toString();
-    }
-
-    @Override
-    public InstructionSet instructionSet() {
-        return InstructionSet.ARMv7;
     }
 
     @Override

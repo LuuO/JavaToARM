@@ -4,8 +4,8 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaLeftValue;
 import javatoarm.javaast.expression.JavaExpression;
-import javatoarm.staticanalysis.JavaScope;
-import javatoarm.staticanalysis.Variable;
+import javatoarm.variable.JavaScope;
+import javatoarm.variable.Variable;
 
 /**
  * Represents an assignment expression in Java

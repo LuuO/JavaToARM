@@ -7,8 +7,8 @@ import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.expression.ComparisonExpression;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.statement.JavaStatement;
-import javatoarm.staticanalysis.JavaScope;
-import javatoarm.staticanalysis.Variable;
+import javatoarm.variable.JavaScope;
+import javatoarm.variable.Variable;
 
 /**
  * Represents a loop in Java

@@ -3,7 +3,7 @@ package javatoarm.javaast.statement;
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.expression.NewObjectExpression;
-import javatoarm.staticanalysis.JavaScope;
+import javatoarm.variable.JavaScope;
 
 /**
  * A throw statement.

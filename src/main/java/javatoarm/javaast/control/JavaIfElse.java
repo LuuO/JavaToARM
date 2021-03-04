@@ -7,8 +7,8 @@ import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.expression.BooleanExpression;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.type.PrimitiveType;
-import javatoarm.staticanalysis.JavaScope;
-import javatoarm.staticanalysis.Variable;
+import javatoarm.variable.JavaScope;
+import javatoarm.variable.Variable;
 
 /**
  * Represents if-else branch statements

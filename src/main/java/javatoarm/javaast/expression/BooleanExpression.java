@@ -3,7 +3,7 @@ package javatoarm.javaast.expression;
 import javatoarm.JTAException;
 import javatoarm.assembly.Condition;
 import javatoarm.assembly.Subroutine;
-import javatoarm.staticanalysis.JavaScope;
+import javatoarm.variable.JavaScope;
 
 /**
  * Represents an expression that produces a boolean value

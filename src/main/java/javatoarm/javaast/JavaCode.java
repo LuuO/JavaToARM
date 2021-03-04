@@ -3,7 +3,7 @@ package javatoarm.javaast;
 import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.expression.JavaExpression;
-import javatoarm.staticanalysis.JavaScope;
+import javatoarm.variable.JavaScope;
 
 /**
  * Super type of all Java execution codes.

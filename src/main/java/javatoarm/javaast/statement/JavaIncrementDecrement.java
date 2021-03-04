@@ -4,9 +4,9 @@ import javatoarm.JTAException;
 import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.expression.JavaExpression;
 import javatoarm.javaast.expression.JavaMember;
-import javatoarm.staticanalysis.JavaScope;
-import javatoarm.staticanalysis.TemporaryVariable;
-import javatoarm.staticanalysis.Variable;
+import javatoarm.variable.JavaScope;
+import javatoarm.variable.TemporaryVariable;
+import javatoarm.variable.Variable;
 
 /**
  * Represents an increment or decrement expression/statement.

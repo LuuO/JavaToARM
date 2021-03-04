@@ -1,4 +1,4 @@
-package javatoarm.staticanalysis;
+package javatoarm.variable;
 
 import javatoarm.JTAException;
 import javatoarm.assembly.Register;
@@ -38,9 +38,9 @@ public interface Variable {
      * the variable. TODO: improve this
      *
      * @param registerAssigner if the variable currently does not hold a register,
-     *                        it will request a register from this register assigner.
-     *                        If the variable already holds a register,
-     *                        this register assigner will be ignored.
+     *                         it will request a register from this register assigner.
+     *                         If the variable already holds a register,
+     *                         this register assigner will be ignored.
      * @return the register associated with the variable
      * @throws JTAException if an error occurs
      */

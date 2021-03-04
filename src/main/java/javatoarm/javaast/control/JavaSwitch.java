@@ -5,7 +5,7 @@ import javatoarm.assembly.Subroutine;
 import javatoarm.javaast.JavaCode;
 import javatoarm.javaast.expression.ImmediateExpression;
 import javatoarm.javaast.expression.JavaExpression;
-import javatoarm.staticanalysis.JavaScope;
+import javatoarm.variable.JavaScope;
 
 import java.util.LinkedHashMap;
 import java.util.List;
