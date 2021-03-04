@@ -49,4 +49,5 @@ Some sample test files included under ``resources/``:
 * class fields
 * class initialization
 * GC
+* type checking
 

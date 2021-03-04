@@ -48,7 +48,12 @@ public class ARMLibrary {
                 """;
     }
 
-    public static String mallocInit() {
+    /**
+     * Instructions to initialize the heap space.
+     *
+     * @return the required instructions
+     */
+    public static String heapInit() {
         return """
                 		LDR		R0, =heap_start
                 		LDR		R1, =heap_front

@@ -8,9 +8,15 @@ import javatoarm.assembly.Subroutine;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * An implementation of Compile for ARMv7
+ */
 public class ARMCompiler implements Compiler {
     private final StringBuilder text;
 
+    /**
+     * Constructs an instance of ARMCompiler
+     */
     public ARMCompiler() {
         text = new StringBuilder();
     }
@@ -26,8 +32,8 @@ public class ARMCompiler implements Compiler {
     }
 
     @Override
-    public void addJumpLabel(String label) {
-        ARMInstruction.branch(text, Condition.ALWAYS, OP.B, label);
+    public void addJump(String target) {
+        ARMInstruction.branch(text, Condition.ALWAYS, OP.B, target);
     }
 
     @Override
@@ -49,14 +55,13 @@ public class ARMCompiler implements Compiler {
     }
 
     @Override
-    public String toCompleteProgram(String entryClass, int stackPosition)
-            throws JTAException {
+    public String toCompleteAssembly(String entryClass, int stackPosition) throws JTAException {
         String classLabel = "class_" + entryClass;
         String javaFile = toString();
         int mainOffset = findOffsetTo(javaFile, classLabel, "function_main");
 
         return ARMLibrary.start(classLabel, mainOffset, stackPosition,
-                List.of(ARMLibrary.mallocInit())) +
+                List.of(ARMLibrary.heapInit())) +
                 ARMLibrary.malloc() +
                 javaFile +
                 ARMLibrary.heapStartLabel();

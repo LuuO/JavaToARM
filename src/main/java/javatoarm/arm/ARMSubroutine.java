@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Represents an ARM subroutine
+ * An implementation of Subroutine for ARMv7
  */
 public class ARMSubroutine implements Subroutine {
     private final static Register[] R = ARMLibrary.Registers;
@@ -29,12 +29,22 @@ public class ARMSubroutine implements Subroutine {
     private StringBuilder text;
     private String finalized;
 
+    /**
+     * Constructs an instance of ARMSubroutine
+     */
     public ARMSubroutine() {
         this.ra = new RegisterAssigner(InstructionSet.ARMv7);
         this.constants = new HashMap<>();
         this.text = new StringBuilder();
     }
 
+    /**
+     * Prepare the variable and get a register containing the value of the variable
+     *
+     * @param source the variable to prepare
+     * @return a register representing the variable
+     * @throws JTAException if an error occurs
+     */
     private Register use(Variable source) throws JTAException {
         if (source instanceof LocalVariable || source instanceof TemporaryVariable) {
             return source.getRegister(ra);
@@ -63,10 +73,17 @@ public class ARMSubroutine implements Subroutine {
             return result;
 
         } else {
-            throw new UnsupportedOperationException();
+            throw new JTAException.NotImplemented("use()");
         }
     }
 
+    /**
+     * Store the value in the source register in the target variable
+     *
+     * @param source the source register
+     * @param target the target variable
+     * @throws JTAException if an error occurs
+     */
     private void store(Register source, Variable target) throws JTAException {
         if (target instanceof LocalVariable || target instanceof TemporaryVariable) {
             Register targetReg = target.getRegister(ra);
@@ -80,7 +97,7 @@ public class ARMSubroutine implements Subroutine {
             ARMInstruction.store(text, Condition.ALWAYS, source, base, index, shift);
 
         } else {
-            throw new UnsupportedOperationException();
+            throw new JTAException.NotImplemented("store()");
         }
     }
 

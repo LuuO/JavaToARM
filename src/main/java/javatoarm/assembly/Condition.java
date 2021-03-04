@@ -1,10 +1,20 @@
 package javatoarm.assembly;
 
+/**
+ * Condition in assembly codes
+ */
 public enum Condition {
     EQUAL, UNEQUAL, GREATER, LESS, GREATER_EQUAL, LESS_EQUAL, ALWAYS, NEVER;
 
-    public static Condition getFromSymbol(String name) throws IllegalArgumentException {
-        return switch (name) {
+    /**
+     * Get a condition from the provided symbol
+     *
+     * @param symbol the symbol
+     * @return the corresponding condition
+     * @throws IllegalArgumentException if the symbol does not correspond to a valid condition
+     */
+    public static Condition getFromSymbol(String symbol) throws IllegalArgumentException {
+        return switch (symbol) {
             case "==" -> EQUAL;
             case "!=" -> UNEQUAL;
             case ">" -> GREATER;
@@ -15,6 +25,12 @@ public enum Condition {
         };
     }
 
+    /**
+     * Get the associated symbol
+     *
+     * @return the symbol representing the condition
+     * @throws IllegalArgumentException if the condition does not have one
+     */
     public String toSymbol() throws IllegalArgumentException {
         return switch (this) {
             case EQUAL -> "==";
@@ -27,6 +43,11 @@ public enum Condition {
         };
     }
 
+    /**
+     * Get the opposite condition
+     *
+     * @return the opposite condition
+     */
     public Condition opposite() {
         return switch (this) {
             case EQUAL -> UNEQUAL;

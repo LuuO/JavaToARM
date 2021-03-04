@@ -7,7 +7,7 @@ import javatoarm.variable.Variable;
  * Represents a CPU register
  */
 public class Register {
-    public final int index;
+    private final int index;
     private final InstructionSet isa;
     private Variable holder;
 
@@ -21,8 +21,8 @@ public class Register {
         this.index = index;
         this.isa = isa;
 
-        if (isa == InstructionSet.ARMv7 && index > 16) {
-            throw new IllegalArgumentException();
+        if (index < 0 || (isa == InstructionSet.ARMv7 && index > 16)) {
+            throw new IllegalArgumentException("Invalid register index for ARMv7: " + index);
         } else if (isa == InstructionSet.X86_64) {
             throw new JTAException.NotImplemented("X86_64");
         }
@@ -41,6 +41,9 @@ public class Register {
         };
     }
 
+    /**
+     * Release the register. This method should be invoked after the holder variable is deleted.
+     */
     public void release() {
         if (holder == null) {
             throw new IllegalArgumentException("Register is not assigned");
@@ -48,13 +51,24 @@ public class Register {
         holder = null;
     }
 
-    public void assign(Variable variable) {
-        if (holder != null) {
+    /**
+     * Set a variable as the holder of this register.
+     * This method should be invoked after the register has been assigned to a variable.
+     *
+     * @param holder the holder variable
+     */
+    public void assign(Variable holder) {
+        if (this.holder != null) {
             throw new IllegalArgumentException("Register is already assigned");
         }
-        holder = variable;
+        this.holder = holder;
     }
 
+    /**
+     * Check if the register is assigned to some variable.
+     *
+     * @return true if the register is not assigned, false otherwise.
+     */
     public boolean isFree() {
         return holder == null;
     }

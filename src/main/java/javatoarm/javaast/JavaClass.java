@@ -122,7 +122,7 @@ public class JavaClass implements JavaClassMember {
         }
         for (JavaFunction f : functions) {
             if (f.isPublic) {
-                compiler.addJumpLabel("function_" + f.name);
+                compiler.addJump("function_" + f.name);
             }
         }
         for (JavaFunction f : functions) {

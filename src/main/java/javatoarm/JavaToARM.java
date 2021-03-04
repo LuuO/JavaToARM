@@ -124,7 +124,7 @@ public class JavaToARM {
         JavaFile file = parser.toJavaAST();
         Compiler compiler = Compiler.getCompiler(InstructionSet.ARMv7);
         file.compileTo(compiler);
-        return compiler.toCompleteProgram(mainClass, memorySize);
+        return compiler.toCompleteAssembly(mainClass, memorySize);
     }
 
 }

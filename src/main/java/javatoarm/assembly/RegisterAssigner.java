@@ -3,16 +3,15 @@ package javatoarm.assembly;
 import javatoarm.JTAException;
 
 /**
- * An object that assigns Registers to Variables. A Register should be requested when creating the variable,
- * and freed when the variable goes out of scope.
+ * A RegisterAssigner manages registers in a subroutine. It allocates free registers to variables upon request.
+ * Registers should be freed when their holders goes out of scope.
  */
 public class RegisterAssigner {
-
     private final InstructionSet isa;
     private final Register[] registers;
 
     /**
-     * Construct a new Register Assigner with the specified Instruction Set
+     * Construct a new Register Assigner with the specified instruction set
      *
      * @param isa the instruction set
      */
@@ -31,7 +30,6 @@ public class RegisterAssigner {
     /**
      * Request a general purpose register
      *
-     * @param variable the holder variable of the register
      * @return the register assigned
      * @throws JTAException if an error occurs
      */
@@ -48,22 +46,19 @@ public class RegisterAssigner {
      * Request a register to store function argument,
      * following the calling convention in the instruction set.
      *
-     * @param argument the holder argument of the register
      * @return the register assigned
      */
     public Register requestArgumentRegister() {
-        switch (isa) {
-            case ARMv7 -> {
-                for (int i = 0; i < 4; i++) {
-                    Register register = registers[i];
-                    if (register.isFree()) {
-                        return register;
-                    }
+        if (isa == InstructionSet.ARMv7) {
+            for (int i = 0; i < 4; i++) {
+                Register register = registers[i];
+                if (register.isFree()) {
+                    return register;
                 }
-                throw new JTAException.NotImplemented("too many arguments");
             }
-            case X86_64 -> throw new JTAException.NotImplemented("x86");
-            default -> throw new IllegalArgumentException();
+            throw new JTAException.NotImplemented("too many arguments");
+        } else {
+            throw new JTAException.NotImplemented("x86");
         }
     }
 }
