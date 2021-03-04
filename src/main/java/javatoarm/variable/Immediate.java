@@ -12,7 +12,7 @@ import javatoarm.javaast.type.PrimitiveType;
 public class Immediate implements Variable {
     private final JavaType type;
     private final Object value;
-    private Register temp = null;
+    private Register temp;
 
     /**
      * Construct an instance of Immediate to represent an immediate value
@@ -23,6 +23,7 @@ public class Immediate implements Variable {
     public Immediate(JavaType type, Object immediateValue) {
         this.type = type;
         this.value = immediateValue;
+        this.temp = null;
     }
 
     /**
@@ -89,7 +90,6 @@ public class Immediate implements Variable {
     public Register getRegister(RegisterAssigner registerAssigner) throws JTAException {
         if (temp == null) {
             temp = registerAssigner.requestRegister();
-            temp.assign(this);
         }
         return temp;
     }

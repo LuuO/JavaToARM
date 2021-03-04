@@ -25,7 +25,6 @@ public class LocalVariable implements Variable {
         this.type = type;
         this.name = name;
         this.register = register;
-        register.assign(this);
     }
 
     @Override

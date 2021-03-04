@@ -27,27 +27,34 @@ Suggested ARMv7 Simulator: <https://cpulator.01xz.net/?sys=arm>
 ## Samples
 
 Some sample test files included under ``resources/``:
-* ``Test1.java`` 
+* ``Test1.java``
 * ``String.java`` from Java Standard Library
 
 ## Features
 
-### Front-end:
+### Front-end
 
 * Support most Java syntax (Everything in ``String.java``)
 
-### Back-end:
+### Back-end
 
 * Supported data types: ``int``, ``boolean``, and arrays
-* Support most procedure pro
+* Branching
+    * if-else
+    * for
+    * while
+    * do-while
+* Function call
+* Complex expression
 * Mini malloc
-* 
-* 
 
 ## TODOs
 
-* class fields
-* class initialization
-* GC
-* type checking
-
+* Floating-point numbers
+* Class fields
+* Switch statement
+* Class initialization
+* String
+* Improve JavaCode.getUniqueID
+* Static type checking
+* Fix ARMSubroutine.addLogicalOperation

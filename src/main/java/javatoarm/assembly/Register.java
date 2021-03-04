@@ -1,7 +1,6 @@
 package javatoarm.assembly;
 
 import javatoarm.JTAException;
-import javatoarm.variable.Variable;
 
 /**
  * Represents a CPU register
@@ -9,7 +8,7 @@ import javatoarm.variable.Variable;
 public class Register {
     private final int index;
     private final InstructionSet isa;
-    private Variable holder;
+    private boolean isAssigned;
 
     /**
      * Create a representation of a register
@@ -45,23 +44,21 @@ public class Register {
      * Release the register. This method should be invoked after the holder variable is deleted.
      */
     public void release() {
-        if (holder == null) {
+        if (!isAssigned) {
             throw new IllegalArgumentException("Register is not assigned");
         }
-        holder = null;
+        isAssigned = false;
     }
 
     /**
-     * Set a variable as the holder of this register.
+     * Set the status of the register as assigned.
      * This method should be invoked after the register has been assigned to a variable.
-     *
-     * @param holder the holder variable
      */
-    public void assign(Variable holder) {
-        if (this.holder != null) {
+    public void assign() {
+        if (isAssigned) {
             throw new IllegalArgumentException("Register is already assigned");
         }
-        this.holder = holder;
+        isAssigned = true;
     }
 
     /**
@@ -70,7 +67,7 @@ public class Register {
      * @return true if the register is not assigned, false otherwise.
      */
     public boolean isFree() {
-        return holder == null;
+        return !isAssigned;
     }
 
     @Override

@@ -69,7 +69,6 @@ public class MemoryOffset implements Variable {
     public Register getRegister(RegisterAssigner registerAssigner) throws JTAException {
         if (temp == null) {
             temp = registerAssigner.requestRegister();
-            temp.assign(this);
         }
         return temp;
     }

@@ -36,6 +36,7 @@ public class RegisterAssigner {
     public Register requestRegister() throws JTAException {
         for (Register register : registers) {
             if (register.isFree()) {
+                register.assign();
                 return register;
             }
         }
@@ -53,6 +54,7 @@ public class RegisterAssigner {
             for (int i = 0; i < 4; i++) {
                 Register register = registers[i];
                 if (register.isFree()) {
+                    register.assign();
                     return register;
                 }
             }

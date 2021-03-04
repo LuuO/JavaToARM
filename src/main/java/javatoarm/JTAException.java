@@ -81,7 +81,7 @@ public class JTAException extends Exception {
 
     public static class InvalidExpression extends JTAException {
         public InvalidExpression(JavaExpression expression) {
-            super("Invalid Expression");
+            super("Invalid Expression: " + expression);
         }
     }
 
@@ -115,7 +115,6 @@ public class JTAException extends Exception {
         }
     }
 
-    // TODO: replace UnsupportedOperationException
     public static class NotImplemented extends RuntimeException {
         public NotImplemented(String message) {
             super(message);

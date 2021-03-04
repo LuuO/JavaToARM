@@ -149,6 +149,6 @@ public class JavaScope {
         variables.put(name, variable);
     }
 
-    // TODO:Support declaring class fields
+    // TODO: Support declaring class fields
 
 }

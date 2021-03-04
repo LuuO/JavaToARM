@@ -23,7 +23,6 @@ public class TemporaryVariable implements Variable {
     public TemporaryVariable(JavaType type, Register register) {
         this.type = type;
         this.register = register;
-        register.assign(this);
     }
 
     @Override
