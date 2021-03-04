@@ -15,7 +15,7 @@ public enum Condition {
         };
     }
 
-    public String toSymbol() {
+    public String toSymbol() throws IllegalArgumentException {
         return switch (this) {
             case EQUAL -> "==";
             case UNEQUAL -> "!=";

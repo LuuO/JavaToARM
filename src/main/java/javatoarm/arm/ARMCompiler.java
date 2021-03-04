@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ARMCompiler implements Compiler {
-    private final static Register[] R = ARMLibrary.Registers;
-
     private final StringBuilder text;
 
     public ARMCompiler() {
@@ -55,11 +53,6 @@ public class ARMCompiler implements Compiler {
             throw new IllegalArgumentException();
         }
         text.append(subroutine);
-    }
-
-    @Override
-    public void addEmptyLine() {
-        text.append('\n');
     }
 
     @Override

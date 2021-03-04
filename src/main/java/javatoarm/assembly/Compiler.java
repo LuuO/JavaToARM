@@ -21,11 +21,15 @@ public interface Compiler {
 
     Subroutine newSubroutine();
 
+    /**
+     * Add all instructions in the subroutine to this compiler
+     *
+     * @param subroutine the subroutine
+     */
     void commitSubroutine(Subroutine subroutine);
-
-    void addEmptyLine();
 
     String toCompleteProgram(String starterClass, int stackPosition) throws JTAException;
 
     InstructionSet instructionSet();
+
 }

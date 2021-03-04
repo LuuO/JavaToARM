@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Represents an ARM subroutine
+ */
 public class ARMSubroutine implements Subroutine {
     private final static Register[] R = ARMLibrary.Registers;
     private final static List<Register> callerSave = List.of(0, 1, 2, 3, 14).stream()
@@ -123,8 +126,7 @@ public class ARMSubroutine implements Subroutine {
 
     @Override
     public void addALU(OperatorToken.Binary operator, Variable left, Variable right,
-                       Variable result)
-            throws JTAException {
+                       Variable result) throws JTAException {
         Register leftReg = use(left);
         Register resultRegister = prepareStore(result);
         if (operator instanceof PlusMinus) {
@@ -132,9 +134,8 @@ public class ARMSubroutine implements Subroutine {
 
             // TODO magic number
             if (right instanceof Immediate && ((Immediate) right).numberOfBitsLessThan(8)) {
-                ARMInstruction.instruction(text, op,
-                        resultRegister, leftReg, ((Immediate) right).toNumberRep());
-
+                ARMInstruction.instruction(
+                        text, op, resultRegister, leftReg, ((Immediate) right).toNumberRep());
             } else {
                 Register rightReg = use(right);
                 ARMInstruction.instruction(text, op, resultRegister, leftReg, rightReg);
@@ -174,11 +175,11 @@ public class ARMSubroutine implements Subroutine {
     }
 
     @Override
-    public void addAssignment(Variable left, Variable right) throws JTAException {
-        Register src = use(right);
-        store(src, left);
-        // should not call left.deleteIfIsTemp();
-        right.deleteIfIsTemp();
+    public void addAssignment(Variable dest, Variable source) throws JTAException {
+        Register src = use(source);
+        store(src, dest);
+        // should not call dest.deleteIfIsTemp();
+        source.deleteIfIsTemp();
     }
 
     @Override
@@ -201,8 +202,8 @@ public class ARMSubroutine implements Subroutine {
     }
 
     @Override
-    public void addLogicOp(boolean saveResult, boolean isAnd, Variable left, Variable right,
-                           Variable result) throws JTAException {
+    public void addLogicalOperation(boolean saveResult, boolean isAnd, Variable left, Variable right,
+                                    Variable result) throws JTAException {
         ARMInstruction.instruction(text, isAnd ? OP.AND : OP.ORR, !saveResult,
                 prepareStore(result), use(left), use(right));
         if (!saveResult) {
@@ -256,10 +257,10 @@ public class ARMSubroutine implements Subroutine {
     }
 
     @Override
-    public void checkCondition(Variable condition) throws JTAException {
-        Register register = use(condition);
+    public void checkCondition(Variable variable) throws JTAException {
+        Register register = use(variable);
         ARMInstruction.instruction(text, OP.CMP, register, 0);
-        condition.deleteIfIsTemp();
+        variable.deleteIfIsTemp();
     }
 
     @Override

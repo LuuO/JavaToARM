@@ -48,13 +48,13 @@ public class LogicalExpression implements BooleanExpression {
 
     /**
      * Compiles this logical expression. Result of the operation can be saved
-     * to a temporary variable or to the condition code.
+     * to a temporary variable or to the condition code. Note that when
+     * saveResult is true, the effect on the condition code is undetermined.
      *
      * @param subroutine the subroutine which this expression belongs to
      * @param parent     the parent scope of this expression
      * @param saveResult true to save the result to a variable and return the variable, false to
-     *                   modify only the condition code. Note that when saveResult is true, the
-     *                   effect on the condition code is undetermined.
+     *                   modify only the condition code.
      * @return if saveResult is true, returns the temporary variable that stores the result.
      * Otherwise, the behavior of the returned variable is undefined.
      * @throws JTAException if an error occurs
@@ -64,7 +64,7 @@ public class LogicalExpression implements BooleanExpression {
         Variable left = operandLeft.compileExpression(subroutine, parent);
         Variable right = operandRight.compileExpression(subroutine, parent);
         TemporaryVariable result = new TemporaryVariable(parent.registerAssigner, PrimitiveType.BOOLEAN);
-        subroutine.addLogicOp(saveResult, operator == Logical.AND, left, right, result);
+        subroutine.addLogicalOperation(saveResult, operator == Logical.AND, left, right, result);
         return result;
     }
 }

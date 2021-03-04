@@ -32,11 +32,11 @@ Some sample test files included under ``resources/``:
 
 ## Features
 
-####Front-end:
+### Front-end:
 
 * Support most Java syntax (Everything in ``String.java``)
 
-####Back-end:
+### Back-end:
 
 * Supported data types: ``int``, ``boolean``, and arrays
 * Support most procedure pro
@@ -46,5 +46,5 @@ Some sample test files included under ``resources/``:
 
 ## TODOs
 
-* 
+* GC
 
