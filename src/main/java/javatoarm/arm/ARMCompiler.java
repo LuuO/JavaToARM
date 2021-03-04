@@ -67,6 +67,16 @@ public class ARMCompiler implements Compiler {
                 ARMLibrary.heapStartLabel();
     }
 
+    /**
+     * Find the memory offset (in bytes) between the starting location of the class and the
+     * branch instruction to specific function.
+     *
+     * @param javaFile      the file containing the function
+     * @param className     label of the class
+     * @param classFunction label of the function
+     * @return the offset from the class label to the branch instruction to the function, in bytes
+     * @throws JTAException if an error occurs
+     */
     private int findOffsetTo(String javaFile, String className, String classFunction) throws JTAException {
         Scanner scanner = new Scanner(javaFile);
         String line = scanner.nextLine();

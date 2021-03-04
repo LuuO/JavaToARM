@@ -5,6 +5,9 @@ import javatoarm.assembly.Register;
 
 import java.util.List;
 
+/**
+ * Helper methods to generate instructions
+ */
 public class ARMInstruction {
 
     public static void instruction(StringBuilder text, OP op, Register Rd, Register Rn) {
@@ -108,6 +111,12 @@ public class ARMInstruction {
         text.append("%s:\t.word %s\n".formatted(label, value));
     }
 
+    /**
+     * Convert conditions to instruction suffixes
+     *
+     * @param condition the condition to convert
+     * @return the corresponding suffix
+     */
     private static String toCode(Condition condition) {
         return switch (condition) {
             case EQUAL -> "EQ";
