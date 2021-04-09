@@ -4,7 +4,8 @@ import javatoarm.JTAException;
 
 /**
  * A RegisterAssigner manages registers in a subroutine. It allocates free registers to variables upon request.
- * Registers should be freed when their holders goes out of scope.
+ * Registers should be freed when their holders goes out of scope. This object uses an first-come-first-serve
+ * algorithm, and throws and exception when it runs out of registers.
  */
 public class RegisterAssigner {
     private final InstructionSet isa;

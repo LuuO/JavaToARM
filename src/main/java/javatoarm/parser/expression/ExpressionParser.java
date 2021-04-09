@@ -19,7 +19,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+/**
+ * Methods for parsing expressions. See {@link JavaExpression}.
+ */
 public class ExpressionParser {
+    /*
+     * TODO: consider using Dijkstra's Shunting-yard Algorithm.
+     * Things to check are:
+     *      1. incorrect expression detection
+     *      2. potentially ambiguous symbols. e.g. +, -
+     */
 
     /**
      * Parse an expression
@@ -40,6 +49,7 @@ public class ExpressionParser {
         }
 
         /* analyze expression elements */
+        // TODO: optimizations
         parseIncrementDecrement(elements);
         parseUnaryOperations(elements);
         parseTypeCasting(elements);
@@ -101,12 +111,7 @@ public class ExpressionParser {
                 } else {
                     /* type casting or sub expression */
                     lexer.createCheckPoint();
-                    JavaType type;
-                    try {
-                        type = TypeParser.parseType(lexer, true);
-                    } catch (JTAException ignored) {
-                        type = null;
-                    }
+                    JavaType type = TypeParser.tryParseType(lexer, true);
 
                     if (lexer.nextIf(BracketToken.ROUND_R) && type != null) {
                         /* type casting */

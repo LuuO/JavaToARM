@@ -131,7 +131,7 @@ public class ARMSubroutine implements Subroutine {
         if (operator instanceof PlusMinus) {
             OP op = operator == PlusMinus.PLUS ? OP.ADD : OP.SUB;
 
-            // TODO magic number
+            // FIXME: magic number
             if (right instanceof Immediate && ((Immediate) right).numberOfBitsLessThan(8)) {
                 ARMInstruction.instruction(
                         text, op, resultRegister, leftReg, ((Immediate) right).toNumberRep());
@@ -194,7 +194,7 @@ public class ARMSubroutine implements Subroutine {
     @Override
     public void addLogicalOperation(boolean saveResult, boolean isAnd, Variable left, Variable right,
                                     Variable result) throws JTAException {
-        // TODO: bug fix - AND op requires left and right have matching bits when they are both non-zero
+        // FIXME: AND op requires left and right have matching bits when they are both non-zero
         ARMInstruction.instruction(text, isAnd ? OP.AND : OP.ORR, !saveResult,
                 result.getRegister(ra), use(left), use(right));
         if (!saveResult) {

@@ -59,6 +59,22 @@ public class TypeParser {
     }
 
     /**
+     * Try parsing a Java data type.
+     *
+     * @param lexer       the lexer
+     * @param acceptArray true if an array is type is acceptable, false otherwise.
+     * @return the data type, or null if an error occurs
+     */
+    public static JavaType tryParseType(JavaLexer lexer, boolean acceptArray) {
+        // TODO: Improve this
+        try {
+            return TypeParser.parseType(lexer, acceptArray);
+        } catch (JTAException ignored) {
+            return null;
+        }
+    }
+
+    /**
      * Parse type parameters which are enclosed in &lt&gt .
      * Examples: &lt Integer &gt, &lt? extend Object&gt, &lt Integer, String &gt
      *

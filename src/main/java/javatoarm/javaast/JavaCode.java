@@ -12,7 +12,7 @@ public interface JavaCode {
 
     /**
      * Get an unique identification code for an object
-     * TODO: This method is not reliable as hash codes are not unique
+     * TODO: This method is not reliable as hash codes are not unique, should use an UUID generator singleton instead.
      *
      * @param obj the object
      * @return the unique identification code
